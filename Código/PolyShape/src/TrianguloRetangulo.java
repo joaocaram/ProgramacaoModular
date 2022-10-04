@@ -33,6 +33,7 @@ public class TrianguloRetangulo extends Poligono {
 	 */
 	public TrianguloRetangulo(double base, double altura) {
 		super(base, altura);
+		this.descricao="Triângulo Retângulo";
 	}
 
 	/**

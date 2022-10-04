@@ -68,5 +68,16 @@ public class Pizza extends Comida{
         return this.bordaRecheada;
     }
     
+    @Override
+    public String toString(){
+        StringBuilder nota = new StringBuilder(this.descricao);
+        nota.append(" com "+this.qtIngredientes+
+        " adicionais. Preço inicial: R$"+String.format("%.2f", this.valorBasico)+".\n");
+        for (int i = 0; i < qtIngredientes; i++) {
+            nota.append("\t"+this.ingredientes[i]+"\tR$"+String.format("%.2f", this.ingredientes[i].preco()*PRECO_INGRED)+"\n");
+        }
+        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco())+".\n");
+        return nota.toString();
+    }
    
 }

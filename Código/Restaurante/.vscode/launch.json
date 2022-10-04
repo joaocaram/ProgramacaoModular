@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "Restaurante_5bc489b5",
+            "shortenCommandLine": "none"
+        }
+    ]
+}
