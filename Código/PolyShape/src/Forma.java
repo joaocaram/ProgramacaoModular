@@ -24,14 +24,14 @@
 
 public abstract class Forma {
 
-	private String descricao;
+	protected String descricao;
 
 	public Forma(String descricao) {
 		this.descricao = descricao;
 	}
 
+	
 	public abstract double area();
-
 	public abstract double perimetro();
 
 	@Override

@@ -27,8 +27,9 @@
 public class Retangulo extends Poligono {
 
 	public Retangulo(double base, double altura) {
-		super(base, altura);
-	}
+		super( base, altura	 )			;
+		this.descricao = "Retângulo" 
+	;	}
 
 
 	
@@ -37,7 +38,7 @@ public class Retangulo extends Poligono {
 	 * @return A área do retângulo, com a precisão double do Java
 	 */
 	@Override
-	public double area() {
+	public final double area() {
 		return this.base*this.altura;
 	}
 

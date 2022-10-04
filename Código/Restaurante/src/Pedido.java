@@ -44,7 +44,7 @@ public class Pedido {
     private void init(Data dataPedido){
         this.idPedido = ++ultimoId;
         this.dataPedido = dataPedido; 
-        this.comidas = new Pizza[MAX_COMIDAS];
+        this.comidas = new Comida[MAX_COMIDAS];
         this.quantComidas = 0;
         this.encerrado = false;
     }
@@ -135,6 +135,10 @@ public class Pedido {
         return resposta;
     }
 
+    /**
+     * Redireciona para toString()
+     * @return
+     */
     public String criarNota(){
         return this.toString();
         
@@ -150,7 +154,7 @@ public class Pedido {
        for (int i = 0; i < this.quantComidas; i++) {
             relatorioPedido.append("\n"+this.comidas[i].toString());
        }
-       relatorioPedido.append("\n\n TOTAL DO PEDIDO: R$ "+this.calcularPreco());
+       relatorioPedido.append("\n\n TOTAL DO PEDIDO: R$ "+ String.format("%.2f", this.calcularPreco()));
        return relatorioPedido.toString();
     }
 

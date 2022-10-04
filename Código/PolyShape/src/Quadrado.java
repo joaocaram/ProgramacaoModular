@@ -33,8 +33,11 @@ public class Quadrado extends Retangulo {
 	 */
 	public Quadrado(double base) {
 		super(base,base);
+		this.descricao="Quadrado";
 	}
 
-	//área e perímetro herdados do Quadrado
+	
+
+	//área e perímetro herdados do Retangulo
 
 }

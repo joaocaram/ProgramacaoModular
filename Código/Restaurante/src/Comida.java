@@ -25,7 +25,7 @@
 public abstract class Comida {
     protected int maximoIngredientes;
     protected double valorBasico;
-    protected String descricao;
+    protected String descricao; 
     protected boolean vendaFechada;
     protected int qtIngredientes;
     protected Ingrediente ingredientes[];
@@ -113,10 +113,11 @@ public abstract class Comida {
     public String toString(){
         StringBuilder nota = new StringBuilder(this.descricao);
         nota.append(" com "+this.qtIngredientes+
-        " adicionais. Preço: R$"+String.format("%.2f", this.calcularPreco())+".\n");
+        " adicionais. Preço: R$"+String.format("%.2f", this.valorBasico)+".\n");
         for (int i = 0; i < qtIngredientes; i++) {
             nota.append("\t"+this.ingredientes[i]+"\tR$"+String.format("%.2f", this.ingredientes[i].preco())+"\n");
         }
+        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco())+".\n");
         return nota.toString();
     }
 }

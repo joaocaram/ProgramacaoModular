@@ -27,8 +27,8 @@ public abstract class Poligono extends Forma {
 	protected double base;
 	protected double altura;
 
-	public  Poligono(double base, double altura) {
-		super("Polígono");
+	public  Poligono( double base, double altura) {
+		super("a");
 		if(altura<1) altura = 1;
 		if(base<1) base = 1;
 		this.altura = altura;

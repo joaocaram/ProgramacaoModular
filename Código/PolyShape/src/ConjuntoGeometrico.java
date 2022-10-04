@@ -75,7 +75,7 @@ public class ConjuntoGeometrico {
 	public String toString() {
 		StringBuilder resumoConjunto = new StringBuilder("Conjunto com "+this.quantasFormas+" formas:\n");
 		resumoConjunto.append("--------------------\n");
-		for (int i = 1; i < this.quantasFormas; i++) {
+		for (int i = 0; i < this.quantasFormas; i++) {
 			resumoConjunto.append(formas[i]+"\n");
 		}
 		return resumoConjunto.toString();

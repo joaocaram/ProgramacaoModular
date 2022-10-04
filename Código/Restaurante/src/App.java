@@ -82,7 +82,7 @@ public class App {
     }
 
     public static int menuComida() {
-
+        limparTela();
         System.out.println();
         System.out.println();
 
@@ -100,6 +100,28 @@ public class App {
             return -1;
         }
     }
+
+    public static int menuIngrediente() {
+        limparTela();
+        System.out.println();
+        System.out.println();
+
+        System.out.println("XULAMBS FOOOODS");
+        System.out.println("==========================");
+        System.out.println("1 - Bacon");
+        System.out.println("2 - Cheddar");
+        System.out.println("3 - Palmito");
+        System.out.println("0 - Sair");
+        System.out.print("Digite sua opção: ");
+        try {
+            int opcao = teclado.nextInt();
+            teclado.nextLine();
+            return opcao;
+        } catch (InputMismatchException ie) {
+            return -1;
+        }
+    }
+
     // #endregion
 
     /**
@@ -109,7 +131,20 @@ public class App {
      * @param novaComida A pizza criada que receberá os adicionais.
      */
     private static void adicionarIngredientes(Comida novaComida) {
-       
+        int cont = -1;
+        do{
+            cont = menuIngrediente();
+            switch(cont){
+                case 1: novaComida.addIngredientes(new Bacon());
+                    break;
+                case 2: novaComida.addIngredientes(new Cheddar());
+                    break; 
+                case 3: novaComida.addIngredientes(new Palmito());
+                    break; 
+                default: cont=0;
+                    System.out.println("Inclusão finalizada.");
+            }
+        }while(cont!=0);
     }
 
     /**
@@ -117,36 +152,21 @@ public class App {
      * inclusão de ingredientes.
      * 
      * @param pedido  O pedido atual.
-     * @param pizza   A pizza que será incluída no pedido.
+     * @param comida   A pizza que será incluída no pedido.
      */
-    public static void adicionarPizzaAoPedido(Pedido pedido, Pizza pizza) {
-        if (pedido.addPizza(pizza)) {
-            adicionarIngredientes(pizza);
-            System.out.println("Pizza adicionada ao pedido.");
+    public static void adicionarComidaAoPedido(Pedido pedido, Comida comida) {
+        if (pedido.addComida(comida)) {
+            adicionarIngredientes(comida);
+            System.out.println("Comida adicionada ao pedido.");
         } else
-            System.out.println("Não foi possível adicionar a pizza: limite atingido ou pedido fechado.");
+            System.out.println("Não foi possível adicionar a comida: limite atingido ou pedido fechado.");
     }
 
-    /**
-     * Utilizado para conter a rotina de adicionar um sanduiche, chamando em seguida a
-     * inclusão de ingredientes.
-     * 
-     * @param pedido  O pedido atual.
-     * @param sanduiche   O sanduiche que será incluída no pedido.
-     */
-    public static void adicionarSanduicheAoPedido(Pedido pedido, Sanduiche sanduiche) {
-        if (pedido.addComida(sanduiche)) {
-            adicionarIngredientes(sanduiche);
-            System.out.println("Sanduíche adicionado ao pedido.");
-        } else
-            System.out.println("Não foi possível adicionar: limite atingido ou pedido fechado.");
-    }
-
-
+    
     public static void main(String[] args) throws Exception {
         // testes feitos na classe de teste!!
         Scanner teclado = new Scanner(System.in);
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/mm/YYYY");
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/YYYY");
         String hoje =  LocalDate.now().format(formatoData);  // fictício, para não precisar pegar data do sistema
         int opcao;
         Pedido novoPedido = null;
@@ -163,9 +183,9 @@ public class App {
                     if (novoPedido != null){
                         int comida = menuComida();
                         switch(comida){
-                            case 1: adicionarPizzaAoPedido(novoPedido, new Pizza());
+                            case 1: adicionarComidaAoPedido(novoPedido, new Pizza());
                                 break;
-                            case 2: adicionarSanduicheAoPedido(novoPedido, new Sanduiche());
+                            case 2: adicionarComidaAoPedido(novoPedido, new Sanduiche());
                                 break; 
                             default: System.out.println("Inclusão cancelada.");
                         }
@@ -183,6 +203,6 @@ public class App {
             }
             pausa();
         } while (opcao != 0);
-
+        teclado.close();
     }
 }
