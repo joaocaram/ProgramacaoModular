@@ -90,6 +90,7 @@ public class App {
         System.out.println("==========================");
         System.out.println("1 - Pizza");
         System.out.println("2 - Sanduíche");
+        System.out.println("3 - PF");
         System.out.println("0 - Cancelar");
         System.out.print("Digite sua opção: ");
         try {
@@ -130,7 +131,7 @@ public class App {
      * 
      * @param novaComida A pizza criada que receberá os adicionais.
      */
-    private static void adicionarIngredientes(Comida novaComida) {
+    private static void adicionarIngredientes(IPersonalizavel novaComida) {
         int cont = -1;
         do{
             cont = menuIngrediente();
@@ -156,7 +157,7 @@ public class App {
      */
     public static void adicionarComidaAoPedido(Pedido pedido, Comida comida) {
         if (pedido.addComida(comida)) {
-            adicionarIngredientes(comida);
+           
             System.out.println("Comida adicionada ao pedido.");
         } else
             System.out.println("Não foi possível adicionar a comida: limite atingido ou pedido fechado.");
@@ -183,10 +184,16 @@ public class App {
                     if (novoPedido != null){
                         int comida = menuComida();
                         switch(comida){
-                            case 1: adicionarComidaAoPedido(novoPedido, new Pizza());
+                            case 1: Pizza p = new Pizza();
+                                    adicionarComidaAoPedido(novoPedido, p);
+                                    adicionarIngredientes(p);
                                 break;
-                            case 2: adicionarComidaAoPedido(novoPedido, new Sanduiche());
-                                break; 
+                            case 2: Sanduiche s = new Sanduiche();
+                            adicionarComidaAoPedido(novoPedido, s);
+                                adicionarIngredientes(s);
+                                break;
+                            case 3:
+                                adicionarComidaAoPedido(novoPedido, new PratoFeito());
                             default: System.out.println("Inclusão cancelada.");
                         }
                     }
