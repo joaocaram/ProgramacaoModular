@@ -25,7 +25,7 @@
 
  
  /** Versão do pedido para a pizzaria: agregação com pizza */
-public class Pedido {
+public class Pedido implements IOrdenavel{
     /**
      * Constante para o máximo de pizzas no pedido.
      */
@@ -103,6 +103,7 @@ public class Pedido {
             resposta = true;
         }
         return resposta;
+        
     }
 
     /**
@@ -124,15 +125,15 @@ public class Pedido {
      * @return TRUE/FALSE conforme foi possível fechar o pedido.
      */
     public boolean encerrar(){
-        boolean resposta = false;
-        if(this.quantComidas>0){
-            resposta = true;
+        if(this.quantComidas>0 && !this.encerrado){
+            
             for (int i = 0; i < this.quantComidas; i++) {
                 this.comidas[i].fecharVenda();
             }
             this.encerrado = true;
+            Util.quicksort(this.comidas, 0, this.quantComidas-1);
         }
-        return resposta;
+        return this.encerrado;
     }
 
     /**
@@ -156,6 +157,12 @@ public class Pedido {
        }
        relatorioPedido.append("\n\n TOTAL DO PEDIDO: R$ "+ String.format("%.2f", this.calcularPreco()));
        return relatorioPedido.toString();
+    }
+
+    @Override
+    public boolean maiorQue(IOrdenavel outro) {
+        Pedido outrPedido = (Pedido)outro; 
+        return this.calcularPreco()>outrPedido.calcularPreco();
     }
 
 }

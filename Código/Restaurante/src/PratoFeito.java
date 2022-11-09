@@ -7,7 +7,7 @@ public class PratoFeito extends Comida{
     private boolean carneExtra;
 
     public PratoFeito(){
-        super(0, VALOR_BASICO, DESCRICAO);
+        super(VALOR_BASICO, DESCRICAO);
     }
 
     @Override
@@ -19,5 +19,19 @@ public class PratoFeito extends Comida{
             return 0d;
     }
     
+     /**
+     * Cria a nota de venda. Em caso de pedido aberto, retorna somente o aviso. A nota tem o formato simplificado de
+     * "Pizza simples com XX adicionais. Preço: R$XX.XX".
+     * @return A nota simplificada ou mensagem de pedido em aberto (string em qualquer caso).
+     */
+    @Override
+    public String toString(){
+        StringBuilder nota = new StringBuilder(this.descricao);
+        nota.append(". Preço: R$"+String.format("%.2f", this.valorBasico)+".\n");
+        if(this.carneExtra)
+            nota.append("\tCarne extra: R$ "+String.format("%.2f", CARNE_EXTRA)+".\n");
+        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco()));
+        return nota.toString();
+    }
 
 }

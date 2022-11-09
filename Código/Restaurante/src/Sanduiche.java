@@ -1,14 +1,19 @@
 
 public class Sanduiche extends Comida implements IPersonalizavel{
 
-        //constantes
-        private static final int MAX_INGRED = 5;
-        private static final double VALOR_BASICO = 12.0;
-        private static final String DESCRICAO = "Sanduíche";
-                
-        public Sanduiche(){
-            super(MAX_INGRED, VALOR_BASICO, DESCRICAO);
-        }
+    //constantes
+    private static final int MAX_INGRED = 5;
+    private static final double VALOR_BASICO = 12.0;
+    private static final String DESCRICAO = "Sanduíche";
+    protected int qtIngredientes;
+    protected Ingrediente ingredientes[];
+
+    public Sanduiche(){
+        super(VALOR_BASICO, DESCRICAO);
+        this.ingredientes = new Ingrediente[MAX_INGRED];
+        this.qtIngredientes =0;
+        
+    }
 
 /**
      * Validação do máximo de adicionais. Protegido para venda fechada e valores negativos. Não adiciona os adicionais, apenas valida a quantidade.
@@ -16,7 +21,7 @@ public class Sanduiche extends Comida implements IPersonalizavel{
      * @return TRUE se válido, FALSE se inválido.
      */
     public boolean validarAdicionais(int quantos){
-        if (!this.vendaFechada && quantos>0 && quantos<=this.maximoIngredientes)
+        if (!this.vendaFechada && quantos>0 && quantos<=MAX_INGRED)
             return true;
         else
             return false;
@@ -62,5 +67,22 @@ public class Sanduiche extends Comida implements IPersonalizavel{
             }            
             return valor;
         }
+
+     /**
+     * Cria a nota de venda. Em caso de pedido aberto, retorna somente o aviso. A nota tem o formato simplificado de
+     * "Pizza simples com XX adicionais. Preço: R$XX.XX".
+     * @return A nota simplificada ou mensagem de pedido em aberto (string em qualquer caso).
+     */
+    @Override
+    public String toString(){
+        StringBuilder nota = new StringBuilder(this.descricao);
+        nota.append(" com "+this.qtIngredientes+
+        " adicionais. Preço: R$"+String.format("%.2f", this.valorBasico)+".\n");
+        for (int i = 0; i < qtIngredientes; i++) {
+            nota.append("\t"+this.ingredientes[i]+"\tR$"+String.format("%.2f", this.ingredientes[i].preco())+"\n");
+        }
+        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco()));
+        return nota.toString();
+    }
         
 }

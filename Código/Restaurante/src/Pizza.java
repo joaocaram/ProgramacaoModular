@@ -33,7 +33,8 @@ public class Pizza extends Comida implements IPersonalizavel{
     private static final String DESCRICAO = "Pizza simples";
     
     private boolean bordaRecheada;
-    
+    protected int qtIngredientes;
+    protected Ingrediente ingredientes[];
    
 /**
      * Validação do máximo de adicionais. Protegido para venda fechada e valores negativos. Não adiciona os adicionais, apenas valida a quantidade.
@@ -41,7 +42,7 @@ public class Pizza extends Comida implements IPersonalizavel{
      * @return TRUE se válido, FALSE se inválido.
      */
     public boolean validarAdicionais(int quantos){
-        if (!this.vendaFechada && quantos>0 && quantos<=this.maximoIngredientes)
+        if (!this.vendaFechada && quantos>0 && quantos<=MAX_INGRED)
             return true;
         else
             return false;
@@ -80,6 +81,8 @@ public class Pizza extends Comida implements IPersonalizavel{
     }
 
     private void init(boolean bordaRecheada){
+        this.ingredientes = new Ingrediente[MAX_INGRED];
+        this.qtIngredientes =0;
         this.incluirBorda(bordaRecheada);
     }
        
@@ -87,12 +90,12 @@ public class Pizza extends Comida implements IPersonalizavel{
      * Construtor simples: cria uma pizza sem adicionais.
      */
     public Pizza(){
-        super(MAX_INGRED, VALOR_BASICO, DESCRICAO);
+        super(VALOR_BASICO, DESCRICAO);
         init(false);
     }
 
     public Pizza(boolean bordaRecheada){
-        super(MAX_INGRED, VALOR_BASICO, DESCRICAO);
+        super(VALOR_BASICO, DESCRICAO);
         init(bordaRecheada);
     }
     @Override
@@ -119,7 +122,7 @@ public class Pizza extends Comida implements IPersonalizavel{
         for (int i = 0; i < qtIngredientes; i++) {
             nota.append("\t"+this.ingredientes[i]+"\tR$"+String.format("%.2f", this.ingredientes[i].preco()*PRECO_INGRED)+"\n");
         }
-        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco())+".\n");
+        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco()));
         return nota.toString();
     }
    

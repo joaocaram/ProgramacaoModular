@@ -22,27 +22,20 @@
  * SOFTWARE.
  */
 
-public abstract class Comida {
-    protected int maximoIngredientes;
+public abstract class Comida  implements IOrdenavel{
+    
     protected double valorBasico;
     protected String descricao; 
     protected boolean vendaFechada;
-    protected int qtIngredientes;
-    protected Ingrediente ingredientes[];
-
-    protected Comida(int maxAdicionais, double valor, String descricao){
-        if(maxAdicionais<0) maxAdicionais = 0;
-        this.maximoIngredientes = maxAdicionais;
-        this.ingredientes = new Ingrediente[maximoIngredientes];
-        this.qtIngredientes =0;
+    
+    protected Comida(double valor, String descricao){
+        
         this.valorBasico = valor;
         this.descricao = descricao;
         this.vendaFechada=false;
 
     }
     protected abstract double valorAdicionais();
-
-     
 
     /**
      * Calcula o preco a ser cobrado pela pizza (valor básico + valor dos adicionais). Perceba que, se considerado adequado,
@@ -62,20 +55,11 @@ public abstract class Comida {
         return toString();
     }
 
-    /**
-     * Cria a nota de venda. Em caso de pedido aberto, retorna somente o aviso. A nota tem o formato simplificado de
-     * "Pizza simples com XX adicionais. Preço: R$XX.XX".
-     * @return A nota simplificada ou mensagem de pedido em aberto (string em qualquer caso).
-     */
     @Override
-    public String toString(){
-        StringBuilder nota = new StringBuilder(this.descricao);
-        nota.append(" com "+this.qtIngredientes+
-        " adicionais. Preço: R$"+String.format("%.2f", this.valorBasico)+".\n");
-        for (int i = 0; i < qtIngredientes; i++) {
-            nota.append("\t"+this.ingredientes[i]+"\tR$"+String.format("%.2f", this.ingredientes[i].preco())+"\n");
-        }
-        nota.append("\tValor final: R$"+String.format("%.2f", this.calcularPreco())+".\n");
-        return nota.toString();
+    public boolean maiorQue(IOrdenavel outra){
+        Comida outraComida = (Comida)(outra);
+        return (this.descricao.compareTo(outraComida.descricao)>0);
+
     }
+   
 }

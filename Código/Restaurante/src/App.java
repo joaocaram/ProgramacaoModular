@@ -69,6 +69,7 @@ public class App {
         System.out.println("2 - Incluir comida em pedido");
         System.out.println("3 - Detalhes do pedido");
         System.out.println("4 - Fechar pedido");
+        System.out.println("5 - Exibir lista de pedidos");
         
         System.out.println("0 - Sair");
         System.out.print("Digite sua opção: ");
@@ -163,14 +164,24 @@ public class App {
             System.out.println("Não foi possível adicionar a comida: limite atingido ou pedido fechado.");
     }
 
+    private static void exibirPedidos(Pedido[] todosOsPedidos, int quantPedidos) {
+        Util.quicksort(todosOsPedidos, 0, quantPedidos-1);
+        for (int i = 0; i < quantPedidos; i++) {
+            System.out.println(todosOsPedidos[i]);
+            System.out.println("------------------------------");
+        } 
+    }
     
     public static void main(String[] args) throws Exception {
         // testes feitos na classe de teste!!
         Scanner teclado = new Scanner(System.in);
+        final int MAX_PEDIDOS = 100;
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-        String hoje =  LocalDate.now().format(formatoData);  // fictício, para não precisar pegar data do sistema
+        String hoje =  LocalDate.now().format(formatoData);  // data do sistema
         int opcao;
+        Pedido[] todosOsPedidos = new Pedido[MAX_PEDIDOS];  //por enquanto, tamanho fixo
         Pedido novoPedido = null;
+        int quantPedidos = 0;
 
         do {
             limparTela();
@@ -194,7 +205,7 @@ public class App {
                                 break;
                             case 3:
                                 adicionarComidaAoPedido(novoPedido, new PratoFeito());
-                            default: System.out.println("Inclusão cancelada.");
+                            
                         }
                     }
                     else
@@ -206,10 +217,17 @@ public class App {
                     break;
                 case 4:
                     novoPedido.encerrar();
+                    todosOsPedidos[quantPedidos++] = novoPedido;
+                    break;
+                case 5:
+                    limparTela();
+                    exibirPedidos(todosOsPedidos, quantPedidos);
                     break;
             }
             pausa();
         } while (opcao != 0);
         teclado.close();
     }
+
+    
 }
