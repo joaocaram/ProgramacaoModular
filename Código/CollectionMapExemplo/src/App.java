@@ -74,7 +74,7 @@ import java.util.function.BiFunction;
         arquivo.close();
     }
 
-
+    //#region demonstrações
     public static void collectionDemo(Scanner teclado) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
         
         Collection<Veiculo> garagemCollection = new ArrayList<Veiculo>();
@@ -302,7 +302,8 @@ import java.util.function.BiFunction;
         }
         teclado.nextLine();
     }
-       
+    //#endregion
+
     /**
      * "Limpa" a tela (códigos de terminal VT-100)
      */
