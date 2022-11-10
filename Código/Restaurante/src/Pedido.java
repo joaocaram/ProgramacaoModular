@@ -155,7 +155,7 @@ public class Pedido implements IOrdenavel{
        for (int i = 0; i < this.quantComidas; i++) {
             relatorioPedido.append("\n"+this.comidas[i].toString());
        }
-       relatorioPedido.append("\n\n TOTAL DO PEDIDO: R$ "+ String.format("%.2f", this.calcularPreco()));
+       relatorioPedido.append("\n TOTAL DO PEDIDO: R$ "+ String.format("%.2f", this.calcularPreco()));
        return relatorioPedido.toString();
     }
 
@@ -165,4 +165,8 @@ public class Pedido implements IOrdenavel{
         return this.calcularPreco()>outrPedido.calcularPreco();
     }
 
+    @Override
+    public int hashCode(){
+        return this.idPedido;
+    }
 }
