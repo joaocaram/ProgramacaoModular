@@ -36,6 +36,7 @@ public class Pedido implements IOrdenavel{
     private Comida[] comidas;
     private int quantComidas;
     private boolean encerrado;
+    private double valorPago;
     
     /**
      * Método inicializador. Cria o vetor de pizzas e o id automático do pedido.
@@ -124,7 +125,7 @@ public class Pedido implements IOrdenavel{
      * o pedido sem nenhuma pizza.
      * @return TRUE/FALSE conforme foi possível fechar o pedido.
      */
-    public boolean encerrar(){
+    public boolean encerrarPedido(){
         if(this.quantComidas>0 && !this.encerrado){
             
             for (int i = 0; i < this.quantComidas; i++) {
@@ -136,6 +137,9 @@ public class Pedido implements IOrdenavel{
         return this.encerrado;
     }
 
+    public boolean encerrado(){
+        return this.encerrado;
+    }
     /**
      * Redireciona para toString()
      * @return
@@ -157,6 +161,25 @@ public class Pedido implements IOrdenavel{
        }
        relatorioPedido.append("\n TOTAL DO PEDIDO: R$ "+ String.format("%.2f", this.calcularPreco()));
        return relatorioPedido.toString();
+    }
+
+    public double aplicarDesconto(double desconto){
+        double precoOriginal = this.calcularPreco(); 
+        if(desconto>precoOriginal) desconto=precoOriginal;
+        this.valorPago = precoOriginal-desconto;
+        return this.valorPago;
+    }
+
+    public double valorPago(){
+        return this.valorPago;
+    }
+    
+    public boolean maisRecente(Pedido outro){
+        return this.dataPedido.depoisDe(outro.dataPedido);
+    }
+
+    public boolean maisRecente(Data referencia){
+        return this.dataPedido.depoisDe(referencia);
     }
 
     @Override

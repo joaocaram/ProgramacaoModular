@@ -32,16 +32,22 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import Util.Util;
-import Util.DAO;
-//import Util.DAO;
-import Util.Lista;
+
 
 /**
  * App-demo para o restaurante. Versão 2: pedidos com pizzas.
  */
 public class App {
     static Scanner teclado = new Scanner(System.in);
+    static final int MAX_PEDIDOS = 500; //enquanto não usamos coleções
+    static final int MAX_CLIENTES = 100; //enquanto não usamos coleções
+        
+    static int quantosPedidos = 0;
+    static int quantosClientes = 0;
+    static Cliente[] listaDeClientes = new Cliente[MAX_CLIENTES];       
+    static Pedido[] listaDePedidos = new Pedido[MAX_PEDIDOS];
+
+        
     // #region utilidades
     /**
      * "Limpa" a tela (códigos de terminal VT-100)
@@ -206,156 +212,161 @@ public class App {
             System.out.println("Não foi possível adicionar a comida: limite atingido ou pedido fechado.");
     }
 
-    public static void exibirPedidos(Lista<Pedido> pedidos){
-        Pedido[] pedidosDecrescente = new Pedido[pedidos.tamanho()];
-        pedidosDecrescente = pedidos.toArray(pedidosDecrescente);
-        Util.quicksort(pedidosDecrescente, 0, pedidosDecrescente.length-1);    
-    
+    public static void exibirPedidos(Pedido[] pedidos){
+                
         limparTela();
         System.out.println("PEDIDOS DE HOJE:");
-        for (int i = pedidosDecrescente.length-1; i >= 0; i--) {
-            System.out.println(pedidosDecrescente[i]);
-            System.out.println("------------------------");
+        for (int i = pedidos.length-1; i >= 0; i--) {
+            if(pedidos[i]!=null){
+                System.out.println(pedidos[i]);
+                System.out.println("------------------------");
+            }
         }    
     }
     
-    public boolean cadastrarCliente(Set<Cliente> clientes){
-        limparTela();
-        System.out.println("NOVO CLIENTE:");
-        System.out.print("Nome: ");
-        String nome = teclado.nextLine();
-        Cliente novo = new Cliente(nome);
-        
-        return clientes.add(novo);
-    }
-
+    
     public static Cliente criarCliente(){
         limparTela();
         System.out.println("NOVO CLIENTE:");
         System.out.print("Nome: ");
         String nome = teclado.nextLine();
         Cliente novo = new Cliente(nome);
+        if(quantosClientes<MAX_CLIENTES){
+            listaDeClientes[quantosClientes++] = novo;
+            System.out.println("Cliente "+novo.nome()+" cadastrado.");
+        }                
+        else 
+            System.out.println("ATENÇÃO: Cadastro de clientes sem espaço livre.");
+        pausa();
         return novo;
+        
        
     }
 
     
-    public static Cliente selecionarCliente(LinkedHashMap<Integer, Cliente> clientes){
-            System.out.print("Código do cliente: ");
-            int  codCli = Integer.parseInt(teclado.nextLine());
-            return clientes.get(codCli);
+    public static Cliente selecionarCliente(){
+            System.out.print("Nome do cliente: ");
+            String  nomeCli = teclado.nextLine();
+            Cliente mock = new Cliente(nomeCli);
+            
+            for (Cliente cliente : listaDeClientes) {
+                if(cliente!=null)
+                    if(cliente.equals(mock))
+                        return cliente;
+            }
+
+            System.out.println("ATENÇÃO: Cliente não encontrado.");
+            System.out.println("Deseja cadastrar? (S/N)");
+            String cadastrar = teclado.nextLine();
+            if(cadastrar.toLowerCase().equals("s"))
+                return criarCliente();
+            else
+                return null;
     }
     
-    public static void infoCliente(LinkedHashMap<Integer, Cliente> clientes){
-        Cliente clienteInfo = selecionarCliente(clientes);
+    public static void infoCliente(){
+        Cliente clienteInfo = selecionarCliente();
         if(clienteInfo==null)
             System.out.println("ATENÇÃO: Cliente não encontrado.");
         else{
             limparTela();
             System.out.println(clienteInfo.toString());
             System.out.println("Pedido mais caro:\n "+clienteInfo.maisCaro());
-            System.out.println("Pedido mais recente:\n "+clienteInfo.maisCaro());
+            System.out.println("Pedido mais recente:\n "+clienteInfo.maisRecente());
         
         }
     }
+    public static void fluxoInserirComida(Pedido novoPedido){
+    if (novoPedido != null){
+        int comida = menuComida();
+        switch(comida){
+            case 1: Pizza p = new Pizza(); 
+            adicionarComidaAoPedido(novoPedido, p);
+                adicionarIngredientes(p);
+                break;
+            case 2: Sanduiche s = new Sanduiche(); 
+                adicionarComidaAoPedido(novoPedido, s);
+                adicionarIngredientes(s);
+                break;
+            case 3: PratoFeito pf = new PratoFeito(); 
+                adicionarComidaAoPedido(novoPedido, pf);
+                break; 
 
+            default: System.out.println("Inclusão cancelada.");
+        }
+    }
+    else
+        System.out.println("Pedido ainda não foi aberto.");    
+    }
     public static void main(String[] args) throws Exception {
-        // testes feitos na classe de teste!!
         
-        TreeSet<Cliente> conjuntoClientes = new TreeSet<Cliente>();
-        LinkedHashMap<Integer, Cliente> mapaClientes = new LinkedHashMap<Integer, Cliente>();
-        SortedMap<String, Cliente> arvoreClientes = new TreeMap<String, Cliente>();
-
-        Pedido novoPedido = null;
-        Cliente clienteAtual = null;        
-       DAO<Comida> daoCli = new DAO<>();
-
-       //daoCli.carregarArquivoInteiro(null, (linha)->Cliente.parseCliente(linha));
-        
-        Lista<Pedido> listaDePedidos = new Lista<Pedido>();
-        Scanner teclado = new Scanner(System.in);
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/YYYY");
         String hoje =  LocalDate.now().format(formatoData);  // fictício, para não precisar pegar data do sistema
         int opcao;
-
+        Pedido novoPedido = null;
+        Cliente clienteAtual = null;        
+    
 
         do {
             limparTela();
             opcao = menu();
             switch (opcao) {
                 case 1:
-                    novoPedido = new Pedido(hoje);
-                    System.out.println("Pedido criado.");
+                    if(novoPedido==null || novoPedido.encerrado()){
+                        novoPedido = new Pedido(hoje);
+                        System.out.println("Pedido criado.");
+                    }
+                    else 
+                        System.out.println("Há pedido em aberto. Favor encerrar antes.");
                     break;
                 case 2:
-                    if (novoPedido != null){
-                        int comida = menuComida();
-                        switch(comida){
-                            case 1: Pizza p = new Pizza(); 
-                            adicionarComidaAoPedido(novoPedido, p);
-                                adicionarIngredientes(p);
-                                break;
-                            case 2: Sanduiche s = new Sanduiche(); 
-                                adicionarComidaAoPedido(novoPedido, s);
-                                adicionarIngredientes(s);
-                                break;
-                            case 3: PratoFeito pf = new PratoFeito(); 
-                                adicionarComidaAoPedido(novoPedido, pf);
-                                break; 
-                                case 4: Suco su = new Suco(); 
-                                adicionarComidaAoPedido(novoPedido, su);
-                                break; 
-                            default: System.out.println("Inclusão cancelada.");
-                        }
-                    }
-                    else
-                        System.out.println("Pedido ainda não foi aberto.");
+                    fluxoInserirComida(novoPedido);
                     break;
                 case 3:
                     limparTela();
-                    System.out.println(novoPedido);
+                    if(novoPedido!=null)
+                        System.out.println(novoPedido);
+                    else
+                        System.out.println("Favor criar o pedido antes.");
                     break;
                 case 4:
-                    while(clienteAtual==null){
-                        System.out.println("Selecionar o cliente do pedido.");
-                        clienteAtual = selecionarCliente(mapaClientes);
-                    }
-                    novoPedido.encerrar();
-                    clienteAtual.addPedido(novoPedido);
-                    listaDePedidos.inserirNoFim(novoPedido);
-                    
-                    break;
+                        while(clienteAtual==null){        
+                            System.out.println("Selecionar o cliente do pedido.");
+                            clienteAtual = selecionarCliente();
+                        }                
+                        novoPedido.encerrarPedido();
+                        clienteAtual.addPedido(novoPedido);
+                        
+                        if(quantosPedidos<MAX_PEDIDOS){
+                            listaDePedidos[quantosPedidos++] = novoPedido;
+                        }
+                        else
+                            System.out.println("Capacidade de pedidos do dia já foi estourada.");
+
+                        break;
                 case 5:
                     exibirPedidos(listaDePedidos);
                     break;
-                case 6: clienteAtual = selecionarCliente(mapaClientes);
+                case 6: clienteAtual = selecionarCliente();
                         if(clienteAtual==null)
                             System.out.println("ATENÇÃO: Cliente não encontrado.");
                     break;
                 case 7: int opcClientes = menuClientes();
                         switch(opcClientes){
                             case 1:
-                                infoCliente(mapaClientes);
+                                infoCliente();
                                 break;
                             case 2: 
                                 limparTela();
-                                System.out.println("Nome inicial: ");
-                                String from = teclado.nextLine();
-                                System.out.println("Nome final: ");
-                                String to = teclado.nextLine();
-                                NavigableSet<Cliente> consulta = conjuntoClientes.subSet(new Cliente(from), true, new Cliente(to), true);                            
-                                for (Cliente cliente : consulta) {
-                                    System.out.println(cliente);
-                                }
-                                break;
+                                System.out.println("Não implementado... volte mais tarde.");
                             case 3:
                                 Cliente novo = criarCliente();
-                                if(conjuntoClientes.add(novo)){
-                                    mapaClientes.put(novo.hashCode(), novo);
-                                    arvoreClientes.put(novo.nome(), novo);
+                                if(novo!=null && quantosClientes < MAX_CLIENTES){
+                                    listaDeClientes[quantosClientes++] = novo;
+                                    System.out.println("Cliente "+novo.nome()+" cadastrado.");   
                                 }
                                 else
-                                    System.out.println("ATENÇÃO: Cliente com este nome já existe.");
+                                    System.out.println("ATENÇÃO: Cadastro de clientes sem espaço livre.");
                                 break;
                         }
                    
