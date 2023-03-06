@@ -4,4 +4,4 @@ Primeiro exemplo de modularidade com POO. Temos uma classe-demonstração Relóg
 
 ## Problema original
 
-*Precisamos de um relógio que marque as horas corretamente, realize a passagem do tempo corretamente a cada segundo e mostre o seu horário no formato 24h, HH:DD:SS.
+*Precisamos de um relógio que marque as horas corretamente, realize a passagem do tempo corretamente a cada segundo e mostre o seu horário no formato 24h, HH:DD:SS.*

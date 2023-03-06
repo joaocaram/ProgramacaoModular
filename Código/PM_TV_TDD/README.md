@@ -1,4 +1,4 @@
-# Exemplo deo TDD: classe televisão
+# Exemplo de TDD: classe televisão
 
 Exemplo parcialmente executado de TDD, utilizando uma classe Televisao. 
 
