@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "PM_Produto_AgregData_40f23d43"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "POO_Produto_AgregData_e16f2b60"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "POO_Produto_AgregData_ff0aeeda",
+            "shortenCommandLine": "none"
+        }
+    ]
+    
+}
