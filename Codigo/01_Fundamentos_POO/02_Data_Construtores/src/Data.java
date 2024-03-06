@@ -24,8 +24,6 @@
 
 public class Data {
         
-    
-    
     //#region atributos
     
     private int dia;
@@ -33,6 +31,29 @@ public class Data {
     private int ano;
     //#endregion
     
+    /**
+     * Construtor detalhado. Tenta criar uma data com os valores passados
+     * de dia, mês e ano. O ano deve ser de 1900 em diante. Qualquer dado inválido
+     * leva a data para 01/01/2000
+     * @param dia De 1 a 31, de acordo com o mês
+     * @param mes De 1 a 12
+     * @param ano De 1900 em diante
+     */
+    public Data(int dia, int mes, int ano){
+        ajustar(dia, mes, ano);
+    }
+
+    /**
+     * Construtor para o ano atual. Tenta criar uma data com os valores passados
+     * de dia e mês e inclui o ano atual. Qualquer dado inválido
+     * leva a data para 01/01/2000
+     * @param dia De 1 a 31, de acordo com o mês
+     * @param mes De 1 a 12
+     */
+    public Data(int dia, int mes){
+        int anoAtual = 2024;
+        ajustar(dia, mes, anoAtual);
+    }
     /**
      * Tenta ajustar uma data com os valores passados. Em caso de qualquer valor inválido, retorna para a data padrão de 01/01/2000
      * @param dia O dia da data (1 a 31, de acordo com o mês). Os anos válidos são de 1900 em diante.
@@ -72,11 +93,7 @@ public class Data {
         }                       
         return resposta;    //retorna a resposta obtida
     }
-    
-    
-
-           
-    
+        
     /**  
     * Retorna se o ano da data armazenada é bissexto 
     * Para regras do ano bissexto:
@@ -94,8 +111,6 @@ public class Data {
         return resposta;
     }
 
-    
-
     /**
      * Acrescenta alguns dias à data e retorna a nova data (sem modificar a atual)
      * @param quant Quantos dias
@@ -103,8 +118,8 @@ public class Data {
      */
     public Data somarDias(int quantos){
         int[] DIASDOMES = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-        Data aux = new Data();
-        aux.ajustar(this.dia, this.mes, this.ano);
+        Data aux = new Data(this.dia, this.mes, this.ano);
+        
         
         if(quantos<=0)        //não pode acrescentar dias negativos e, assim, retorna data atual.
             return aux;
