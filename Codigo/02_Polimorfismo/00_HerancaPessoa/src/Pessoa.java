@@ -35,5 +35,7 @@ public class Pessoa {
         // fingindo que estou usando um serviço bacanudo para enviar emails
     }
 
-    
+    public String dadosPessoa(){
+        return nome+", idade: "+idade()+" anos.";
+    }
 }
