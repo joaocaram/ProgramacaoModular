@@ -1,5 +1,4 @@
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,19 +14,8 @@ public class ComidaTest {
 
     @BeforeEach
     public void setUp(){
-        pizza = new Comida("pizza");
-        sanduiche = new Comida("sanduiche");
-    }
-
-    @Test
-    public void calculaPrecoDaPizzaCorretamente(){
-        assertEquals(29.0, pizza.precoFinal(),0.01);
-    }
-
-    @Test
-    public void calculaPrecoDaPizzaComAdicionaisCorretamente(){
-        pizza.adicionarIngredientes(2);
-        assertEquals(39.0, pizza.precoFinal(),0.01);
+        pizza = new Pizza();
+        sanduiche = new Sanduiche();
     }
 
     @Test
@@ -40,16 +28,7 @@ public class ComidaTest {
         sanduiche.adicionarIngredientes(4);
         assertEquals(4,sanduiche.adicionarIngredientes(3));        
     }
-
-    @Test
-    public void naoAdicionaIngredientesEmExcessoNaPizza(){
-        
-        for (int i = 0; i < 10; i++) {
-            pizza.adicionarIngredientes(1);
-        }        
-        assertTrue(pizza.relatorio().contains("8 adicionais"));
-    }
-
+   
     @Test
     public void naoAdicionaIngredienteNegativo(){
 

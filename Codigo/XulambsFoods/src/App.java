@@ -21,7 +21,7 @@ public class App {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("🍔 XULAMBS FOODS - v0.21 🍕");
+        System.out.println("🍔 XULAMBS FOODS - v0.31 🍕");
         System.out.println("=====================");
     }
 
@@ -48,7 +48,7 @@ public class App {
     }
 
     static void relatorioTotalVendido() {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/M/uuuu");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/uuuu");
         cabecalho();
         String hoje = LocalDate.now().format(df);
         System.out.println("Total vendido hoje (" + hoje + "): R$ " + String.format("%.2f", totalVendido));
@@ -73,15 +73,24 @@ public class App {
         return novoPedido;
     }
 
+    static boolean querBordaRecheada(){
+        String querBorda="";
+        System.out.print("\nPizza com borda recheada (S/N)? ");
+        querBorda = teclado.nextLine();
+        return querBorda.toLowerCase().equals("s");
+    }
     static Comida criarComida() {
         int tipoComida = MenuComida();
         Comida novaComida = null;
         switch (tipoComida) {
             case 1:
-                novaComida = new Comida("pizza");
+                if(querBordaRecheada())
+                    novaComida = new Pizza(0,true);
+                else   
+                    novaComida = new Pizza();
                 break;
             case 2:
-                novaComida = new Comida("sanduiche");
+                novaComida = new Sanduiche();
                 break;
         }
 

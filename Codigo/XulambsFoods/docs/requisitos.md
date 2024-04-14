@@ -21,3 +21,5 @@
   - Um pedido deve ter um identificador único e sua data armazenada.
   - Um pedido pode conter até 10 comidas. 
   - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
+
+1. Pizzas agora podem ter bordas recheadas (adicional de R$ 5,50). Os adicionais de pizza passam a ter um desconto de 50% no seu valor a partir do 6º adicional.

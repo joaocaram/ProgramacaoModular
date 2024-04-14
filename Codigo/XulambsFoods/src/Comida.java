@@ -25,70 +25,19 @@
  /**
   * Classe Comida simples: atributos, métodos, encapsulamento, construtores.
   */
- public class Comida{
+  public class Comida{
 
     //#region Atributos
-    private String descricao;
-    private double precoBasico;
-    private double valorPorAdicional;
-    private int maxAdicionais;
-    private int qtdAdicionais;
+    protected String descricao;
+    protected double precoBasico;
+    protected double valorPorAdicional;
+    protected int maxAdicionais;
+    protected int qtdAdicionais;
     //#endregion
 
     //#region Construtores
 
-    /**
-     * Inicializador privado. Recebe a descrição da comida e a quantidade de adicionais. A descrição pode ser 'Pizza' ou 'Sanduiche',
-     * sem distinção de maiúsculas ou minúsculas. Os adicionais serão validados de acordo com as regras das comidas. Em caso de descrição inválida,
-     * cria uma pizza. Adicionais inválidos se tornam 0.
-     * @param descricao Tipo da comida: "Pizza" ou "Sanduiche", sem distinção de maiúsculas/minúsculas.
-     * @param qtdAdicionais Quantos adicionais (>0 e respeitando regra das comidas.)
-     */
-    private void init(String descricao, int qtdAdicionais){
-        switch (descricao.toLowerCase()) {
-            case "sanduiche":
-                    this.descricao = "Sanduiche";
-                    precoBasico = 15;
-                    valorPorAdicional = 2.50;
-                    maxAdicionais = 5;
-                break;
-            case "pizza":
-            default:
-                    this.descricao = "Pizza";
-                    precoBasico = 29;
-                    valorPorAdicional = 5.0;
-                    maxAdicionais = 8;
-                break;
-        }
-        adicionarIngredientes(qtdAdicionais);
-    }
     
-    /**
-     * Cria uma comida do tipo especificado. Recebe a descrição da comida ('Pizza' ou 'Sanduiche') e cria com 0 adicionais. 
-     * Em caso de descrição inválida, cria uma pizza. 
-     * @param descricao Tipo da comida: "Pizza" ou "Sanduiche", sem distinção de maiúsculas/minúsculas.
-     */
-    public Comida(String descricao){
-        init(descricao, 0);
-    }
-
-    /**
-     * Construtor. Recebe a descrição da comida e a quantidade de adicionais. A descrição pode ser 'Pizza' ou 'Sanduiche',
-     * sem distinção de maiúsculas ou minúsculas. Os adicionais serão validados de acordo com as regras das comidas. Em caso de descrição inválida,
-     * cria uma pizza. Adicionais inválidos se tornam 0.
-     * @param descricao Tipo da comida: "Pizza" ou "Sanduiche", sem distinção de maiúsculas/minúsculas.
-     * @param qtdAdicionais Quantos adicionais (>0 e respeitando regra das comidas.)
-     */
-    public Comida(String descricao, int qtdAdicionais){
-        init(descricao, qtdAdicionais);
-    }
-
-    /**
-     * Cria uma pizza com 0 adicionais.
-     */
-    public Comida(){
-        init("pizza", 0);
-    }
     //#endregion
 
     //#region Métodos de negócio
@@ -105,7 +54,7 @@
      * Método privado que calcula o valor dos ingredientes adicionais.
      * @return O valor dos adicionais da comida (double não negativo).
      */
-    private  double valorAdicionais(){
+    protected  double valorAdicionais(){
         return qtdAdicionais * valorPorAdicional;
     }
 
@@ -137,6 +86,7 @@
      * Cria um relatório simples da comida em String. 
      * @return String com o relatório conforme a o requisito: descrição da comida, preço básico, quantidade de adicionais e preço a pagar.
      */
+
     public String relatorio(){
         return String.format("%s (R$ %2.2f) com %d adicionais (R$ %.2f)\n   TOTAL: R$ %.2f",
                              descricao, precoBasico, qtdAdicionais, valorAdicionais(), precoFinal());

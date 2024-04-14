@@ -1,12 +1,10 @@
 ﻿# 🍕 Xulambs Foods 🍔
 
-## Segunda iteração
+## Terceira iteração (v0.31)
 (veja os requisitos completos no [documento de requisitos](doc/requisitos.md))
 
-Com a certeza de que o sistema pode calcular corretamente as condições e valores de vendas de pizzas e sanduíches, a _Xulambs Foods_ entendeu que é melhor agrupar as vendas em pedidos, os quais serão controlados diariamente. 
+Decidiu-se por uma refatoração do código da classe `Comida` para aumentar sua coesão, criando as classes filhas `Pizza` e `Sanduiche`.
 
-Foram levantadas as seguintes regras para a criação dos pedidos:
-- Um pedido deve ter um identificador único.
-- Um pedido deve ter sua data armazenada.
-- Um pedido pode conter até 10 comidas. 
-- O relatório de um pedido deve mostrar suas informações de id e data, a descrição detalhada de cada uma das comidas e o valor total do pedido.
+Uma pizza passou a ter a possibilidade de possuir borda recheada, o que aumenta seu preço em R$5,50. Para incentivar os clientes a incluirem mais adicionais, os adicionais da pizza terão desconto de 50% em seu valor a partir do 6º adicional.
+
+O sistema deixa o usuário escolher se a pizza terá borda recheada.
