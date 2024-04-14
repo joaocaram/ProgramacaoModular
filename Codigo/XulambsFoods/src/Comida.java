@@ -23,9 +23,9 @@
  */
 
  /**
-  * Classe Comida simples: atributos, métodos, encapsulamento, construtores.
+  * Classe Comida abstrata, para herança em Pizza e Sanduíche
   */
-  public class Comida{
+  public abstract class Comida{
 
     //#region Atributos
     protected String descricao;

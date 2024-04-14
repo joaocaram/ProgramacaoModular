@@ -1,10 +1,18 @@
 ﻿# 🍕 Xulambs Foods 🍔
 
-## Terceira iteração (v0.31)
+## Terceira iteração, sprint 2 (v0.32)
 (veja os requisitos completos no [documento de requisitos](doc/requisitos.md))
 
-Decidiu-se por uma refatoração do código da classe `Comida` para aumentar sua coesão, criando as classes filhas `Pizza` e `Sanduiche`.
+O restaurante quer dar seu próximo passo e começar a registrar pedidos em separado para o salão e para o serviço de entrega.
 
-Uma pizza passou a ter a possibilidade de possuir borda recheada, o que aumenta seu preço em R$5,50. Para incentivar os clientes a incluirem mais adicionais, os adicionais da pizza terão desconto de 50% em seu valor a partir do 6º adicional.
+Os pedidos feitos para consumo no local serão servidos por garçons. Estes pedidos:
+  
+  - Têm uma taxa de 10% de serviço;
+  - Não têm limite de itens;
+  
+Os pedidos para entrega:
 
-O sistema deixa o usuário escolher se a pizza terá borda recheada.
+  - Têm taxa variável de acordo com a distância: grátis até 4km, R$5 até 8km e R$8 acima disso.
+  - O limite de 10 itens por pedido está mantido.
+  
+

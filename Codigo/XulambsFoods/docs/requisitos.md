@@ -18,8 +18,12 @@
       - Cada adicional custa R$4.
     
 1. As vendas devem ser agrupadas em pedidos.
-  - Um pedido deve ter um identificador único e sua data armazenada.
-  - Um pedido pode conter até 10 comidas. 
-  - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
+    - Um pedido deve ter um identificador único e sua data armazenada.
+    - Um pedido pode conter até 10 comidas. 
+    - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
 
 1. Pizzas agora podem ter bordas recheadas (adicional de R$ 5,50). Os adicionais de pizza passam a ter um desconto de 50% no seu valor a partir do 6º adicional.
+
+1. Agora podemos ter pedidos para comer no local e pedidos para entrega. 
+    - Pedidos locais não terão limites de comida e terão taxa de serviço de 10%;
+    - Pedidos para entrega continuam com limite de 10 comidas. Não há taxa de serviço, mas há taxa de entrega de acordo com a distância: grátis até 4km, R$5 até 8km e R$8 acima disso. 

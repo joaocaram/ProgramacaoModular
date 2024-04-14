@@ -21,7 +21,7 @@ public class App {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("🍔 XULAMBS FOODS - v0.31 🍕");
+        System.out.println("🍔 XULAMBS FOODS - v0.32 🍕");
         System.out.println("=====================");
     }
 
@@ -55,21 +55,40 @@ public class App {
         pausa();
     }
 
+    static Pedido escolherTipoPedido(){
+        int opcao = 0;
+        Pedido novoPedido = null;
+        cabecalho();
+        System.out.println("1 - Para comer no local");
+        System.out.println("2 - Para entrega");
+        System.out.print("Digite sua opção: ");
+        opcao = Integer.parseInt(teclado.nextLine());
+        switch (opcao) {
+            case 1 -> novoPedido = new PedidoLocal();
+            case 2-> {
+                System.out.print("Digite a distância da entrega em km: ");
+                double dist = Double.parseDouble(teclado.nextLine());
+                novoPedido = new PedidoDelivery(dist);
+            }
+        }
+        return novoPedido;
+
+    }
     static Pedido criarPedido() {
-        Pedido novoPedido = new Pedido();
-        Comida novaComida = criarComida();
-
-        if (novaComida != null) {
-            do {
-                novoPedido.addComida(novaComida);
-                System.out.println(novaComida.relatorio() + " adicionado ao pedido.");
-                pausa();
-                novaComida = criarComida();
-            } while (novaComida != null);
-            novoPedido.fecharPedido();
-        } else
-            novoPedido = null;
-
+        Pedido novoPedido = escolherTipoPedido();
+        if(novoPedido!=null){ 
+            Comida novaComida = criarComida();
+            if (novaComida != null) {
+                do {
+                    novoPedido.addComida(novaComida);
+                    System.out.println(novaComida.relatorio() + " adicionado ao pedido.");
+                    pausa();
+                    novaComida = criarComida();
+                } while (novaComida != null);
+                novoPedido.fecharPedido();
+            } else
+                novoPedido = null;
+        }
         return novoPedido;
     }
 
@@ -116,7 +135,7 @@ public class App {
                     if (pedidoAtual != null) {
                         totalVendido += pedidoAtual.precoFinal();
                         System.out.println("Pedido fechado: ");
-                        System.out.println(pedidoAtual.relatorio());
+                        System.out.println(pedidoAtual.toString());
                         pausa();
                     }
                     break;
