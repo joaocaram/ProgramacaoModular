@@ -1,6 +1,5 @@
 import java.util.LinkedList;
 import java.util.Queue;
-
 /** 
  * MIT License
  *
@@ -30,11 +29,17 @@ public class Cliente {
     private int id;
     private String nome;
     private Queue<Pedido> pedidos;
-    
+    private IFidelidade categoria;
+
     public Cliente(String nome){
         this.nome = nome;
         id = ++ultimoID;
         pedidos = new LinkedList<>();
+        categoria = new XulambsJunior(pedidos);
+    }
+
+    public void verificarCategoria(){
+        categoria = categoria.atualizarCategoria();
     }
 
     public void registrarPedido(Pedido novo){
@@ -55,6 +60,12 @@ public class Cliente {
             valor += pedido.precoFinal();
         }
         return valor;
+    }
+
+    public double valorAPagar(Pedido pedido){
+        double precoAPagar = pedido.precoFinal();
+		precoAPagar -= categoria.desconto(pedido);
+		return precoAPagar;
     }
 
     @Override

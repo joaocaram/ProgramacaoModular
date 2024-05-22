@@ -1,4 +1,3 @@
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class App {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("🍔 XULAMBS FOODS - v0.41 🍕");
+        System.out.println("🍔 XULAMBS FOODS - v0.42 🍕");
         System.out.println("=====================");
     }
 
@@ -103,7 +102,6 @@ public class App {
         return novoPedido;
 
     }
-    
     static Pedido criarPedido() {
         Pedido novoPedido = escolherTipoPedido();
         if(novoPedido!=null){ 
@@ -128,7 +126,6 @@ public class App {
         querBorda = teclado.nextLine();
         return querBorda.toLowerCase().equals("s");
     }
-   
     static Comida criarComida() {
         int tipoComida = MenuComida();
         Comida novaComida = null;
@@ -184,7 +181,6 @@ public class App {
             pausa();
         }
     }
-    
     public static void main(String[] args) {
         clientes = new HashMap<>();
         teclado = new Scanner(System.in);
