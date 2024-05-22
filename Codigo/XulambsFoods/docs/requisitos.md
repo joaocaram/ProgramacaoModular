@@ -22,8 +22,11 @@
     - Um pedido pode conter até 10 comidas. 
     - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
 
-1. Pizzas agora podem ter bordas recheadas (adicional de R$ 5,50). Os adicionais de pizza passam a ter um desconto de 50% no seu valor a partir do 6º adicional.
+1. As pizzas passarão a ser vendidas com a opção de borda recheada. Uma pizza com borda recheada sofre acréscimo de R$5,50.
 
-1. Agora podemos ter pedidos para comer no local e pedidos para entrega. 
-    - Pedidos locais não terão limites de comida e terão taxa de serviço de 10%;
-    - Pedidos para entrega continuam com limite de 10 comidas. Não há taxa de serviço, mas há taxa de entrega de acordo com a distância: grátis até 4km, R$5 até 8km e R$8 acima disso. 
+1. Procurando incentivar a adição de ingredientes na Pizza, a partir do 6º ingredientes será concedido um desconto de 50% no seu valor.
+
+1. Cada pedido deverá ser registrado para um cliente.
+
+1. Um relatório de cliente inclui seu identificador e todos os seus pedidos.
+
