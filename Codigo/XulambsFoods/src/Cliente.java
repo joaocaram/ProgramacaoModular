@@ -24,7 +24,7 @@ import java.util.Queue;
  * SOFTWARE.
  */
 
-public class Cliente {
+public class Cliente implements Comparable<Cliente>{
     private static int ultimoID = 0;
     private int id;
     private String nome;
@@ -54,7 +54,7 @@ public class Cliente {
         return relatorio.toString();
     }
 
-    private double totalEmPedidos(){
+    public double totalEmPedidos(){
         double valor = 0d;
         for (Pedido pedido : pedidos) {
             valor += pedido.precoFinal();
@@ -75,6 +75,11 @@ public class Cliente {
 
     @Override
     public int hashCode(){
-        return id;
+        return this.nome.hashCode();
+    }
+
+    @Override
+    public int compareTo(Cliente o) {
+        return this.nome.compareTo(o.nome);
     }
 }
