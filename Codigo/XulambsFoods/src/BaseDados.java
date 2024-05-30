@@ -62,13 +62,27 @@ public class BaseDados<K,T> {
     }
 
     public double totalizar(Function<T, Double> extrator){
-        double total=0d;
-        for(T dado : dados.values()){
-            total += extrator.apply(dado);
-        }
-        return total;
+        return dados.values().stream()
+                             .mapToDouble(dado ->extrator.apply(dado))
+                             .sum();
+
+        // double total=0d;
+        // for(T dado : dados.values()){
+        //     total += extrator.apply(dado);
+        // }
+        // return total;
     }
 
+    public double media(Function<T, Double> extrator){
+        return totalizar(extrator)  / dados.size();
+
+    }
+
+    public T maiorDeTodos(Comparator<T> comparator){
+        return dados.values().stream()
+                             .max(comparator)
+                             .orElse(null);
+    }
     public void processar(Consumer<T> metodo){
         for(T dado : dados.values()){
             metodo.accept(dado);

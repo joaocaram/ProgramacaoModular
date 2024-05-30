@@ -24,7 +24,7 @@ import java.util.Queue;
  * SOFTWARE.
  */
 
-public class Cliente implements Comparable<Cliente>{
+ public class Cliente implements Comparable<Cliente>{
     private static int ultimoID = 0;
     private int id;
     private String nome;
@@ -55,13 +55,18 @@ public class Cliente implements Comparable<Cliente>{
     }
 
     public double totalEmPedidos(){
-        double valor = 0d;
-        for (Pedido pedido : pedidos) {
-            valor += pedido.precoFinal();
-        }
-        return valor;
+        return pedidos.stream()
+                      .mapToDouble(ped -> ped.precoFinal())
+                      .sum(); 
     }
 
+    public double valorMedioPorPedido(){
+        return pedidos.stream()
+                      .mapToDouble(ped -> ped.precoFinal())
+                      .average()
+                      .orElse(0d);
+                      
+    }
     public double valorAPagar(Pedido pedido){
         double precoAPagar = pedido.precoFinal();
 		precoAPagar -= categoria.desconto(pedido);
@@ -72,14 +77,21 @@ public class Cliente implements Comparable<Cliente>{
     public String toString(){
         return String.format("Cliente nº %d: %s\nTotal em pedidos: R$ %.2f", id, nome, totalEmPedidos());
     }
-
+   
     @Override
     public int hashCode(){
-        return this.nome.hashCode();
+        return id;
     }
-
+    
     @Override
     public int compareTo(Cliente o) {
         return this.nome.compareTo(o.nome);
+    }
+
+    @Override
+    public boolean equals(Object other){
+
+        Cliente outro = (Cliente)other;
+        return this.nome.equals(outro.nome);
     }
 }
