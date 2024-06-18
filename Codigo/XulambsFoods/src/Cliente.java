@@ -1,5 +1,7 @@
 import java.util.LinkedList;
 import java.util.Queue;
+
+import javax.naming.directory.InvalidAttributeValueException;
 /** 
  * MIT License
  *
@@ -31,7 +33,14 @@ public class Cliente implements Comparable<Cliente>{
     private Queue<Pedido> pedidos;
     private IFidelidade categoria;
 
-    public Cliente(String nome){
+    /**
+     * Cria um cliente com o nome determinado. O nome não pode ser vazio.
+     * @param nome Nome do cliente. Não pode ser vazio.
+     * @throws InvalidAttributeValueException Em caso de nome vazio.
+     */
+    public Cliente(String nome) throws InvalidAttributeValueException{
+        if(nome.length()==0)
+            throw new InvalidAttributeValueException("Nome do cliente não pode ser vazio");
         this.nome = nome;
         id = ++ultimoID;
         pedidos = new LinkedList<>();
@@ -75,7 +84,7 @@ public class Cliente implements Comparable<Cliente>{
 
     @Override
     public int hashCode(){
-        return this.nome.hashCode();
+        return id;
     }
 
     @Override

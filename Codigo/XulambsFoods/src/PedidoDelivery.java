@@ -59,10 +59,16 @@ public class PedidoDelivery extends Pedido{
      * @return A quantidade de comidas no pedido após a tentativa de inserção.
      */
     public int addComida(Comida novaComida) {
-        if (novaComida != null && podeAdicionarComida()) {
+        if(novaComida == null)
+            throw new NullPointerException("Comida nula não pode ser inserida. ");
+
+        if (podeAdicionarComida()) {
             itens[quantComidas] = novaComida;
             quantComidas++;
         }
+        else 
+            throw new PedidoCheioException(idPedido, MAX_COMIDAS);
+
         return quantComidas;
     }
 

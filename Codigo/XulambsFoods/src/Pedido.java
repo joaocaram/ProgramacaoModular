@@ -37,7 +37,7 @@ public abstract class Pedido {
     //#endregion
 
     //#region atributos
-    private int idPedido;
+    protected int idPedido;
     private LocalDate dataPedido;
     private String descricao;
     protected Comida[] itens;
@@ -131,10 +131,6 @@ public abstract class Pedido {
         return relat.toString();
     }
 
-    @Override
-    public int hashCode(){
-        return idPedido;
-    }
     /**
      * Fecha o pedido, desde que ele tenha pelo menos 1 comida adicionada.
      */

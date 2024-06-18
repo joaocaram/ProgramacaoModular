@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -53,11 +55,32 @@ public class BaseDados<K,T> {
         return relat.toString();
     }
 
+    public boolean relatorio(String nomeArquivo){
+        String relat = relatorio();
+        try{
+            FileWriter arq = new FileWriter(nomeArquivo);
+            arq.append(relat);
+            arq.close();    
+            return true;
+        }catch(IOException ex){
+            return false;
+        }
+    }
+
     public T localizar(K identificador) {
             return dados.get(identificador);
     }
 
-    public void cadastrar(K chave,T dado) {
+
+    /**
+     * 
+     * @param chave
+     * @param dado
+     * @throws 
+     */
+    public void cadastrar(K chave,T dado) throws UnsupportedOperationException {
+        if(dados.containsKey(chave))
+            throw new UnsupportedOperationException("Não posso inserir com chave duplicada");
         dados.put(chave, dado);
     }
 

@@ -3,6 +3,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import javax.naming.directory.InvalidAttributeValueException;
+
 /** 
  * MIT License
  *
@@ -66,7 +68,13 @@ public class App {
         System.out.println("5 - Gerenciar Pedidos");
         System.out.println("0 - Sair");
         System.out.print("Digite sua opção: ");
-        opcao = Integer.parseInt(teclado.nextLine());
+        try{
+            opcao = Integer.parseInt(teclado.nextLine());
+        }catch(NumberFormatException ne){
+            System.out.println("Opção inválida. Fique atento ao menu ☝️.");
+            pausa();
+            opcao = 99;
+        }
         return opcao;
     }
 
@@ -220,9 +228,14 @@ public class App {
             Comida novaComida = criarComida();
             if (novaComida != null) {
                 do {
-                    novoPedido.addComida(novaComida);
-                    System.out.println(novaComida.relatorio() + " adicionado ao pedido.");
-                    pausa();
+                    try {
+                        novoPedido.addComida(novaComida);
+                        System.out.println(novaComida.relatorio() + " adicionado ao pedido.");
+                           
+                    } catch (PedidoCheioException pex) {
+                        System.out.println("Atingiu o máximo de comidas: "+ pex.maximoDeComidas());
+                    }
+                    pausa(); 
                     novaComida = criarComida();
                 } while (novaComida != null);
                 novoPedido.fecharPedido();
@@ -264,6 +277,7 @@ public class App {
     }
 
     static Cliente localizarCliente() {
+        int idCli;
         String nomeCliente;
         cabecalho();
         System.out.print("Digite o nome do cliente: ");
@@ -272,14 +286,27 @@ public class App {
     }
 
     static Cliente cadastrarCliente() {
-        String nomeCliente;
+        String nomeCliente="";
         Cliente novoCliente;
         cabecalho();
-        System.out.print("Digite o nome do cliente: ");
-        nomeCliente = teclado.nextLine();
-        novoCliente = new Cliente(nomeCliente);
-        baseClientes.cadastrar(nomeCliente, novoCliente);
-        System.out.println("Cliente cadastrado:\n" + novoCliente);
+        try{
+            System.out.print("Digite o nome do cliente: ");
+            nomeCliente = teclado.nextLine();
+            novoCliente = new Cliente(nomeCliente);
+            baseClientes.cadastrar(nomeCliente, novoCliente);
+            System.out.println("Cliente cadastrado:\n" + novoCliente);
+        }catch(InvalidAttributeValueException ie){
+            System.out.println("Erro criando cliente: nome inválido.");
+            novoCliente = null;
+        }catch(UnsupportedOperationException ue){
+            System.out.println("Erro criando cliente: "+nomeCliente+" já existe.");
+            novoCliente = null;
+        } 
+        catch(Exception e){
+            System.err.println(e.getMessage());
+            System.err.println("Contactar o suporte.");
+            novoCliente = null;
+        }
         pausa();
         return novoCliente;
     }
@@ -303,8 +330,13 @@ public class App {
                            "Otávio", "Givanildo", "Matías", "Gustavo",
                             "Paulinho", "Alan" };
         for(String nome : nomes) {
-            Cliente novo = new Cliente(nome);     
-        baseClientes.cadastrar(nome, novo);
+            try {
+                Cliente novo = new Cliente(nome);   
+                baseClientes.cadastrar(nome, novo);    
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            
         }
     }
     

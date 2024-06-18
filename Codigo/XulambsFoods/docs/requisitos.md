@@ -22,25 +22,8 @@
     - Um pedido pode conter até 10 comidas. 
     - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
 
-1. As pizzas passarão a ser vendidas com a opção de borda recheada. Uma pizza com borda recheada sofre acréscimo de R$5,50.
+1. Pizzas agora podem ter bordas recheadas (adicional de R$ 5,50). Os adicionais de pizza passam a ter um desconto de 50% no seu valor a partir do 6º adicional.
 
-1. Procurando incentivar a adição de ingredientes na Pizza, a partir do 6º ingredientes será concedido um desconto de 50% no seu valor.
-
-1. Cada pedido deverá ser registrado para um cliente.
-
-1. Um relatório de cliente inclui seu identificador e todos os seus pedidos.
-
-1. O restaurante implementará um **programa de fidelidade** para seus clientes.
-
-    1. Clientes sem fidelidade são Xulambs Júnior. Quando atingem determinadas metas de consumo, os clientes podem obter dois tipos de vantagem: Xulambs Pleno e Xulambs Sênior.
-  
-    1. _Xulambs Pleno_ são aqueles que atingem pelo menos `10` pedidos feitos no restaurante e mantém valor médio de pelo menos `R$26`. Ganham um desconto fixo de `10%` em cada pedido feito enquanto mantiverem este status.
-  
-    1. _Xulambs Sênior_ são os clientes que já fizeram pelo menos `20` pedidos no restaurante, mantendo um valor médio de pelo menos `R$35`. Ganham um desconto fixo de `15%` em qualquer pedido e um desconto adicional de `R$10` a cada `5` pedidos no mês.
-
-1. A categoria do cliente é definida no primeiro dia útil de cada mês.
-
-
-
-
-
+1. Agora podemos ter pedidos para comer no local e pedidos para entrega. 
+    - Pedidos locais não terão limites de comida e terão taxa de serviço de 10%;
+    - Pedidos para entrega continuam com limite de 10 comidas. Não há taxa de serviço, mas há taxa de entrega de acordo com a distância: grátis até 4km, R$5 até 8km e R$8 acima disso. 
