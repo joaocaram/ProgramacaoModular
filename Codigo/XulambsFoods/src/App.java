@@ -264,6 +264,7 @@ public class App {
     }
 
     static Cliente localizarCliente() {
+        int idCli;
         String nomeCliente;
         cabecalho();
         System.out.print("Digite o nome do cliente: ");
@@ -303,12 +304,13 @@ public class App {
                            "Otávio", "Givanildo", "Matías", "Gustavo",
                             "Paulinho", "Alan" };
         for(String nome : nomes) {
-            Cliente novo = new Cliente(nome);     
-        baseClientes.cadastrar(nome, novo);
+            Cliente novo = new Cliente(nome);   
+            baseClientes.cadastrar(nome, novo);
         }
     }
     
     public static void main(String[] args) {
+        
         baseClientes = new BaseDados<>(100);
         todosOsPedidos = new BaseDados<>(1000);
         gerarClientes();

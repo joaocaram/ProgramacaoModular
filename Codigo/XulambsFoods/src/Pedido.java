@@ -131,10 +131,6 @@ public abstract class Pedido {
         return relat.toString();
     }
 
-    @Override
-    public int hashCode(){
-        return idPedido;
-    }
     /**
      * Fecha o pedido, desde que ele tenha pelo menos 1 comida adicionada.
      */

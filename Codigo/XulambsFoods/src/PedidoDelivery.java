@@ -29,12 +29,10 @@ public class PedidoDelivery extends Pedido{
     
     //#region constantes
     private static final int MAX_COMIDAS = 10;
-    private static final double VALORES_TAXA[] = {0d, 5d, 8d};
-    private static final double DISTANCIAS_ENTREGA[] = {4d, 8d, Double.MAX_VALUE};
     //#endregion
 
     //#region atributos
-    private double distancia;
+    private EDistancia distancia;
     //#endregion
 
     //#region construtores
@@ -45,9 +43,7 @@ public class PedidoDelivery extends Pedido{
      */
     public PedidoDelivery(double dist){
         super("Pedido para entrega");
-        distancia = 0.1;
-        if(dist > 0.1)
-            distancia = dist;
+        distancia = EDistancia.definirDistancia(dist);
     }
     //#endregion
 
@@ -81,11 +77,7 @@ public class PedidoDelivery extends Pedido{
      */
     @Override
     public double taxa(){
-        int pos = 0;
-        while ((distancia > DISTANCIAS_ENTREGA[pos])) {
-            pos++;
-        }
-        return VALORES_TAXA[pos];
+        return distancia.valorTaxa();
     }   
 
 }
