@@ -63,7 +63,7 @@ public class Cliente implements Comparable<Cliente>{
     }
 
     public double valorAPagar(Pedido pedido){
-        double precoAPagar = pedido.precoFinal();
+        double precoAPagar = pedido.precoAPagar();
 		precoAPagar -= categoria.desconto(pedido);
 		return precoAPagar;
     }
@@ -75,7 +75,7 @@ public class Cliente implements Comparable<Cliente>{
 
     @Override
     public int hashCode(){
-        return this.nome.hashCode();
+        return id;
     }
 
     @Override

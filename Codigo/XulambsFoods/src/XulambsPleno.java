@@ -26,7 +26,7 @@ import java.util.Collection;
 
 public class XulambsPleno implements IFidelidade {
     private static final double PCT_DESCONTO = 0.1;
-    private static final int MIN_PEDIDOS = 10;
+    private static final int MIN_PEDIDOS = 2;
     private static final double MEDIA_MIN = 26d;
     private Collection<Pedido> pedidos;
     

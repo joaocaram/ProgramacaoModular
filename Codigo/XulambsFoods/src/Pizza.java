@@ -28,9 +28,6 @@
 public class Pizza extends Comida {
 
     //#region constantes
-    private static final int MAX_ADICIONAIS = 8;
-    private static final double VALOR_ADICIONAIS = 4.0;
-    private static final double PRECO_BASE = 29;
     private static final double VALOR_BORDA = 5.5;
     private static final int ADICIONAIS_SEM_DESCONTO = 5;
     private static final double DESCONTO_ADICIONAIS = 0.5;
@@ -48,18 +45,15 @@ public class Pizza extends Comida {
      * @param borda Boolean indicado se há borda recheada ou não.
      */
     private void init(int qtdAdicionais, boolean borda){
-        descricao = "Pizza";
-        precoBasico = PRECO_BASE;
-        valorPorAdicional = VALOR_ADICIONAIS;
-        maxAdicionais = MAX_ADICIONAIS;
-        setBorda(borda);
-        adicionarIngredientes(qtdAdicionais);
+       setBorda(borda);
+       adicionarIngredientes(qtdAdicionais);
     }
 
     /**
      * Cria uma pizza sem adicionais nem borda recheada.
      */
     public Pizza(){
+        super("pizza");
         init(0, false);
     }
 
@@ -68,6 +62,7 @@ public class Pizza extends Comida {
      * @param qtdAdicionais Quantidade de adicionais da pizza ( > 0)
      */
     public Pizza(int qtdAdicionais){
+        super("pizza");
         init(qtdAdicionais, false);
     }
 
@@ -77,6 +72,7 @@ public class Pizza extends Comida {
      * @param bordaRecheada Boolean indicando se há ou não borda recheada
      */
     public Pizza(int qtdAdicionais, boolean bordaRecheada){
+        super("pizza");
         init(qtdAdicionais, bordaRecheada);
     }
     //#endregion
@@ -89,7 +85,6 @@ public class Pizza extends Comida {
      */    
     @Override
     protected double valorAdicionais(){
-        
         return super.valorAdicionais() - descontoAdicionais();
     }
 
@@ -99,9 +94,9 @@ public class Pizza extends Comida {
      */
     private double descontoAdicionais(){
         double valorDesconto = 0d;
-        int quantidadeComDesconto = qtdAdicionais - ADICIONAIS_SEM_DESCONTO;
+        int quantidadeComDesconto = quantAdicionais - ADICIONAIS_SEM_DESCONTO;
         if(quantidadeComDesconto > 0){
-            valorDesconto = quantidadeComDesconto*VALOR_ADICIONAIS*DESCONTO_ADICIONAIS;
+            valorDesconto = quantidadeComDesconto*base.valorAdicional()*DESCONTO_ADICIONAIS;
         }
         return valorDesconto;
     }
@@ -122,14 +117,7 @@ public class Pizza extends Comida {
      */
     private void setBorda(boolean borda){
         temBordaRecheada = borda;
-        if(temBordaRecheada){
-            descricao = "Pizza com borda recheada";
-            precoBasico = PRECO_BASE + VALOR_BORDA;
-        }
-        else{
-            descricao = "Pizza";
-            precoBasico = PRECO_BASE;
-        }
+
     }
     //#endregion
 }

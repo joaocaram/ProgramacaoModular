@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /** 
  * MIT License
@@ -43,6 +44,7 @@ public abstract class Pedido {
     protected Comida[] itens;
     protected boolean aberto;
     protected int quantComidas;
+    protected Optional<IPromocao> promocao;
     //#endregion
 
     //#region construtores
@@ -75,6 +77,7 @@ public abstract class Pedido {
         itens = new Comida[1_000];  // valor absurdo enquanto não usamos coleções
         if (primeira != null)
             addComida(primeira);
+        this.promocao = Optional.ofNullable(null);
 
     }
     //#endregion
@@ -87,12 +90,19 @@ public abstract class Pedido {
      */
     public abstract int addComida(Comida novComida);
 
+    public void setPromocao(IPromocao promocao){
+        this.promocao = Optional.ofNullable(promocao);
+    }
     /**
      * Valor total do pedido (ou seja, a soma dos valores das comidas)
      * @return Double com o valor total do pedido
      */
     public double precoFinal() {
         return valorItens() + taxa();
+    }
+
+    public double precoAPagar(){
+        return promocao.map(promo -> promo.valorComDesconto(this)).orElse(precoFinal());
     }
 
     protected double valorItens(){
@@ -122,19 +132,16 @@ public abstract class Pedido {
         relat.append("=====================\n");
         relat.append(descricao+" nº " + this.idPedido + " - " + this.dataPedido.format(df) + "\n");
         for (int i = 0; i < quantComidas; i++) {
-            relat.append(String.format("%02d - %s\n", (i + 1), itens[i].relatorio()));
+            relat.append(String.format("%02d - %s\n", (i + 1), itens[i].toString()));
         }
         relat.append("\nTOTAL DOS ITENS:\t R$ " + String.format("%6.2f", this.valorItens()) + "\n");
         relat.append("TAXA:\t\t\t R$ " + String.format("%6.2f", this.taxa()) + "\n");
         relat.append("TOTAL DO PEDIDO:\t R$ " + String.format("%6.2f", this.precoFinal()) + "\n");
+        relat.append("VALOR A PAGAR:  \t R$ " + String.format("%6.2f", this.precoAPagar()) + "\n");
         relat.append("=====================");
         return relat.toString();
     }
 
-    @Override
-    public int hashCode(){
-        return idPedido;
-    }
     /**
      * Fecha o pedido, desde que ele tenha pelo menos 1 comida adicionada.
      */
