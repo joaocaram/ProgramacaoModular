@@ -1,7 +1,11 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Supplier;
+
+import javax.swing.text.html.Option;
 
 /** 
  * MIT License
@@ -32,6 +36,7 @@ public class App {
     static Scanner teclado;
     static BaseDados<String, Cliente> baseClientes;
     static BaseDados<Integer,Pedido> todosOsPedidos;
+    static BaseDados<String, IFabrica<Comida>> fabricas;
     
     static Comparator<Cliente> compID = (  (cli1,cli2) ->
                                         (cli1.hashCode()-cli2.hashCode())
@@ -55,6 +60,17 @@ public class App {
         System.out.println("🍔 XULAMBS FOODS - v0.51 🍕");
         System.out.println("=====================");
     }
+
+    static void config(){
+        fabricas = new BaseDados<>(5);
+        fabricas.cadastrar("pizza", new FabricaPizza());
+        fabricas.cadastrar("pizzacomborda", new FabricaPizzaComBorda());
+        fabricas.cadastrar("sanduiche", new FabricaSanduiche());
+        fabricas.cadastrar("sanduichebacon", new FabricaSanduicheBacon());
+
+        gerarClientes();
+    }
+
 
     static int MenuPrincipal() {
         int opcao;
@@ -172,6 +188,24 @@ public class App {
         System.out.println(baseClientes.relatorio());    
     }
 
+    static Comida MenuFabricaComida(){
+        int opcao = 99;
+        cabecalho();
+        Comida comida = null;
+        Menu comidas = new Menu("comidas.csv");
+
+        System.out.println(comidas);
+        System.out.print("Digite sua opção: ");
+        opcao = Integer.parseInt(teclado.nextLine());
+        
+        IFabrica<Comida> fabrica = fabricas.localizar(comidas.valor(opcao));
+        
+        if(fabrica!=null)
+            comida = fabrica.criar();
+
+        return comida;
+
+    }
     static int MenuComida() {
         int opcao;
         cabecalho();
@@ -221,7 +255,7 @@ public class App {
             if (novaComida != null) {
                 do {
                     novoPedido.addComida(novaComida);
-                    System.out.println(novaComida.relatorio() + " adicionado ao pedido.");
+                    System.out.println(novaComida.toString() + " adicionado ao pedido.");
                     pausa();
                     novaComida = criarComida();
                 } while (novaComida != null);
@@ -240,19 +274,8 @@ public class App {
     }
 
     static Comida criarComida() {
-        int tipoComida = MenuComida();
-        Comida novaComida = null;
-        switch (tipoComida) {
-            case 1:
-                if (querBordaRecheada())
-                    novaComida = new Pizza(0, true);
-                else
-                    novaComida = new Pizza();
-                break;
-            case 2:
-                novaComida = new Sanduiche();
-                break;
-        }
+        Comida novaComida = MenuFabricaComida();
+        
 
         if (novaComida != null) {
             System.out.print("Deseja quantos adicionais? ");
@@ -264,6 +287,7 @@ public class App {
     }
 
     static Cliente localizarCliente() {
+        int idCli;
         String nomeCliente;
         cabecalho();
         System.out.print("Digite o nome do cliente: ");
@@ -303,15 +327,15 @@ public class App {
                            "Otávio", "Givanildo", "Matías", "Gustavo",
                             "Paulinho", "Alan" };
         for(String nome : nomes) {
-            Cliente novo = new Cliente(nome);     
-        baseClientes.cadastrar(nome, novo);
+            Cliente novo = new Cliente(nome);   
+            baseClientes.cadastrar(nome, novo);
         }
     }
     
     public static void main(String[] args) {
         baseClientes = new BaseDados<>(100);
         todosOsPedidos = new BaseDados<>(1000);
-        gerarClientes();
+        config();
         teclado = new Scanner(System.in);
         
         int opcao;
@@ -347,7 +371,9 @@ public class App {
                     pausa();    
                     break;
                 case 6:
-
+                    Comida comida = MenuFabricaComida();
+                    System.out.println(comida);
+                    pausa();
                     break;
             }
         } while (opcao != 0);

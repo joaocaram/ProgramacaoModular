@@ -28,9 +28,7 @@
 public class Sanduiche extends Comida {
     
     //#region constantes
-    private static final int MAX_ADICIONAIS = 5;
-    private static final double VALOR_ADICIONAIS = 2.5;
-    private static final double PRECO_BASE = 15;
+    
     //#endregion   
 
     //#region construtores
@@ -40,10 +38,7 @@ public class Sanduiche extends Comida {
      * @param qtdAdicionais Quantos adicionais o sanduíche terá (>=0)
      */
     private void init(int qtdAdicionais){
-        descricao = "Sanduíche";
-        precoBasico = PRECO_BASE;
-        valorPorAdicional = VALOR_ADICIONAIS;
-        maxAdicionais = MAX_ADICIONAIS;
+   
         
         adicionarIngredientes(qtdAdicionais);
     }
@@ -52,6 +47,7 @@ public class Sanduiche extends Comida {
      * Cria um sanduíche sem adicionais
      */
     public Sanduiche(){
+        super("sanduiche");
         init(0);
     }
 
@@ -60,6 +56,7 @@ public class Sanduiche extends Comida {
      * @param qtdAdicionais Quantos adicionais o sanduíche terá (>0)
      */
     public Sanduiche(int qtdAdicionais){
+        super("sanduiche");
         init(qtdAdicionais);
     }
     //#endregion

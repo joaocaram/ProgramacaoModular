@@ -75,7 +75,7 @@ public class Cliente implements Comparable<Cliente>{
 
     @Override
     public int hashCode(){
-        return this.nome.hashCode();
+        return id;
     }
 
     @Override

@@ -1,0 +1,29 @@
+﻿# Documentação de requisitos do Xulambs Foods 🍔🍕
+
+1. No momento, o cardápio tem apenas duas comidas:
+    - Sanduíche;
+    - Pizza.
+
+1.  As comidas são vendidas em uma versão padrão e podem ser personalizadas com adicionais.
+
+1. É cobrado um valor fixo por adicional.
+    - Sanduíche:
+      - Preço inicial de R$15.
+      - Até 5 ingredientes adicionais.
+      - Cada adicional custa R$2.
+
+    - Pizza:
+      - Preço inicial de R$29.
+      - Até 8 ingredientes adicionais.
+      - Cada adicional custa R$4.
+    
+1. As vendas devem ser agrupadas em pedidos.
+    - Um pedido deve ter um identificador único e sua data armazenada.
+    - Um pedido pode conter até 10 comidas. 
+    - O relatório de um pedido deve mostrar a descrição de cada uma das comidas, detalhadamente, e o valor total do pedido.
+
+1. Pizzas agora podem ter bordas recheadas (adicional de R$ 5,50). Os adicionais de pizza passam a ter um desconto de 50% no seu valor a partir do 6º adicional.
+
+1. Agora podemos ter pedidos para comer no local e pedidos para entrega. 
+    - Pedidos locais não terão limites de comida e terão taxa de serviço de 10%;
+    - Pedidos para entrega continuam com limite de 10 comidas. Não há taxa de serviço, mas há taxa de entrega de acordo com a distância: grátis até 4km, R$5 até 8km e R$8 acima disso. 

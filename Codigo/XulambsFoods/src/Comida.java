@@ -28,15 +28,17 @@
   public abstract class Comida{
 
     //#region Atributos
-    protected String descricao;
-    protected double precoBasico;
-    protected double valorPorAdicional;
-    protected int maxAdicionais;
-    protected int qtdAdicionais;
+    protected IFlyweightComida base;
+	protected int quantAdicionais;
+        
     //#endregion
 
     //#region Construtores
 
+    protected Comida(String base){
+        this.base = FabricaComida.criar(base);
+        this.quantAdicionais = 0;
+    }
     
     //#endregion
 
@@ -47,7 +49,7 @@
      * @return O preço a pagar pela comida (double não negativo)
      */
     public double precoFinal(){
-        return precoBasico + valorAdicionais();
+        return base.precoBase() + valorAdicionais();
     }
 
     /**
@@ -55,7 +57,7 @@
      * @return O valor dos adicionais da comida (double não negativo).
      */
     protected  double valorAdicionais(){
-        return qtdAdicionais * valorPorAdicional;
+        return quantAdicionais * base.valorAdicional();
     }
 
     /**
@@ -65,9 +67,9 @@
      */
     public int adicionarIngredientes(int quantos){
         if(podeAdicionarIngredientes(quantos)){
-            qtdAdicionais += quantos;
+            quantAdicionais += quantos;
         }
-        return qtdAdicionais;
+        return quantAdicionais;
     }
 
     /**
@@ -78,7 +80,7 @@
      */
     private boolean podeAdicionarIngredientes(int quantos){
         return ((quantos>0) &&
-                (qtdAdicionais + quantos <= maxAdicionais));
+                (quantAdicionais + quantos <= base.maxAdicionais()));
 
     }
 
@@ -86,10 +88,10 @@
      * Cria um relatório simples da comida em String. 
      * @return String com o relatório conforme a o requisito: descrição da comida, preço básico, quantidade de adicionais e preço a pagar.
      */
-
-    public String relatorio(){
+    @Override
+    public String toString(){
         return String.format("%s (R$ %2.2f) com %d adicionais (R$ %.2f)\n   TOTAL: R$ %.2f",
-                             descricao, precoBasico, qtdAdicionais, valorAdicionais(), precoFinal());
+                             base.descricao(), base.precoBase(), quantAdicionais, valorAdicionais(), precoFinal());
     }
 
     //#endregion

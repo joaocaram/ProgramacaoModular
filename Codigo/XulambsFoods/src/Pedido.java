@@ -122,7 +122,7 @@ public abstract class Pedido {
         relat.append("=====================\n");
         relat.append(descricao+" nº " + this.idPedido + " - " + this.dataPedido.format(df) + "\n");
         for (int i = 0; i < quantComidas; i++) {
-            relat.append(String.format("%02d - %s\n", (i + 1), itens[i].relatorio()));
+            relat.append(String.format("%02d - %s\n", (i + 1), itens[i].toString()));
         }
         relat.append("\nTOTAL DOS ITENS:\t R$ " + String.format("%6.2f", this.valorItens()) + "\n");
         relat.append("TAXA:\t\t\t R$ " + String.format("%6.2f", this.taxa()) + "\n");
@@ -131,10 +131,6 @@ public abstract class Pedido {
         return relat.toString();
     }
 
-    @Override
-    public int hashCode(){
-        return idPedido;
-    }
     /**
      * Fecha o pedido, desde que ele tenha pelo menos 1 comida adicionada.
      */
