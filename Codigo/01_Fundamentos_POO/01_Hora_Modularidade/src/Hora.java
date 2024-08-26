@@ -1,7 +1,7 @@
 /** 
  * MIT License
  *
- * Copyright(c) 2022 João Caram <caram@pucminas.br>
+ * Copyright(c) 2022-4 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,9 @@ public class Hora {
 
     //#region atributos
     
-    byte hora;
-    byte minuto;
-    byte segundo;
+    int horas;
+    int minutos;
+    int segundos;
     
     //#endregion
     
@@ -45,49 +45,12 @@ public class Hora {
      * @param minuto O minuto desejado (0 a 59)
      * @param segundo O segundo desejado (0 a 59)
      */
-    void ajustar(byte hora, byte minuto, byte segundo){
-        this.hora = hora;
-        this.minuto = minuto;
-        this.segundo = segundo;
+    void ajustar(int hora, int minuto, int segundo){
+        this.horas = hora;
+        this.minutos = minuto;
+        this.segundos = segundo;
         if(!validar())
-            this.hora = this.minuto = this.segundo = 0;
-    }
-
-    /**
-     * Incrementa uma das partes da hora armazenada (hora, minuto ou segundo). O incremento só pode ser feito em valores de até 60 unidades para a parte escolhida.
-     * Caso a quantidade for maior que 60, o incremento será ignorado. O componente da hora se ajusta automaticamente ao incremento. Por exemplo, na hora <i> 13:42:50 </i>, se forem incrementados
-     * 25 segundos, a hora armazenada será <i> 13:43:15 </i>. O componente a ser incrementado deve ser indicado por uma letra minúscula (h: hora, m: minuto, s: segundo). Outras letras serão
-     * ignoradas.
-     * @param quant Unidades a serem incrementadas no compomente da hora. Valores menores que 0 ou maiores que 60 são ignorados.
-     * @param posicao O componente do incremento: h: hora, m: minuto, s: segundo. Outras letras serão ignoradas.
-     */
-    void incrementar(byte quant, char posicao){
-        if(quant<0 || quant >60)
-            return;
-        char digito = Character.toLowerCase(posicao);
-        int acumulador = 0;
-        switch(digito){
-            case 'h': this.hora += quant;
-                break;
-            case 'm': this.minuto += quant;
-                break;
-            case 's': this.segundo += quant;
-                break;
-        }
-        if(this.segundo>=60){       //ajuste caso os segundos ultrapassem 60
-            acumulador = this.segundo/60;
-            this.segundo = (byte) (this.segundo % 60);
-            this.minuto += acumulador;
-        }
-        if(this.minuto>=60){        //ajuste caso os minutos ultrapassem 60
-            acumulador = this.minuto/60;
-            this.minuto = (byte) (this.minuto % 60);
-            this.hora += acumulador;
-        }
-        if(this.hora >=24){         //ajuste caso 'vire o dia'
-            this.hora = (byte) (this.hora % 24);
-        }
-
+            this.horas = this.minutos = this.segundos = 0;
     }
 
     /**
@@ -95,13 +58,43 @@ public class Hora {
      * @return TRUE para hora válida, FALSE para hora inválida.
      */
     boolean validar() {
-        if ((hora >= 0 && hora <= 23) && (minuto >= 0 && minuto <= 59)
-                && (segundo >= 0 && segundo <= 59))
-            return true;
-        else {
-            return false;
-        }
+        //TODO: revisar código e melhorar lógica
+        boolean resposta = false;
+        if ((horas >= 0 && horas <= 23) && 
+            (minutos >= 0 && minutos <= 59) && 
+            (segundos >= 0 && segundos <= 59))
+                resposta =  true;
+        
+        return resposta;
     }
+
+    /**
+     * Incrementa uma quantidade de segundos a uma hora existente, retornando a nova hora. Não modifica a hora já existente.
+     * Quantidades menores ou iguais a 0 são ignoradas e é retornada uma hora idêntica à atual.
+     * @param quantidadeSegundos Quantidade de segundos a incrementar (>0)
+     * @return Uma nova hora com os segundos incrementados, podendo ser igual à hora atual em caso de valores não positivos.
+     */
+    Hora incrementar(int quantidadeSegundos){
+        //TODO: revisar código e melhorar lógica
+        int minutosParaSegundos = 60;
+        int horasParaMinutos = 60;
+        int horasParaSegundos = minutosParaSegundos * horasParaMinutos;
+        Hora novaHora = new Hora();
+        novaHora.ajustar(horas, minutos, segundos);
+        
+        if(quantidadeSegundos > 0){
+            int totalSegundos = (horas * horasParaSegundos + minutos * minutosParaSegundos + segundos) + quantidadeSegundos;
+            int novosSegundos = totalSegundos % 60;
+
+            int novosMinutos = (totalSegundos / minutosParaSegundos) % horasParaMinutos;
+            int novasHoras = (totalSegundos / horasParaSegundos) % 24;
+
+            novaHora.ajustar(novasHoras, novosMinutos, novosSegundos);
+        }
+        return novaHora;
+    }
+
+    
 
     /**
      * Verifica se esta hora encontra-se à frente de outra considerando um dia de 24h. Retorna TRUE ou FALSE conforme esta hora esteja na frente.
@@ -110,11 +103,23 @@ public class Hora {
      * @return TRUE se esta hora está à frente no relógio, FALSE caso contrário.
      */
     boolean estahNaFrenteDe(Hora outra){
-		int esta;
+        //TODO: revisar código e melhorar lógica
+		int minutosParaSegundos = 60;
+        int horasParaSegundos = minutosParaSegundos * 60;
+
+        int esta;
+		esta =  (horas * horasParaSegundos + minutos * minutosParaSegundos + segundos);
 		int aquela;
-		esta = hora*3600 + minuto*60 + segundo;		
-		aquela = outra.hora*3600 + outra.minuto*60 + outra.segundo;		
-		return (esta > aquela);		
+		aquela = outra.horas * horasParaSegundos + outra.minutos * minutosParaSegundos + outra.segundos;
+        return (esta > aquela);		
 	}
+
+    /**
+     * Retorna uma hora formatada em HH:MM:SS
+     * @return Uma string com a hora formatada como indicado.
+     */
+    String horaFormatada(){
+        return String.format("%02d:%02d:%02d", horas, minutos, segundos);
+    }
     //#endregion
 }
