@@ -1,3 +1,5 @@
+package com.xulambs.XulambsPizza.Models;
+
 import java.text.NumberFormat;
 import java.time.LocalDate;
 /** 
@@ -24,6 +26,17 @@ import java.time.LocalDate;
  * SOFTWARE.
  */
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.xulambs.XulambsPizza.DTO.PedidoDTO;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 
 /** Classe Pedido: composição com classe Pizza. Um pedido pode conter diversas pizzas. Elas podem
@@ -31,19 +44,24 @@ import java.time.format.DateTimeFormatter;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
+@Entity
+@Table(name = "TB_PEDIDOS")
 public class Pedido {
 
 	//#region static/constantes
-	/** Para gerar o id incremental automático */
-	private static int ultimoPedido;
 	/** Para criar um vetor de pizzas de tamanho grande */
 	private static final int MAX_PIZZAS = 100;
 	//#endregion
 	
 	//#region atributos
-	private LocalDate data;
-	private Pizza[] pizzas;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idPedido;
+	
+	@OneToMany
+	private List<Pizza> pizzas;
+
+	private LocalDate data;
 	private int quantPizzas;
 	private boolean aberto;
 	//#endregion
@@ -54,14 +72,16 @@ public class Pedido {
 	 * do último identificador armazenado.
 	 */
 	public Pedido() {
-		idPedido = ++ultimoPedido;
-        pizzas = new Pizza[MAX_PIZZAS];
+		pizzas = new LinkedList<>();
         quantPizzas = 0;
         aberto = true;
 		data = LocalDate.now();
 	}
 	//#endregion
 
+	public PedidoDTO generateDTO(){
+		return new PedidoDTO(idPedido, quantPizzas, precoAPagar(), relatorio());
+	}
 	/**
 	 * Verifica se uma pizza pode ser adicionada ao pedido, ou seja, se o pedido
 	 * está aberto e há espaço na memória.
@@ -79,10 +99,11 @@ public class Pedido {
 	 */
 	public int adicionar(Pizza pizza) {
 		if(podeAdicionar()){
-            pizzas[quantPizzas] = pizza;
-            quantPizzas++;
-        }
-        return quantPizzas;
+			//pizzas[quantPizzas] = pizza;
+			pizzas.add(pizza);
+			quantPizzas++;
+		}
+		return quantPizzas;
 	}
 
 	/**
@@ -90,8 +111,8 @@ public class Pedido {
 	 * a operação é ignorada.
 	 */
 	public void fecharPedido() {
-		if(quantPizzas > 0 )
-            aberto = false;
+		if(quantPizzas>0)
+			aberto = false;
 	}
 
 	/**
@@ -102,11 +123,12 @@ public class Pedido {
 	public double precoAPagar() {
 		double precoFinal =0d;
         for (int i=0; i<quantPizzas; i++) {
-            precoFinal += pizzas[i].valorFinal();
+            precoFinal += pizzas.get(i).valorFinal();
         }
         return precoFinal;
 	}
 
+	
 	/**
 	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
 	 * de cada pizza e o preço final a ser pago.
@@ -128,11 +150,13 @@ public class Pedido {
         relat.append("=============================\n");
         
         for (int i=0; i<quantPizzas; i++) {
-            relat.append(String.format("%02d - %s\n", (i+1), pizzas[i].notaDeCompra()));            
+            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
         }
         relat.append(String.format("\nTOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
         relat.append("=============================");
         return relat.toString();
 	}
+
+	
 
 }
