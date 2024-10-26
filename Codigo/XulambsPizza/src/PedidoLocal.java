@@ -17,7 +17,7 @@ public class PedidoLocal extends Pedido{
 	 */
     @Override
 	protected boolean podeAdicionar() {
-		return aberto && quantComidas < MAX_PIZZAS;
+		return estado.equals(EEstadoPedido.ABERTO) && quantComidas < MAX_PIZZAS;
 	}
 
     @Override

@@ -43,7 +43,7 @@ public abstract class Pedido {
 	protected Comida[] comidas;
 	private int idPedido;
 	protected int quantComidas;
-	protected boolean aberto;
+	protected EEstadoPedido estado;
 	//#endregion
 
 	protected abstract double valorTaxa();
@@ -58,7 +58,7 @@ public abstract class Pedido {
 		idPedido = ++ultimoPedido;
         comidas = new Comida[maxComidas];
         quantComidas = 0;
-        aberto = true;
+        estado = EEstadoPedido.ABERTO;
 		data = LocalDate.now();
 	}
 	//#endregion
@@ -85,7 +85,7 @@ public abstract class Pedido {
 	 */
 	public void fecharPedido() {
 		if(quantComidas>0)
-			aberto = false;
+			estado = EEstadoPedido.FECHADO;
 	}
 
 
@@ -124,7 +124,7 @@ public abstract class Pedido {
         NumberFormat moeda = NumberFormat.getCurrencyInstance();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido ");
-        relat.append(String.format("%02d - %s\n", idPedido, formatter.format(data)));
+        relat.append(String.format("%02d %s - %s\n", idPedido, estado.toString(), formatter.format(data)));
         relat.append("=============================");
         
         for (int i=0; i<quantComidas; i++) {
