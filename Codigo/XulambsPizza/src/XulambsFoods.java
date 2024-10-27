@@ -27,7 +27,7 @@ import java.util.Scanner;
  * SOFTWARE.
  */
 
-public class XulambsPizza {
+public class XulambsFoods {
     static Scanner teclado;
 
     static void limparTela() {
@@ -42,7 +42,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA\n=============");
+        System.out.println("XULAMBS FOODS - v0.3\n=============");
     }
 
     static int exibirMenu() {
