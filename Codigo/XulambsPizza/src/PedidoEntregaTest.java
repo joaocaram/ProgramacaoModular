@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test;
 public class PedidoEntregaTest {
     
     static Pedido pedido;
-    static Pizza pizzaCom2Ingredientes;
-    static Pizza pizzaSemIngredientes;
+    static Comida pizzaCom2Ingredientes;
+    static Comida pizzaSemIngredientes;
 
     @BeforeAll
     static public void criarPizzas(){
-        pizzaCom2Ingredientes = new Pizza(2);
-        pizzaSemIngredientes = new Pizza();
+        pizzaCom2Ingredientes = new Comida(EComida.PIZZA);
+        pizzaCom2Ingredientes.adicionarIngredientes(2);
+        pizzaSemIngredientes = new Comida(EComida.PIZZA);
     }
 
     @BeforeEach
@@ -37,7 +38,7 @@ public class PedidoEntregaTest {
     @Test
     public void naoAdicionaPizzaAcimaDoLimite(){
         for(int i=0; i<6; i++)
-            pedido.adicionar(new Pizza());
+            pedido.adicionar(new Comida(EComida.PIZZA));
         assertEquals(6,pedido.adicionar(pizzaSemIngredientes));
     }
 

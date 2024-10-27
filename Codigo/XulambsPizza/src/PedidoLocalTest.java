@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 public class PedidoLocalTest {
     
     static Pedido pedido;
-    static Pizza pizzaCom2Ingredientes;
-    static Pizza pizzaSemIngredientes;
+    static Comida pizzaCom2Ingredientes;
+    static Comida pizzaSemIngredientes;
 
     @BeforeAll
     static public void criarPizzas(){
-        pizzaCom2Ingredientes = new Pizza(2);
-        pizzaSemIngredientes = new Pizza();
+        (pizzaCom2Ingredientes = new Comida(EComida.PIZZA)).adicionarIngredientes(2);
+        pizzaSemIngredientes = new Comida(EComida.PIZZA);
     }
 
     @BeforeEach
