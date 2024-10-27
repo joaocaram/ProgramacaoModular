@@ -12,17 +12,28 @@ public class PedidoEntrega extends Pedido {
         distanciaEntrega = distancia;
     }
 
+    @Override
     protected boolean podeAdicionar(){
-        return(aberto && quantComidas < MAX_PIZZAS);
+        return(estado.equals(EEstadoPedido.ABERTO) && quantComidas < MAX_PIZZAS);
     }
 
+    @Override
+    public void fecharPedido(){
+        if(quantComidas>0)
+			estado = EEstadoPedido.EM_ENTREGA;
+    }
+
+    public void entregarPedido(){
+        if(estado.equals(EEstadoPedido.EM_ENTREGA))
+            estado = EEstadoPedido.FECHADO;
+    }
+
+    @Override
     protected double valorTaxa(){
-        double taxa = 0d;
-        for(int i = (DISTANCIAS.length-1); i>=0; i--) {
-            if (distanciaEntrega <= DISTANCIAS[i])
-                taxa = TAXAS[i];
-        }
-        return taxa;
-
-    }
+        int pos = 0;
+		while ((distanciaEntrega > DISTANCIAS[pos])){
+			pos++;
+		}
+		return TAXAS[pos];
+	}
 }
