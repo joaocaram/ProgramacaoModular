@@ -112,7 +112,7 @@ public class XulambsFoods {
         String escolha = "n";
         do {
             relatorioPedido(procurado);
-            Comida novaComida = comprarComida();
+            IComida novaComida = comprarComida();
             
             procurado.adicionar(novaComida);
             System.out.print("\nDeseja outra comida? (s/n) ");
@@ -120,8 +120,8 @@ public class XulambsFoods {
         } while (escolha.toLowerCase().equals("s"));
     }
 
-    private static Comida comprarComida() {
-        Comida novaComida = null;
+    private static IComida comprarComida() {
+        IComida novaComida = null;
         int escolha = 0;
         System.out.println("Escolha sua comida: ");
         System.out.println("1 - Pizza");
@@ -145,19 +145,19 @@ public class XulambsFoods {
         return novaComida;
     }
 
-    static Pizza comprarPizza() {
+    static IComida comprarPizza() {
         System.out.println("Comprando uma nova pizza:");
         Pizza novaPizza = new Pizza();
         return novaPizza;
     }
 
-    static void escolherIngredientes(Comida comida) {
+    static void escolherIngredientes(IComida comida) {
         System.out.print("Quantos adicionais você deseja? (máx. 8): ");
         int adicionais = Integer.parseInt(teclado.nextLine());
         comida.adicionarIngredientes(adicionais);
     }
 
-    static void mostrarNota(Comida comida) {
+    static void mostrarNota(IComida comida) {
         System.out.println("Você acabou de comprar: ");
         System.out.println(comida.notaDeCompra());
 

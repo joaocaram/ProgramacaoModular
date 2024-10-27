@@ -40,7 +40,7 @@ public abstract class Pedido {
 	
 	//#region atributos
 	private LocalDate data;
-	protected Comida[] comidas;
+	protected IComida[] comidas;
 	private int idPedido;
 	protected int quantComidas;
 	protected EEstadoPedido estado;
@@ -71,7 +71,7 @@ public abstract class Pedido {
 	 * @param comida Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
 	 */
-	public final int adicionar(Comida comida) {
+	public final int adicionar(IComida comida) {
 		if(podeAdicionar()){
 			comidas[quantComidas] = comida;
 			quantComidas++;
