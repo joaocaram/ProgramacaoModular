@@ -27,22 +27,19 @@ import java.text.NumberFormat;
 /** Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
   * A pizza deve emitir uma nota de compra com os seus detalhes.
   */
-public class Pizza extends Comida{
+public class Pizza implements IComida{
 
-	private static final int MAX_INGREDIENTES = 8;
-	private static final String DESCRICAO = "Pizza";
-	private static final double PRECO_BASE = 29d;
-    private static final double VALOR_ADICIONAL = 5d;
+	private static final EComida tipo = EComida.PIZZA;
     private static final int ADIC_DESCONTO = 5;
 	private static final double PCT_DESCONTO = 0.5;
 	
-
+    private int quantosAdicionais;
 
     /**
      * Construtor padrão. Cria uma pizza sem adicionais.
      */
 	public Pizza()  {
-        super(DESCRICAO,MAX_INGREDIENTES,PRECO_BASE,VALOR_ADICIONAL);
+        
 	}
 
     /**
@@ -50,15 +47,15 @@ public class Pizza extends Comida{
      * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
      */
 	public Pizza(int quantosAdicionais) {
-        super(DESCRICAO,MAX_INGREDIENTES,PRECO_BASE,VALOR_ADICIONAL);
 		adicionarIngredientes(quantosAdicionais);
 	}
 
+
     private double descontoAdicionais() {
         double desconto = 0d;
-        int quantosComDesconto = quantidadeIngredientes - ADIC_DESCONTO;
+        int quantosComDesconto = quantosAdicionais - ADIC_DESCONTO;
         if(quantosComDesconto > 0)
-            desconto = quantosComDesconto * VALOR_ADICIONAL * PCT_DESCONTO;
+            desconto = quantosComDesconto * tipo.getValorAdicional() * PCT_DESCONTO;
         return desconto;
     }
     
@@ -68,7 +65,7 @@ public class Pizza extends Comida{
      */
     @Override
 	public double valorFinal() {
-		return PRECO_BASE + valorAdicionais() - descontoAdicionais();
+		return tipo.getPrecoBase() + valorAdicionais() - descontoAdicionais();
 	}
 
     /**
@@ -78,10 +75,28 @@ public class Pizza extends Comida{
     @Override
 	public String notaDeCompra() {
         NumberFormat moeda = NumberFormat.getCurrencyInstance();
-        String nota = super.notaDeCompra();
-        nota += String.format("\n\tDesconto: %s", moeda.format(descontoAdicionais()));
-        nota += String.format("\nVALOR A PAGAR: %s", moeda.format(valorFinal()));
-        return nota;
+        
+        StringBuilder nota = new StringBuilder();
+        nota.append(String.format("%s (%s) com %d ingredientes (%s)", 
+                                    tipo.getDescricao(), moeda.format(tipo.getPrecoBase()), 
+                                    quantosAdicionais, moeda.format(valorAdicionais())));
+
+        nota.append(String.format("\n\tDesconto: %s", moeda.format(descontoAdicionais())));
+        nota.append(String.format("\nVALOR A PAGAR: %s", moeda.format(valorFinal())));
+        return nota.toString();
 	}
+
+    @Override
+    public int adicionarIngredientes(int quantos) {
+        if(quantosAdicionais+quantos < tipo.getMaxIngredientes())
+            quantosAdicionais += quantos;
+        return quantosAdicionais;
+        
+    }
+
+    @Override
+    public double valorAdicionais() {
+        return quantosAdicionais * tipo.getValorAdicional();
+    }
 
 }
