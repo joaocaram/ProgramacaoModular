@@ -57,7 +57,6 @@ public class Retangulo extends PoligonoReto{
      */
     @Override
     public String toString(){
-        String aux = super.toString();
-        return aux + String.format(" | Base: %05.2f | Altura: %05.2f", base, altura);
+        return super.toString() + String.format(" | Base: %05.2f | Altura: %05.2f", base, altura);
     }
 }

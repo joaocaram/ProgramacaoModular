@@ -61,12 +61,11 @@ public class TrianguloRetangulo extends PoligonoReto{
         return Math.sqrt(soma);
     }
 
-        /** String do trioângulo retângulo: inclui informação dos catetos (base e altura) e da hipotenusa
+    /** String do triângulo retângulo: inclui informação dos catetos (base e altura) e da hipotenusa
      * @return String contendo descrição, área, perímetro, catetos e hipotenusa do retângulo
      */
     @Override
     public String toString(){
-        String aux = super.toString();
-        return aux + String.format(" | Catetos: %05.2f e %05.2f | Hipotenusa: %05.2f", base, altura, hipotenusa());
+        return super.toString() + String.format(" | Catetos: %05.2f e %05.2f | Hipotenusa: %05.2f", base, altura, hipotenusa());
     }
 }
