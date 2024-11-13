@@ -42,4 +42,6 @@ public abstract class PoligonoReto extends FormaGeometrica{
         if(this.base<=1d) this.base=1d;
         if(this.altura<=1d) this.altura=1d;
     }
+
+    
 }

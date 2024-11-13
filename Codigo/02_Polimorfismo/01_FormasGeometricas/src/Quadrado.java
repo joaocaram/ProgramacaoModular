@@ -50,4 +50,13 @@ public class Quadrado extends PoligonoReto{
     public double perimetro(){
         return this.base*4;
     }
+
+    /** String do quadrado: inclui informação do tamanho da base
+     * @return String contendo descrição, área, perímetro e base do quadrado
+     */
+    @Override
+    public String toString(){
+        String aux = super.toString();
+        return aux + String.format(" | Base: %05.2f", base);
+    }
 }

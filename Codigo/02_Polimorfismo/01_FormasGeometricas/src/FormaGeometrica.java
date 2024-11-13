@@ -54,7 +54,7 @@ public abstract class FormaGeometrica {
      */
     @Override
     public String toString(){
-        return this.descricao + " com área de "+this.area();
+        return String.format("%20s | Área: %05.2f | Perímetro: %05.2f", descricao, area(), perimetro());
     }
 
     /**

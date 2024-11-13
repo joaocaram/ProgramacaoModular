@@ -51,4 +51,13 @@ public class Retangulo extends PoligonoReto{
     public double perimetro(){
         return this.base*2 + 2*this.altura;
     }
+
+    /** String do retângulo: inclui informação do tamanho da base e da altura
+     * @return String contendo descrição, área, perímetro, base e altura do retângulo
+     */
+    @Override
+    public String toString(){
+        String aux = super.toString();
+        return aux + String.format(" | Base: %05.2f | Altura: %05.2f", base, altura);
+    }
 }

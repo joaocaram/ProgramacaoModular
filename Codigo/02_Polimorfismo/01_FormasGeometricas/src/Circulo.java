@@ -63,6 +63,6 @@ public class Circulo extends FormaGeometrica{
     @Override
     public String toString(){
         String aux = super.toString();
-        return aux + " COM RAIO DE "+String.format("%.2f",this.raio);
+        return aux + String.format(" | Raio: %05.2f",raio);
     }
 }
