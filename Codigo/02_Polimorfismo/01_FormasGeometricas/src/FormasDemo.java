@@ -25,7 +25,7 @@ import java.util.Scanner;
  */
 
 
-public class App {
+public class FormasDemo {
     static Scanner teclado = new Scanner(System.in);
 
     /**
