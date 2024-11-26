@@ -1,11 +1,12 @@
+import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+
 
 /** 
  * MIT License
@@ -36,7 +37,7 @@ import java.util.TreeMap;
  * (streams)
  */
 public class FormasCollectionStream {
-    static Scanner teclado = new Scanner(System.in);
+    static Scanner teclado = new Scanner(System.in, Charset.forName("UTF-8"));
 
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -50,20 +51,35 @@ public class FormasCollectionStream {
 
     static int menuPrincipal() {
         limparTela();
+        String linha = "=========================";
+        System.out.println("MUITAS FORMAS GEOMÉTRICAS");
+        System.out.println(linha);
+        System.out.println("CRIAR / LISTAR / LOCALIZAR");
         System.out.println("1 - Criar novo conjunto");
-        System.out.println("2 - Mostrar conjunto");
-        System.out.println("3 - Maior forma");
-        System.out.println("4 - Mostrar conjunto ordenado");
-        System.out.println("5 - Pegar elemento");
-        System.out.println("6 - Filtrar formas por área");
-        System.out.println("7 - Somar perímetros");
-        System.out.println("8 - Média das áreas");
-        System.out.println("9 - Média dos perímetros dos quadrados");
-        System.out.println("10 - Média dos perímetros dos quadrados");
-
+        System.out.println("2 - Adicionar forma fixa");
+        System.out.println("3 - Mostrar conjunto");
+        System.out.println("4 - Pegar elemento");
+        System.out.println(linha);
+        System.out.println("FILTROS");
+        System.out.println("5 - Filtrar formas por área");
+        System.out.println("6 - Nomes e áreas com filtro por área");
+        System.out.println("7 - Filtro por tamanho e tipo da forma");
+        System.out.println("8 - Formas distintas por área mínima por tamanho e tipo da forma");
+        System.out.println(linha);
+        System.out.println("TOTALIZADORES");
+        System.out.println("9 - Maior forma em área");
+        System.out.println("10 - Menor forma em perímetro");
+        System.out.println("11 - Soma das áreas");
+        System.out.println("12 - Soma e média dos perímetros");
+        System.out.println("13 - Média dos perímetros de um tipo");        
+        System.out.println(linha);
+        System.out.println("MAP / REDUCE ");
+        System.out.println("14 - Mostrar conjunto ordenado ");
+        System.out.println("15 - Mostrar subconjunto ordenado por área");
+        System.out.println(linha);
 
         System.out.println("0 - Sair");
-        System.out.print("Opção: ");
+        System.out.print("\nOpção: ");
         return Integer.parseInt(teclado.nextLine());
     }
 
@@ -108,7 +124,7 @@ public class FormasCollectionStream {
         Comparator<FormaGeometrica> compArea = (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
         Comparator<FormaGeometrica> compDesc = (f1, f2) -> f1.toString().compareTo(f2.toString());
 
-        LinkedList<FormaGeometrica> meuConjuntoGeometrico = new LinkedList<>();
+        LinkedList<FormaGeometrica> listaFormas = new LinkedList<>();
         TreeMap<Double, FormaGeometrica> arvore = new TreeMap<>();
         HashMap<Integer, FormaGeometrica> hashFiguras = new HashMap<>();
         int opcao;
@@ -123,88 +139,166 @@ public class FormasCollectionStream {
             System.out.println();
             switch (opcao) {
                 case 1 -> {
-                    meuConjuntoGeometrico.clear();
-                    meuConjuntoGeometrico = new LinkedList<>(criaFormasAleatorias(50, meuConjuntoGeometrico));
-                    for (FormaGeometrica formaGeometrica : meuConjuntoGeometrico) {
+                    int tamanho;
+                    System.out.print("Qual o tamanho do conjunto? ");
+                    tamanho = Integer.parseInt(teclado.nextLine());
+                    listaFormas.clear();
+                    listaFormas = new LinkedList<>(criaFormasAleatorias(tamanho, listaFormas));
+                    for (FormaGeometrica formaGeometrica : listaFormas) {
                         hashFiguras.put(formaGeometrica.hashCode(), formaGeometrica);
                         arvore.put(formaGeometrica.perimetro(), formaGeometrica);
                     }
 
                 }
                 case 2 -> {
+                    FormaGeometrica quadradinhoDe8 = new Quadrado(8);   
+                    listaFormas.addFirst(quadradinhoDe8);
+                    listaFormas.addLast(quadradinhoDe8);
+                    listaFormas.add(listaFormas.size()/2, quadradinhoDe8);
+                    hashFiguras.put(quadradinhoDe8.hashCode(), quadradinhoDe8);
+                    arvore.put(quadradinhoDe8.perimetro(), quadradinhoDe8);
+                }
+
+                case 3 -> {
+                    limparTela();
                     final String linha = "---------------------------";
-                    System.out.println(linha);
-                    System.out.println(linha);
-                    for (FormaGeometrica formaGeometrica : meuConjuntoGeometrico) {
+                    System.out.println("LISTA:");
+                    for (FormaGeometrica formaGeometrica : listaFormas) {
                         System.out.println(formaGeometrica);
                     }
+                    pausa();
                     System.out.println(linha);
-
-                    // System.out.println("---------------------------");
-                    // for (FormaGeometrica formaGeometrica : hashFiguras.values()) {
-                    // System.out.println(formaGeometrica);
-                    // }
-                    // System.out.println("---------------------------");
-                    // System.out.println("---------------------------");
-                    // for (FormaGeometrica formaGeometrica : arvore.values()) {
-                    // System.out.println(formaGeometrica);
-                    // }
-                    // System.out.println("---------------------------");
-
-                }
-                case 3 -> {
-                    String qualForma = "CÍRCULO";
-                    double areaMinima = 55;
-                    FormaGeometrica maior = meuConjuntoGeometrico.stream()
-                            .filter(f -> f.toString().contains(qualForma))
-                            .filter(f -> f.area() >= areaMinima)
-                            .min(compArea)
-                            .orElse(null);
-                    System.out.println(maior);
+                    System.out.println("HASH MAP:");
+                     for (FormaGeometrica formaGeometrica : hashFiguras.values()) {
+                        System.out.println(formaGeometrica);
+                     }
+                    pausa();
+                    System.out.println(linha);
+                    System.out.println("ÁRVORE:");
+                    for (FormaGeometrica formaGeometrica : arvore.values()) {
+                        System.out.println(formaGeometrica);
+                    }
                 }
                 case 4 -> {
-                    Collections.sort(meuConjuntoGeometrico, compArea);
-                    for (FormaGeometrica formaGeometrica : meuConjuntoGeometrico) {
-                        System.out.println(formaGeometrica);
-                    }
-                }
-                case 5 -> {
-                    System.out.print("Identificador do elemento: ");
+                    System.out.print("Identificador/posição do elemento: ");
                     int idElemento = Integer.parseInt(teclado.nextLine());
                     FormaGeometrica f = hashFiguras.get(idElemento);
-
-                    System.out.println(f);
+                    System.out.println("Por id no mapa: "+f);
+                    f = listaFormas.get(idElemento);
+                    System.out.println("Por posição na lista: "+f);
+                }
+                case 5 -> {
+                    System.out.print("Qual é a área mínima do filtro? ");
+                    double areaMinima = Double.parseDouble(teclado.nextLine());
+                    
+                    listaFormas.stream()
+                               .filter(f -> f.area() >= areaMinima)
+                               .forEach(f -> System.out.println(f));
+                               
                 }
                 case 6 -> {
                     System.out.print("Qual é a área mínima do filtro? ");
                     double areaMinima = Double.parseDouble(teclado.nextLine());
-                    System.out.println(
-                            meuConjuntoGeometrico.stream()
-                                    .filter(fg -> fg.area() >= areaMinima)
-                                    .map(Object::toString)
-                                    .reduce((f1, f2) -> f1.concat("\n" + f2)));
+                    
+                    listaFormas.stream()
+                               .filter(f -> f.area() >= areaMinima)
+                               .map(f -> new Object(){public double area = f.area(); public String nome = f.nome(); })
+                               .forEach(o -> System.out.println(o.nome+" - Área "+o.area));
+                               
                 }
                 case 7 -> {
-                    double somaPerimetro = meuConjuntoGeometrico.stream()
-                            .mapToDouble(fg -> fg.perimetro())
-                            .sum();
-                    System.out.println("Perímetros somados: " + somaPerimetro);
+                    System.out.print("Qual é a área mínima do filtro? ");
+                    double areaMinima = Double.parseDouble(teclado.nextLine());
+                    System.out.print("Qual o tipo da forma geométrica? ");
+                    String forma = teclado.nextLine().toLowerCase();
+
+                    listaFormas.stream()
+                               .filter(f -> f.area() >= areaMinima)
+                               .filter(f -> f.nome().toLowerCase().equals(forma))
+                               .forEach(f-> System.out.println(f));
+                               
                 }
                 case 8 -> {
-                    System.out.println("Média das áreas: " +
-                            meuConjuntoGeometrico.stream()
-                                    .mapToDouble(fg -> fg.perimetro())
-                                    .average().getAsDouble());
+                    System.out.print("Qual é a área mínima do filtro? ");
+                    double areaMinima = Double.parseDouble(teclado.nextLine());
+                    System.out.println("Formas distintas:");
+                    listaFormas.stream()
+                               .filter(f -> f.area() >= areaMinima)
+                               .map( f-> f.nome())
+                               .distinct()
+                               .forEach(f-> System.out.println(f));                               
+                }
+                case 9 ->{
+                    System.out.println("Maior em área = " +
+                            listaFormas.stream()
+                                       .max(compArea)
+                                       .orElse(null)
+                    );
+                }           
+                case 10 ->{
+                    System.out.println("Menor em perímetro = " +
+                            listaFormas.stream()
+                                       .min((f1,f2) -> f1.perimetro() > f2.perimetro() ? 1: -1)
+                                       .orElse(null)
+                    );
+                }      
+                case 11 -> {
+                    double somaAreas = listaFormas.stream()
+                            .mapToDouble(fg -> fg.area())
+                            .sum();
+                    System.out.println("Áreas somados: " + somaAreas);
+                }
+                case 12 -> {
+                    double somaPerimetros = listaFormas.stream()
+                            .mapToDouble(fg -> fg.perimetro())
+                            .sum();
+                    double mediaPerimetros = listaFormas.stream()
+                            .mapToDouble(fg -> fg.perimetro())
+                            .average()
+                            .orElse(0d);
+                    System.out.println("Média dos perímetros: " + mediaPerimetros + " (soma de "+ somaPerimetros+").");
+                    
+                    //dica: olhe o método .summaryStatistics() para a stream
+                }
+
+                case 13 -> {
+                    System.out.print("Qual o tipo da forma geométrica? ");
+                    String forma = teclado.nextLine().toLowerCase();
+                    System.out.println("Média dos perímetros dos "+forma+"s = "+
+                            listaFormas.stream()
+                                       .filter(f -> f.nome().toLowerCase().equals(forma))
+                                       .mapToDouble(fg -> fg.perimetro())
+                                       .average()
+                                       .orElse(0)
+                    );
 
                 }
-                case 9 -> {
-                    System.out.println("Média dos perímetros dos quadrados: " +
-                            meuConjuntoGeometrico.stream()
-                                    .filter(fg -> fg.toString().contains("QUADRADO"))
-                                    .mapToDouble(f -> f.perimetro())
-                                    .average()
-                                    .getAsDouble());
 
+                case 14 -> {
+                    System.out.print("Ordem de área (1) ou alfabética (2) ? ");
+                    int escolha  = Integer.parseInt(teclado.nextLine());
+                    Comparator<FormaGeometrica> compEscolhido = escolha==1 ? compArea : compDesc;
+
+                    System.out.println(
+                            listaFormas.stream()
+                                      .sorted(compEscolhido)
+                                      .map(Object::toString)
+                                      .reduce((f1, f2) -> f1.concat("\n" + f2))
+                                      .orElse("Vazio")
+                    );
+                }
+                case 15 -> {
+                    System.out.print("Qual o tipo da forma geométrica? ");
+                    String forma = teclado.nextLine().toLowerCase();
+
+                    System.out.println(
+                            listaFormas.stream()
+                                      .filter(f -> f.nome().toLowerCase().equals(forma))
+                                      .sorted(compArea)
+                                      .map(Object::toString)
+                                      .reduce((f1, f2) -> f1.concat("\n" + f2))
+                                      .orElse("Vazio")
+                    );
                 }
                 default -> opcao = 1;
             }

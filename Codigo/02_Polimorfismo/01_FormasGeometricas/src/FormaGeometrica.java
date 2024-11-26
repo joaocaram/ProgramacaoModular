@@ -54,6 +54,14 @@ public abstract class FormaGeometrica {
 
 
     /**
+     * "Nome" da forma geométrica: sua descrição simples, sem as medidas
+     * @return String com o nome/tipo da forma
+     */
+    public String nome(){
+        return descricao;
+    }
+
+    /**
      * Representação em string da forma: descrição e área.
      * @return String com a descrição e a área da forma instanciada.
      */
