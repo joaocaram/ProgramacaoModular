@@ -1,5 +1,5 @@
 # Programação Modular
-Conteúdo da disciplina de Programação Modular (teoria e laboratório) - Eng. Soft - PUC Minas Praça da Liberdade - noite - Semestre 2/2024
+Conteúdo da disciplina de Programação Modular (teoria e laboratório) - Eng. Soft - PUC Minas Praça da Liberdade - noite - Semestre 1/2025. Última atualização: exemplos de Java Básico para a turma 1/2025.
 
 ## Código
 
