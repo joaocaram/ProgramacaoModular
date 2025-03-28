@@ -63,6 +63,14 @@ public class Pedido {
 	//#endregion
 
 	/**
+	 * Retorna o id do pedido, para fins de localização (pode ser feito de maneira mais
+	 * abstrata, como veremos adiante)
+	 * @return Identificador do pedido (inteiro positivo)
+	 */
+	public int getID(){
+		return idPedido;
+	}
+	/**
 	 * Verifica se uma pizza pode ser adicionada ao pedido, ou seja, se o pedido
 	 * está aberto e há espaço na memória.
 	 * @return TRUE se puder adicionar, FALSE caso contrário
