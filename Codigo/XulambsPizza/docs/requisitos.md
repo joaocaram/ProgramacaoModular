@@ -13,9 +13,18 @@ O **Sistema Xulambs Pizza** precisa permitir registrar vendas de pizzas isoladas
 
 ## Versão 0.2 - A pizzaria e seus pedidos
 
-A pizzaria percebeu que é melhor agrupar as vendas de pizzas em pedidos. Foram levantados os requisitos:
+A pizzaria percebeu que é melhor agrupar as vendas de pizzas em **pedidos**. Foram levantados os requisitos:
 
 1. Um pedido deve ter um identificador único.
 1. Um pedido deve ter sua data armazenada.
 1. Um pedido aceitará novos itens até que seja fechado.
 1. O relatório de um pedido deve mostrar a descrição de cada uma das pizzas, detalhadamente, e o valor total do pedido.
+
+## Versão 0.3 - Borda recheada
+
+Para atender um desejo de muitos de seus clientes, a Xulambs Pizza incluiu uma opção no cardápio: **bordas recheadas**. Uma pizza poderá ter os seguintes tipos de bordas:
+
+1. Borda tradicional: sem acréscimo.
+1. Borda de cheddar: acréscimo de R$ 10.
+1. Borda de chocolate: acréscimo de R$ 8.
+1. Borda de requeijão: acréscimo de R$ 7.
