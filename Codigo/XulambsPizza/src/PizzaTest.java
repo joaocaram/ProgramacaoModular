@@ -55,5 +55,11 @@ public class PizzaTest {
         assertTrue(pizza.notaDeCompra().contains("44,00"));
     }
 
+    @Test
+    public void calculaCorretamenteOPrecoComBordaRecheada(){
+        pizza.adicionarBorda(EBorda.CHEDDAR);
+        assertEquals(39d, pizza.valorFinal(), 0.01);
+    }
+
 
 }

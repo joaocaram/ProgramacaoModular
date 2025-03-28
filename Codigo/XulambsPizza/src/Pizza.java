@@ -29,37 +29,71 @@
    */
  public class Pizza {
  
-     private static final int MAX_INGREDIENTES = 8;
-     private static final String DESCRICAO = "Pizza";
-     private static final double PRECO_BASE = 29d;
-     private static final double VALOR_ADICIONAL = 5d;
+     private static final int MAX_INGREDIENTES;
+     private static final double PRECO_BASE;
+     private static final double VALOR_ADICIONAL;
      private int quantidadeIngredientes;
- 
- 
+	 private EBorda bordaRecheada;
+
+	 static{
+		MAX_INGREDIENTES = 8;
+		PRECO_BASE = 29d;
+		VALOR_ADICIONAL = 5d;
+	}
+
+	/**
+	 * Inicializador privado. Configura os adicionais e a borda recheada desejada.
+	 * @param adicionais Quantidade de adicionais (int >=0)
+	 * @param borda Borda da pizza (EBorda)
+	 */
+	private void init(int adicionais, EBorda borda){
+		adicionarIngredientes(adicionais);
+		adicionarBorda(borda);
+	}
+
+
      /**
-      * Construtor padrão. Cria uma pizza sem adicionais.
+      * Construtor padrão. Cria uma pizza sem adicionais e borda tradicional.
       */
      public Pizza() {
-         quantidadeIngredientes = 0;
-     }
- 
+		init(0, EBorda.SEM_BORDA);
+	}
+
+
      /**
-      * Cria uma pizza com a quantidade de adicionais pré-definida. Em caso de valor inválido, a pizza será criada sem adicionais.
-      * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
+      * Cria uma pizza com a quantidade de adicionais pré-definida e borda tradicional. 
+	  * Em caso de valor inválido para adicionais, a pizza será criada sem adicionais.
+      * @param adicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
       */
-     public Pizza(int quantosAdicionais) {
-         adicionarIngredientes(quantosAdicionais);
-     }
- 
+	  public Pizza(int adicionais) {
+		init(adicionais, EBorda.SEM_BORDA);
+	}
+
+	/**
+	 * Cria uma pizza com a quantidade de adicionais pré-definida e borda escolhida
+	 * pelo usuário. Em caso de valor inválido para adicionais, a pizza será criada 
+	 * sem adicionais. Em caso de borda nula, será usada borda tradicional. 
+	 * @param adicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
+	 * @param borda EBorda para a pizza. Se for nula, cria com borda tradicional.
+	 */
+	public Pizza(int adicionais, EBorda borda) {
+		init(adicionais, borda);
+	}
+
+	/**
+	 * Encapsula a lógica de cálculo para o valor dos adicionais da pizza. 
+	 * @return Double (>=0) com o valor dos adicionais.
+	 */
      private double valorAdicionais(){
          return quantidadeIngredientes*VALOR_ADICIONAL;
      }
-     /**
+    
+	 /**
       * Retorna o valor final da pizza, incluindo seus adicionais.
       * @return Double com o valor final da pizza.
       */
      public double valorFinal() {
-         return PRECO_BASE + valorAdicionais();
+         return PRECO_BASE + valorAdicionais() + bordaRecheada.valor();
      }
  
      /**
@@ -68,13 +102,27 @@
       * @param quantos Quantos ingredientes a serem adicionados (>0)
       * @return Quantos ingredientes a pizza tem após a execução
       */
-     public int adicionarIngredientes(int quantos) {
-         if(podeAdicionar(quantos)){
-             quantidadeIngredientes += quantos;
-         }
-         return quantidadeIngredientes;
-     }
- 
+	  public int adicionarIngredientes(int quantos) {
+		if(podeAdicionar(quantos)){
+            quantidadeIngredientes += quantos;
+        }
+        return quantidadeIngredientes;
+	}
+
+	/**
+	 * Retira ingredientes da pizza. Caso o valor pedido ("quantos") seja maior que 
+	 * a quantidade de ingredientes, ignora a operação.
+	 * @param quantos Quantos ingredientes devem ser retirados. Deve ser um valor
+	 * inteiro positivo.
+	 * @return A quantidade de ingredientes da pizza após a execução.
+	 */
+	public int retirarIngredientes(int quantos) {
+		if(quantos > 0)
+			quantos *=-1;
+        return adicionarIngredientes(quantos);
+	}
+
+
      /**
       * Faz a verificação de limites para adicionar ingredientes na pizza. Retorna TRUE/FALSE conforme seja possível ou não adicionar
       * esta quantidade de ingredientes.
@@ -85,16 +133,31 @@
          return (quantos>0 && quantos+quantidadeIngredientes<=MAX_INGREDIENTES);
      }
  
+	 /**
+	  * Muda a borda da pizza. Em caso de valor inválido/nulo, deixa a pizza com
+	  * borda tradicional. Retorna o valor da borda atribuída à pizza.
+	  * @param borda Borda da pizza (Enumerador EBorda)
+	  * @return Valor da borda atribuída à pizza
+	  */
+	 public double adicionarBorda(EBorda borda){
+		if(borda == null)
+			borda = EBorda.SEM_BORDA;
+		bordaRecheada = borda;
+		return bordaRecheada.valor();
+
+	}
+
      /**
-      * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
-      * @return String no formato "<DESCRICAO>, no valor de <VALOR>"
+      * Nota simplificada de compra: descrição da pizza, dos ingredientes, da borda
+	  * e do preço a pagar.
+      * @return String de uma única linha com as informações acima
       */
      public String notaDeCompra() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
-         return String.format("%s (%s) com %d ingredientes (%s), no valor de %s", 
-                                     DESCRICAO, moeda.format(PRECO_BASE), 
-                                     quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));
-     }
+		 return String.format("Pizza (%s) com %d ingredientes (%s) e %s. Valor total: R$ %s",
+		 						moeda.format(PRECO_BASE), quantidadeIngredientes, moeda.format(valorAdicionais()), 
+								bordaRecheada.descricao(), moeda.format(valorFinal()));
+}
  
  }
  
