@@ -45,7 +45,7 @@ public class PedidoTest {
     public void relatorioContemDetalhes(){
         pedido.adicionar(pizzaCom2Ingredientes);
         pedido.adicionar(pizzaSemIngredientes);
-        String relatorio = pedido.relatorio();
+        String relatorio = pedido.toString();
         assertTrue(relatorio.contains("29,00"));
         assertTrue(relatorio.contains("39,00"));
         assertTrue(relatorio.contains("68,00"));
