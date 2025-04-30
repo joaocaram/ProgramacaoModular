@@ -36,8 +36,8 @@ public class PedidoTest {
 
     @Test
     public void calculaPrecoCorretamente(){
-        pedido.adicionar(pizzaCom2Ingredientes);
         pedido.adicionar(pizzaSemIngredientes);
+        pedido.adicionar(pizzaCom2Ingredientes);
         assertEquals(68d, pedido.precoAPagar(), 0.01);
     }
 

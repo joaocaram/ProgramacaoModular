@@ -52,7 +52,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.3\n================");
+        System.out.println("XULAMBS PIZZA v0.4\n================");
     }
     // #endregion
 
@@ -67,10 +67,18 @@ public class XulambsPizza {
         return lerInteiro("Digite sua opção");
     }
 
+    static int exibirMenuPedido() {
+        cabecalho();
+        System.out.println("1 - Pedido Local");
+        System.out.println("2 - Pedido para Entrega");
+        
+        return lerInteiro("Digite sua opção");
+    }
+
     static int exibirMenuIngredientes(Pizza pizza) {
         cabecalho();
         System.out.println("Personalizar a Pizza");
-        mostrarNota(pizza);
+        mostrar(pizza);
         System.out.println("\n1 - Acrescentar ingredientes");
         System.out.println("2 - Retirar ingredientes");
         System.out.println("0 - Não quero alterar");
@@ -92,13 +100,13 @@ public class XulambsPizza {
         Pizza novaPizza = new Pizza();
         escolherBorda(novaPizza);
         escolherIngredientes(novaPizza);
-        mostrarNota(novaPizza);
+        mostrar(novaPizza);
         return novaPizza;
     }
 
     static void escolherBorda(Pizza pizza){
         cabecalho();
-        mostrarNota(pizza);
+        mostrar(pizza);
         int borda = exibirMenuBorda();
         pizza.adicionarBorda(EBorda.values()[borda-1]);
     }
@@ -112,24 +120,52 @@ public class XulambsPizza {
                 case 1 ->  pizza.adicionarIngredientes(adicionais);
                 case 2 ->  pizza.retirarIngredientes(adicionais);
             }
-            mostrarNota(pizza);
+            mostrar(pizza);
             pausa();
             opcao = exibirMenuIngredientes(pizza);
         }
     }
 
-    static void mostrarNota(Pizza pizza) {
-        System.out.println("\nComprando: ");
-        System.out.println(pizza.notaDeCompra());
-
+    static void mostrar(Object objeto){
+        System.out.println(objeto);
     }
+    // static void mostrarNota(Pizza pizza) {
+    //     System.out.println("\nComprando: ");
+    //     System.out.println(pizza.notaDeCompra());
+    // }
+
+    // static void mostrarPedido(Pedido pedido) {
+    //     cabecalho();
+    //     System.out.println(pedido.toString());
+    // }
 
     static Pedido abrirPedido() {
-            Pedido novoPedido = new Pedido();
+            Pedido novoPedido = escolherTipoPedido();
             adicionarPizzas(novoPedido);
             return novoPedido;
     }
 
+    static Pedido escolherTipoPedido(){
+        Pedido novo = null;
+        int opcao = exibirMenuPedido();
+        switch (opcao) {
+            case 1 -> novo = criarPedidoLocal();
+            case 2 -> novo = criarPedidoEntrega();
+        }
+        return novo;
+    }
+
+    static Pedido criarPedidoLocal(){
+        return new Pedido();
+    }
+
+    static Pedido criarPedidoEntrega(){
+        cabecalho();
+        System.out.println("Pedido para entrega.");
+        System.out.print("Distância: ");
+        double distancia = Double.parseDouble(teclado.nextLine());
+        return new PedidoEntrega(distancia);
+    }
     static void adicionarPizzas(Pedido pedido) {
         String conf;
         do {
@@ -140,10 +176,7 @@ public class XulambsPizza {
         } while (conf.equals("S"));
     }
 
-    static void mostrarPedido(Pedido pedido) {
-        cabecalho();
-        System.out.println(pedido.relatorio());
-    }
+    
 
     static void armazenarPedido(Pedido pedido) {
         if(quantPedidos < MAX_PEDIDOS) {
@@ -169,7 +202,7 @@ public class XulambsPizza {
         Pedido pedidoParaAlteracao = localizarPedido();
         if (pedidoParaAlteracao != null) {
             adicionarPizzas(pedidoParaAlteracao);
-            mostrarPedido(pedidoParaAlteracao);
+            mostrar(pedidoParaAlteracao);
         }
         else
             System.out.println("Pedido não encontrado");
@@ -178,7 +211,7 @@ public class XulambsPizza {
     static void relatorioDePedido() {
         Pedido localizado = localizarPedido();
         if (localizado != null)
-            mostrarPedido(localizado);
+            mostrar(localizado); 
         else
             System.out.println("Pedido não existente");
     }
@@ -187,7 +220,7 @@ public class XulambsPizza {
         Pedido localizado = localizarPedido();
         if (localizado != null){
             localizado.fecharPedido();
-            mostrarPedido(localizado);
+            mostrar(localizado);
         }
         else
             System.out.println("Pedido não existente");
@@ -200,7 +233,7 @@ public class XulambsPizza {
                 switch (opcao) {
                     case 1:
                         Pedido novoPedido = abrirPedido();
-                        mostrarPedido(novoPedido);
+                        mostrar(novoPedido);
                         armazenarPedido(novoPedido);
                         break;
                     case 2:
