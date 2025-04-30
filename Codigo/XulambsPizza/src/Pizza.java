@@ -1,3 +1,7 @@
+import java.text.NumberFormat;
+
+import javax.swing.text.NumberFormatter;
+
 /**
  * MIT License
  *
@@ -23,18 +27,24 @@
  * SOFTWARE.
  */
 
-public class Pizza {
+public class Pizza extends Comida{
 
 	private static final int MAX_INGREDIENTES;
+	private static final String DESCRICAO;
 	private static final double PRECO_BASE;
-	private static final double VALOR_POR_ADICIONAL;
-	private int quantidadeIngredientes;
+	private static final double VALOR_ADICIONAL;
+	private static final int ADIC_SEM_DESCONTO;
+	private static final double PCT_DESCONTO;
+
 	private EBorda bordaRecheada;
 
 	static{
 		MAX_INGREDIENTES = 8;
+		DESCRICAO = "Pizza";
 		PRECO_BASE = 29d;
-		VALOR_POR_ADICIONAL = 5d;
+		VALOR_ADICIONAL = 5d;
+		ADIC_SEM_DESCONTO = 5;
+		PCT_DESCONTO = 0.5;
 	}
 	
 	private void init(int adicionais, EBorda borda){
@@ -43,40 +53,31 @@ public class Pizza {
 	}
 
 	public Pizza() {
+		super(DESCRICAO, MAX_INGREDIENTES, PRECO_BASE, VALOR_ADICIONAL);
 		init(0, EBorda.SEM_BORDA);
 	}
 
 	public Pizza(int adicionais) {
+		super(DESCRICAO, MAX_INGREDIENTES, PRECO_BASE, VALOR_ADICIONAL);
 		init(adicionais, EBorda.SEM_BORDA);
 	}
 
 	public Pizza(int adicionais, EBorda borda) {
+		super(DESCRICAO, MAX_INGREDIENTES, PRECO_BASE, VALOR_ADICIONAL);
 		init(adicionais, borda);
 	}
 
-	private double valorAdicionais() {
-		return quantidadeIngredientes * VALOR_POR_ADICIONAL;
-	}
-
-	private boolean podeAdicionar(int quantos) {
-		int total = quantos + quantidadeIngredientes; 
-		return ( total >= 0 && total <= MAX_INGREDIENTES);
-	}
-
+	@Override
 	public double valorFinal() {
-		return PRECO_BASE + valorAdicionais() + bordaRecheada.valor();
+		return PRECO_BASE + valorAdicionais() + bordaRecheada.valor() - descontoAdicionais();
 	}
 
-	public int adicionarIngredientes(int quantos) {
-		if(podeAdicionar(quantos)){
-            quantidadeIngredientes += quantos;
-        }
-        return quantidadeIngredientes;
-	}
-
-	public int retirarIngredientes(int quantos) {
-		quantos *=-1;
-        return adicionarIngredientes(quantos);
+	private double descontoAdicionais(){
+		double desconto = 0d;
+		int quantosComDesconto = quantidadeIngredientes - ADIC_SEM_DESCONTO;
+		if(quantosComDesconto>0)
+			desconto = quantosComDesconto * VALOR_ADICIONAL * PCT_DESCONTO;
+		return desconto;
 	}
 
 	public double adicionarBorda(EBorda borda){
@@ -89,8 +90,13 @@ public class Pizza {
 
 	@Override
 	public String toString() {
-		return String.format("Pizza (R$ %.2f) com %d ingredientes (R$ %.2f) e %s. Valor total: R$ %.2f",
-                                    PRECO_BASE, quantidadeIngredientes, valorAdicionais(), bordaRecheada.descricao(), valorFinal());
+		NumberFormat moeda = NumberFormat.getCurrencyInstance();
+		StringBuilder notinha = new StringBuilder(super.toString()+"\n");
+		notinha.append(String.format("   Borda      : %s\n", bordaRecheada.descricao()));
+		notinha.append(String.format("   Adicionais : %s\n", moeda.format(valorAdicionais())));
+		notinha.append(String.format("   Desconto   : %s\n", moeda.format(descontoAdicionais())));
+		notinha.append(String.format("VALOR A PAGAR : %s", moeda.format(valorFinal())));
+		return notinha.toString();
 	}
 
 }

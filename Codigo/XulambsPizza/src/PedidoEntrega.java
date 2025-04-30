@@ -14,12 +14,6 @@ public class PedidoEntrega extends Pedido{
         distanciaEntrega = distancia;
     }
 
-    @Override
-    protected boolean podeAdicionar(){
-        return super.podeAdicionar() 
-                    && quantPizzas < MAX_PIZZAS;
-    }
-
     private double valorTaxa(){
         int pos = 0;
         while(distanciaEntrega > DISTANCIAS[pos])
@@ -28,8 +22,15 @@ public class PedidoEntrega extends Pedido{
     }
 
     @Override
+    protected boolean podeAdicionar(){
+        return super.podeAdicionar() 
+                    && quantComidas < MAX_PIZZAS;
+    }
+
+
+    @Override
     public double precoAPagar(){
-        return super.precoAPagar() + valorTaxa();
+        return valorItens() + valorTaxa();
     }
     
     @Override
@@ -38,7 +39,7 @@ public class PedidoEntrega extends Pedido{
 	
 		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Para Entrega");
         relat.append("\n"+detalhesPedido());
-        relat.append(String.format("\n\nTAXA DE ENTREGA: %s (%.2f km)", moeda.format(valorTaxa()), distanciaEntrega));
+        relat.append(String.format("TAXA DE ENTREGA: %s (%.2f km)", moeda.format(valorTaxa()), distanciaEntrega));
         relat.append(String.format("\nTOTAL A PAGAR: %s", moeda.format(precoAPagar())));
         relat.append("\n=============================");
         return relat.toString();
