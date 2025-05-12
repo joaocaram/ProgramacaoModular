@@ -1,5 +1,7 @@
 
+import java.security.InvalidParameterException;
 import java.util.Scanner;
+import javax.naming.OperationNotSupportedException;
 
 /**
  * MIT License
@@ -35,9 +37,20 @@ public class XulambsFoods {
     // #region utilidades
     static Scanner teclado;
 
+    /**
+     * Lê um inteiro, mostrando uma mensagem para o usuário
+     * @param mensagem Mensagem a ser mostrada
+     * @return O inteiro digitado pelo usuário, ou -1 em caso
+     * de leitura inválida. 
+     */
     static int lerInteiro(String mensagem) {
         System.out.print(mensagem + ": ");
-        return Integer.parseInt(teclado.nextLine());
+        try {
+            return Integer.parseInt(teclado.nextLine());    
+        } catch (NumberFormatException nException) {
+            throw new InvalidParameterException();
+        }
+        
     }
 
     static void limparTela() {
@@ -52,7 +65,7 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.5\n================");
+        System.out.println("XULAMBS FOODS v0.6\n================");
     }
     // #endregion
 
@@ -139,10 +152,10 @@ public class XulambsFoods {
     static void escolherIngredientes(Comida comida) {
         int opcao = exibirMenuIngredientes(comida);
         while (opcao != 0) {
-            int adicionais = lerInteiro("Quantidade de adicionais");
             switch (opcao) {
-                case 1 ->  comida.adicionarIngredientes(adicionais);
-                case 2 ->  comida.retirarIngredientes(adicionais);
+                case -1 -> System.out.println("Opção inválida");
+                case 1 -> adicionarIngredientes(comida);
+                case 2 -> retirarIngredientes(comida);
             }
             mostrar(comida, "Comprando: ");
             pausa();
@@ -150,6 +163,28 @@ public class XulambsFoods {
         }
     }
 
+    static void adicionarIngredientes(Comida comida){
+        int adicionais = lerInteiro("Quantidade de adicionais para acrescentar:");
+        try{
+             comida.adicionarIngredientes(adicionais); 
+        }catch (IngredientesEmExcessoException e) {
+             int quantos = e.getQuantosIngredientes();    
+             System.out.println("Ingredientes em excesso: "+quantos);
+             pausa();
+        }
+    }
+
+    static void retirarIngredientes(Comida comida){
+        int adicionais = lerInteiro("Quantidade de adicionais para retirar:");
+        try{
+             comida.retirarIngredientes(adicionais); 
+        }catch (IngredientesEmExcessoException e) {
+             int quantos = e.getQuantosIngredientes();    
+             System.out.println("Ingredientes em excesso: "+quantos);
+             pausa();
+        }
+
+    }
     static void mostrar(Object objeto, String mensagem){
         System.out.println(mensagem);
         System.out.println(objeto);
@@ -187,9 +222,20 @@ public class XulambsFoods {
         String conf;
         do {
             Comida novaComida = escolherComida();
-            pedido.adicionar(novaComida);
-            System.out.print("\nIncluir outra comida (S/N)? ");
-            conf = teclado.nextLine().toUpperCase();
+            try {
+                pedido.adicionar(novaComida);
+                System.out.print("\nIncluir outra comida (S/N)? ");
+                conf = teclado.nextLine().toUpperCase();    
+            } catch (OperationNotSupportedException operException) {
+                System.out.println("\n\nO PEDIDO JÁ ESTÁ FECHADO!!");
+                pausa();
+                conf = "N";
+            } catch(NullPointerException npException){
+                System.out.println("\nComida inválida. Tente novamente");
+                pausa();
+                conf="S";
+            }
+            
         } while (conf.equals("S"));
     }
 
