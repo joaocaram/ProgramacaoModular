@@ -1,6 +1,7 @@
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import javax.naming.OperationNotSupportedException;
 
 /**
  * MIT License
@@ -104,16 +105,23 @@ public abstract class Pedido {
 	public abstract double precoAPagar();
 
 	/**
-	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
-	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
+	 * Adiciona uma comida ao pedido, se for possível. 
+	 * Caso não seja, será lançada uma exceção. 
+	 * Retorna a quantidade de pizzas do pedido após a execução.
 	 * @param comida Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
+	 * @throws OperationNotSupportedException caso o pedido esteja fechado.
+	 * @throws NullPointerException caso a comida adicionada seja nula.
 	 */
-	public int adicionar(Comida comida) {
-		if(podeAdicionar()){ 
-			comidas[quantComidas] = comida;
-			quantComidas++;
+	public int adicionar(Comida comida) throws OperationNotSupportedException{
+		if(!podeAdicionar()){ 
+			throw new OperationNotSupportedException("Não posso adicionar comida em pedido fechado");
 		}
+		if(comida == null){
+			throw new NullPointerException("Comida não foi criada");
+		}
+		comidas[quantComidas] = comida;
+		quantComidas++;
 		return quantComidas;
 	}
 
@@ -122,8 +130,9 @@ public abstract class Pedido {
 	 * a operação é ignorada.
 	 */
 	public void fecharPedido() {
-		if(quantComidas>0)
-			aberto = false;
+		if(quantComidas==0)
+			throw new IllegalStateException("Pedido sem comidas não pode ser fechado");
+		aberto = false;
 	}
 
 	//#region Herança Object
@@ -141,7 +150,7 @@ public abstract class Pedido {
 	 */
 	@Override
 	public int hashCode(){
-		return (int)(idPedido + data.toEpochDay());
+		return (int)(idPedido);
 	}
 
 	
