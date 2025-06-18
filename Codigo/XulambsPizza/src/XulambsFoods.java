@@ -1,4 +1,15 @@
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import javax.naming.OperationNotSupportedException;
 
@@ -29,8 +40,9 @@ import javax.naming.OperationNotSupportedException;
 
 public class XulambsFoods {
 
-    static final int MAX_PEDIDOS = 100;
-    static Pedido[] pedidos = new Pedido[MAX_PEDIDOS];
+    static final int MAX_PEDIDOS = 10_000;
+    static Pedido[] pedidos;
+    static Map<Integer, Cliente> clientes = new HashMap<>();
     static int quantPedidos = 0;
 
     // #region utilidades
@@ -69,6 +81,73 @@ public class XulambsFoods {
     }
     // #endregion
 
+    // #region geradorAleatorio
+    static void gerarClientes() {
+        clientes.put(0, new Cliente(0, "Anônimo"));
+        try {
+            Path caminho = Path.of("medalhistas.txt");
+            List<String> nomes = Files.readAllLines(caminho, Charset.forName("UTF-8"));
+            int doc = 1;
+            for (String nome : nomes) {
+                Cliente novo = new Cliente(doc, nome);
+                clientes.put(novo.hashCode(), novo);
+                doc++;
+            }
+        } catch (IOException exception) {
+            System.out.println("Problema na leitura do arquivo. Sistema iniciado somente com cliente anônimo.");
+            pausa();
+        }
+    }
+
+    static void gerarPedidos(int quantCli) {
+        Random aleat = new Random(42);
+        int quantos = quantCli * 16;
+        pedidos = new Pedido[quantos*2];
+        Pedido pedido;
+        Comida comida;
+        for (int i = 0; i < quantos; i++) {
+            int tipo = aleat.nextInt(10_000) % 3;
+            if (tipo <= 1)
+                pedido = new PedidoLocal();
+            else
+                pedido = new PedidoEntrega(aleat.nextInt(10)+1);
+
+            int quantComidas = aleat.nextInt(1000);
+            if (quantComidas > 950)
+                quantComidas = 4;
+            else if (quantComidas > 750)
+                quantComidas = 3;
+            else if (quantComidas > 500)
+                quantComidas = 2;
+            else
+                quantComidas = 1;
+
+            for (int j = 0; j < quantComidas; j++) {
+                tipo = aleat.nextInt(10_000) % 2;
+                int quantAdic = aleat.nextInt(6);
+                if (tipo == 0)
+                    comida = new Pizza(quantAdic);
+                else
+                    comida = new Sanduiche(quantAdic);
+                try {
+                    pedido.adicionar(comida);
+                } catch (OperationNotSupportedException e) {
+                    System.err.println("Comida inválida e pedido sem comida");
+                }
+            }
+            Cliente quem = clientes.get(aleat.nextInt(quantCli));
+            quem.registrarPedido(pedido);
+            pedido.fecharPedido();
+            armazenarPedido(pedido);
+        }
+    }
+
+    static void config() {
+        gerarClientes();
+        gerarPedidos(clientes.size());
+    }
+    // #endregion
+
     static int exibirMenuPrincipal() {
         cabecalho();
         System.out.println("1 - Abrir Pedido");
@@ -76,6 +155,8 @@ public class XulambsFoods {
         System.out.println("3 - Verificar um Pedido");
         System.out.println("4 - Fechar um Pedido");
         System.out.println("5 - Pedido mais caro do dia");
+        System.out.println("6 - Mostrar dados do cliente");
+        System.out.println("7 - Atualizar fidelidade");
         System.out.println("0 - Finalizar");
 
         return lerInteiro("Digite sua opção");
@@ -109,7 +190,7 @@ public class XulambsFoods {
 
     static <T extends Comparable<T>> T localizarMaior(T[] dados, int limite) {
         T maior = dados[0];
-        for (int i = 1; i < limite ; i++) {
+        for (int i = 1; i < limite; i++) {
             if (dados[i].compareTo(maior) > 0)
                 maior = dados[i];
         }
@@ -228,7 +309,6 @@ public class XulambsFoods {
         return new PedidoLocal();
     }
 
-    
     static Pedido criarPedidoPromocional() {
         return new PedidoPromocional();
     }
@@ -308,31 +388,65 @@ public class XulambsFoods {
             System.out.println("Pedido não existente");
     }
 
-    static void maiorDoVetor(Comparable[] comp, int limite){
+    static <T extends Comparable<T>> void maiorDoVetor(T[] comp, int limite) {
         cabecalho();
         System.out.println("Pedido mais caro do restaurante: ");
-        Comparable maisCaro = localizarMaior(comp, limite);
+        Comparable<T> maisCaro = localizarMaior(comp, limite);
         System.out.println(maisCaro);
     }
 
-    
+    static void registrarPedidoParaCliente(Pedido pedido) {
+        cabecalho();
+        mostrar(pedido, "Pedido atual:");
+        String mensagem = "Não foi encontrado cliente com este id. Registrado para cliente anônimo.";
+        int id = lerInteiro("ID do cliente");
+        Cliente cliente = clientes.get(id);
+        if (cliente == null) {
+            cliente = clientes.get(0);
+        } else
+            mensagem = String.format("Pedido registrado para %s", cliente.toString());
+        cliente.registrarPedido(pedido);
+        System.out.println(mensagem);
+        mostrar(pedido, "");
+        pausa();
+    }
 
+    static void criarERegistrarPedido() {
+        Pedido novoPedido = abrirPedido();
+        registrarPedidoParaCliente(novoPedido);
+        armazenarPedido(novoPedido);
+    }
+
+    static void atualizarFidelidades(){
+        cabecalho();
+        System.out.println("Atualizando fidelidades...");
+        for (Cliente cliente : clientes.values()) {
+            cliente.atualizarCategoria();
+        }
+    }
+
+    static void mostrarCliente(){
+        cabecalho();
+        System.out.println("Mostrar situação do cliente.");
+        int id = lerInteiro("Digite o ID do cliente");
+        Cliente quem = clientes.get(id);
+        System.out.println(quem);
+    }
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
+        config();
         int opcao = -1;
         do {
             opcao = exibirMenuPrincipal();
             switch (opcao) {
-                case 1 ->{
-                    Pedido novoPedido = abrirPedido();
-                    mostrar(novoPedido, "Novo pedido:");
-                    armazenarPedido(novoPedido);
-                }
+                case 1 -> criarERegistrarPedido();
                 case 2 -> alterarPedido();
                 case 3 -> relatorioDePedido();
                 case 4 -> fecharPedido();
                 case 5 -> maiorDoVetor(pedidos, quantPedidos);
-                 case 0 -> System.out.println("FLW VLW OBG VLT SMP.");
+                case 6 -> mostrarCliente();
+                case 7 -> atualizarFidelidades();
+                case 0 -> System.out.println("FLW VLW OBG VLT SMP.");
             }
             pausa();
         } while (opcao != 0);

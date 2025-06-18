@@ -42,6 +42,7 @@ public class PedidoEntrega extends Pedido{
 		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Para Entrega");
         relat.append("\n"+detalhesPedido());
         relat.append(String.format("TAXA DE ENTREGA: %s (%.2f km)", moeda.format(valorTaxa()), distanciaEntrega));
+        relat.append("\n"+notaDesconto());
         relat.append(String.format("\nTOTAL A PAGAR: %s", moeda.format(precoAPagar())));
         relat.append("\n=============================");
         return relat.toString();

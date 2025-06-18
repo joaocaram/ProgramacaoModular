@@ -31,7 +31,8 @@ public class PedidoLocal extends Pedido {
 		
 		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Local");
         relat.append("\n"+detalhesPedido());
-        relat.append(String.format("TOTAL A PAGAR: %s", moeda.format(precoAPagar())));
+        relat.append(notaDesconto()+"\n");
+		relat.append(String.format("TOTAL A PAGAR: %s", moeda.format(precoAPagar())));
         relat.append("\n=============================");
         return relat.toString();
 	}

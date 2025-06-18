@@ -1,3 +1,4 @@
+import java.security.InvalidParameterException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ public abstract class Pedido implements Comparable<Pedido> {
 	private LocalDate data;
 	protected Comida[] comidas;
 	private boolean aberto;
+	private double desconto;
 	protected int quantComidas;
 	//#endregion
 
@@ -88,7 +90,7 @@ public abstract class Pedido implements Comparable<Pedido> {
 		for (int i = 0; i < quantComidas; i++) {
 			valor += comidas[i].valorFinal();
 		}
-		return valor;
+		return valor - desconto;
 	}
 
 	protected String detalhesPedido(){
@@ -108,6 +110,12 @@ public abstract class Pedido implements Comparable<Pedido> {
             relat.append(String.format("%02d - %s\n\n", (i+1), comidas[i].toString()));            
         }
 		return relat.toString();
+	}
+
+	protected String notaDesconto(){
+	    NumberFormat moeda = NumberFormat.getCurrencyInstance();
+	
+		return String.format("DESCONTO: %s", moeda.format(desconto));
 	}
 
 	/**
@@ -146,6 +154,14 @@ public abstract class Pedido implements Comparable<Pedido> {
 			throw new IllegalStateException("Pedido sem comidas não pode ser fechado");
 		aberto = false;
 	}
+	public double aplicarDesconto(double valor){
+		if(valor < 0 || valor > valorItens() )
+			throw new InvalidParameterException("Valor inválido para o desconto");
+		if(desconto != 0)
+			throw new IllegalStateException("Pedido já tem desconto");
+		desconto = valor;
+		return desconto;
+	}
 
 	//#region Herança Object
 	@Override
@@ -162,7 +178,7 @@ public abstract class Pedido implements Comparable<Pedido> {
 	 */
 	@Override
 	public int hashCode(){
-		return (int)(idPedido);
+		return (idPedido);
 	}
 
 	
