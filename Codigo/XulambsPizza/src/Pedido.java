@@ -1,3 +1,4 @@
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,7 +29,7 @@ import javax.naming.OperationNotSupportedException;
  * SOFTWARE.
  */
 
-public abstract class Pedido {
+public abstract class Pedido implements Comparable<Pedido> {
     //#region static/constantes
 	/** Para controlar o vetor de Pizzas */
     private static final int MAX_COMIDAS = 100;
@@ -40,7 +41,7 @@ public abstract class Pedido {
 	//#region atributos
 	private int idPedido;
 	private LocalDate data;
-	private Comida[] comidas;
+	protected Comida[] comidas;
 	private boolean aberto;
 	protected int quantComidas;
 	//#endregion
@@ -61,6 +62,17 @@ public abstract class Pedido {
 		init(maxComidas);
 	}
 	//#endregion
+
+	@Override
+    public int compareTo(Pedido other){
+        double dif = this.precoAPagar() - other.precoAPagar();
+        int resultado = 0;
+        if(dif < 0)
+            resultado = -1;
+        else if(dif > 0)
+                resultado = 1;
+        return resultado;
+    }
 
     /**
      * Verifica se pode adicionar um novo item ao pedido (no caso, se o pedido estiver aberto e

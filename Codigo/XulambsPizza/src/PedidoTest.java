@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 public class PedidoTest {
 
     static Pedido pedido;
-    static Comida pizzaCom2Ingredientes;
-    static Comida pizzaSemIngredientes;
+    static Pizza pizzaCom2Ingredientes;
+    static Pizza pizzaSemIngredientes;
 
     @BeforeAll
     static public void criarPizzas() {

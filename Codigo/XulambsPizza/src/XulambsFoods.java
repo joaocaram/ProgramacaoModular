@@ -1,4 +1,3 @@
-
 import java.security.InvalidParameterException;
 import java.util.Scanner;
 import javax.naming.OperationNotSupportedException;
@@ -39,18 +38,19 @@ public class XulambsFoods {
 
     /**
      * Lê um inteiro, mostrando uma mensagem para o usuário
+     * 
      * @param mensagem Mensagem a ser mostrada
      * @return O inteiro digitado pelo usuário, ou -1 em caso
-     * de leitura inválida. 
+     *         de leitura inválida.
      */
     static int lerInteiro(String mensagem) {
         System.out.print(mensagem + ": ");
         try {
-            return Integer.parseInt(teclado.nextLine());    
+            return Integer.parseInt(teclado.nextLine());
         } catch (NumberFormatException nException) {
-            throw new InvalidParameterException();
+            return -1;
         }
-        
+
     }
 
     static void limparTela() {
@@ -65,7 +65,7 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.6\n================");
+        System.out.println("XULAMBS FOODS v0.7\n================");
     }
     // #endregion
 
@@ -75,8 +75,9 @@ public class XulambsFoods {
         System.out.println("2 - Acrescentar Comidas a um Pedido");
         System.out.println("3 - Verificar um Pedido");
         System.out.println("4 - Fechar um Pedido");
+        System.out.println("5 - Pedido mais caro do dia");
         System.out.println("0 - Finalizar");
-       
+
         return lerInteiro("Digite sua opção");
     }
 
@@ -84,7 +85,8 @@ public class XulambsFoods {
         cabecalho();
         System.out.println("1 - Pedido Local");
         System.out.println("2 - Pedido para Entrega");
-        
+        System.out.println("3 - Pedido Promocional");
+
         return lerInteiro("Digite sua opção");
     }
 
@@ -92,8 +94,26 @@ public class XulambsFoods {
         cabecalho();
         System.out.println("1 - Pizza (padrão)");
         System.out.println("2 - Sanduíche");
-        
+
         return lerInteiro("Digite sua opção");
+    }
+
+    static <T extends Comparable<T>> T localizarMenor(T[] dados, int limite) {
+        T menor = dados[0];
+        for (int i = 1; i < limite; i++) {
+            if (dados[i].compareTo(menor) < 0)
+                menor = dados[i];
+        }
+        return menor;
+    }
+
+    static <T extends Comparable<T>> T localizarMaior(T[] dados, int limite) {
+        T maior = dados[0];
+        for (int i = 1; i < limite ; i++) {
+            if (dados[i].compareTo(maior) > 0)
+                maior = dados[i];
+        }
+        return maior;
     }
 
     static int exibirMenuIngredientes(Comida comida) {
@@ -109,7 +129,7 @@ public class XulambsFoods {
         EBorda[] bordas = EBorda.values();
         System.out.println("\nEscolha o tipo de borda: ");
         for (int i = 0; i < bordas.length; i++) {
-            System.out.printf("%d - %s\n", (i+1), bordas[i].descricao());
+            System.out.printf("%d - %s\n", (i + 1), bordas[i].descricao());
         }
         return lerInteiro("Digite sua escolha");
     }
@@ -122,40 +142,59 @@ public class XulambsFoods {
         switch (opcao) {
             case 1 -> novaComida = comprarPizza();
             case 2 -> novaComida = comprarSanduiche();
-            default -> novaComida = comprarPizza();    
+            default -> novaComida = comprarPizza();
         }
         escolherIngredientes(novaComida);
         mostrar(novaComida, "Incluído:");
         return novaComida;
     }
 
-    static Comida comprarPizza(){
+    static Comida comprarPizza() {
         Pizza pizza = new Pizza();
         escolherBorda(pizza);
         return pizza;
     }
 
-    static Comida comprarSanduiche(){
+    static Comida comprarSanduiche() {
         System.out.print("\nDeseja combo com fritas (S/N)? ");
         String opcao = teclado.nextLine().toLowerCase();
         boolean combo = (opcao.equals("s"));
         return new Sanduiche(combo);
     }
 
-    static void escolherBorda(Pizza pizza){
+    static void escolherBorda(Pizza pizza) {
         cabecalho();
         mostrar(pizza, "Pizza atual:");
         int borda = exibirMenuBorda();
-        pizza.adicionarBorda(EBorda.values()[borda-1]);
+        pizza.adicionarBorda(EBorda.values()[borda - 1]);
     }
 
     static void escolherIngredientes(Comida comida) {
         int opcao = exibirMenuIngredientes(comida);
         while (opcao != 0) {
+            int adicionais;
             switch (opcao) {
+                case 1 -> {
+                    adicionais = lerInteiro("Quantidade de adicionais");
+                    try {
+                        comida.adicionarIngredientes(adicionais);
+                    } catch (IngredientesIncorretos e) {
+                        int quantos = e.getQuantosIngredientes();
+                        System.out.println("Ingredientes inválidos: " + quantos);
+                        pausa();
+                    }
+                }
+                case 2 -> {
+                    adicionais = lerInteiro("Quantidade de adicionais");
+                    try {
+                        comida.retirarIngredientes(adicionais);
+                    } catch (IngredientesIncorretos e) {
+                        int quantos = e.getQuantosIngredientes();
+                        System.out.println("Ingredientes inválidos: " + quantos);
+                        pausa();
+                    }
+                }
                 case -1 -> System.out.println("Opção inválida");
-                case 1 -> adicionarIngredientes(comida);
-                case 2 -> retirarIngredientes(comida);
             }
             mostrar(comida, "Comprando: ");
             pausa();
@@ -163,54 +202,38 @@ public class XulambsFoods {
         }
     }
 
-    static void adicionarIngredientes(Comida comida){
-        int adicionais = lerInteiro("Quantidade de adicionais para acrescentar:");
-        try{
-             comida.adicionarIngredientes(adicionais); 
-        }catch (IngredientesEmExcessoException e) {
-             int quantos = e.getQuantosIngredientes();    
-             System.out.println("Ingredientes em excesso: "+quantos);
-             pausa();
-        }
-    }
-
-    static void retirarIngredientes(Comida comida){
-        int adicionais = lerInteiro("Quantidade de adicionais para retirar:");
-        try{
-             comida.retirarIngredientes(adicionais); 
-        }catch (IngredientesEmExcessoException e) {
-             int quantos = e.getQuantosIngredientes();    
-             System.out.println("Ingredientes em excesso: "+quantos);
-             pausa();
-        }
-
-    }
-    static void mostrar(Object objeto, String mensagem){
+    static void mostrar(Object objeto, String mensagem) {
         System.out.println(mensagem);
         System.out.println(objeto);
     }
-   
+
     static Pedido abrirPedido() {
-            Pedido novoPedido = escolherTipoPedido();
-            adicionarComidas(novoPedido);
-            return novoPedido;
+        Pedido novoPedido = escolherTipoPedido();
+        adicionarComidas(novoPedido);
+        return novoPedido;
     }
 
-    static Pedido escolherTipoPedido(){
+    static Pedido escolherTipoPedido() {
         Pedido novo = null;
         int opcao = exibirMenuPedido();
         switch (opcao) {
             case 1 -> novo = criarPedidoLocal();
             case 2 -> novo = criarPedidoEntrega();
+            case 3 -> novo = criarPedidoPromocional();
         }
         return novo;
     }
 
-    static Pedido criarPedidoLocal(){
+    static Pedido criarPedidoLocal() {
         return new PedidoLocal();
     }
 
-    static Pedido criarPedidoEntrega(){
+    
+    static Pedido criarPedidoPromocional() {
+        return new PedidoPromocional();
+    }
+
+    static Pedido criarPedidoEntrega() {
         cabecalho();
         System.out.println("Pedido para entrega.");
         System.out.print("Distância: ");
@@ -225,22 +248,22 @@ public class XulambsFoods {
             try {
                 pedido.adicionar(novaComida);
                 System.out.print("\nIncluir outra comida (S/N)? ");
-                conf = teclado.nextLine().toUpperCase();    
+                conf = teclado.nextLine().toUpperCase();
             } catch (OperationNotSupportedException operException) {
                 System.out.println("\n\nO PEDIDO JÁ ESTÁ FECHADO!!");
                 pausa();
                 conf = "N";
-            } catch(NullPointerException npException){
+            } catch (NullPointerException npException) {
                 System.out.println("\nComida inválida. Tente novamente");
                 pausa();
-                conf="S";
+                conf = "S";
             }
-            
+
         } while (conf.equals("S"));
     }
 
     static void armazenarPedido(Pedido pedido) {
-        if(quantPedidos < MAX_PEDIDOS) {
+        if (quantPedidos < MAX_PEDIDOS) {
             pedidos[quantPedidos] = pedido;
             quantPedidos++;
         }
@@ -251,7 +274,7 @@ public class XulambsFoods {
         System.out.println("Localizando um pedido");
         int numero = lerInteiro("Digite o número do pedido");
         Pedido localizado = null;
-        
+
         for (int i = 0; i < quantPedidos && localizado == null; i++) {
             if (pedidos[i].hashCode() == numero)
                 localizado = pedidos[i];
@@ -264,53 +287,55 @@ public class XulambsFoods {
         if (pedidoParaAlteracao != null) {
             adicionarComidas(pedidoParaAlteracao);
             mostrar(pedidoParaAlteracao, "Pedido localizado:");
-        }
-        else
+        } else
             System.out.println("Pedido não encontrado");
     }
 
     static void relatorioDePedido() {
         Pedido localizado = localizarPedido();
         if (localizado != null)
-            mostrar(localizado, "Pedido localizado"); 
+            mostrar(localizado, "Pedido localizado");
         else
             System.out.println("Pedido não existente");
     }
 
     static void fecharPedido() {
         Pedido localizado = localizarPedido();
-        if (localizado != null){
+        if (localizado != null) {
             localizado.fecharPedido();
             mostrar(localizado, "Pedido localizado");
-        }
-        else
+        } else
             System.out.println("Pedido não existente");
     }
+
+    static void maiorDoVetor(Comparable[] comp, int limite){
+        cabecalho();
+        System.out.println("Pedido mais caro do restaurante: ");
+        Comparable maisCaro = localizarMaior(comp, limite);
+        System.out.println(maisCaro);
+    }
+
+    
+
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
         int opcao = -1;
-            do {
-                opcao = exibirMenuPrincipal();
-                switch (opcao) {
-                    case 1:
-                        Pedido novoPedido = abrirPedido();
-                        mostrar(novoPedido, "Novo pedido:");
-                        armazenarPedido(novoPedido);
-                        break;
-                    case 2:
-                        alterarPedido();
-                        break;
-                    case 3:
-                        relatorioDePedido();
-                        break;
-                    case 4:
-                        fecharPedido();
-                        break;
-                    case 0: System.out.println("FLW VLW OBG VLT SMP.");
-                        break;
+        do {
+            opcao = exibirMenuPrincipal();
+            switch (opcao) {
+                case 1 ->{
+                    Pedido novoPedido = abrirPedido();
+                    mostrar(novoPedido, "Novo pedido:");
+                    armazenarPedido(novoPedido);
                 }
-                pausa();
-            } while (opcao != 0);
+                case 2 -> alterarPedido();
+                case 3 -> relatorioDePedido();
+                case 4 -> fecharPedido();
+                case 5 -> maiorDoVetor(pedidos, quantPedidos);
+                 case 0 -> System.out.println("FLW VLW OBG VLT SMP.");
+            }
+            pausa();
+        } while (opcao != 0);
         teclado.close();
     }
 }

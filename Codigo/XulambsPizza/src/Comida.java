@@ -1,29 +1,8 @@
 import java.text.NumberFormat;
-/**
- * MIT License
- *
- * Copyright(c) 2022-25 João Caram <caram@pucminas.br>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-public abstract class Comida {
+
+import javax.naming.OperationNotSupportedException;
+
+public abstract class Comida implements Comparable<Comida>{
     
     private int maxIngredientes;
     protected int quantidadeIngredientes;
@@ -38,6 +17,19 @@ public abstract class Comida {
         valorAdicionais = valorAdc;
     }
 
+    @Override
+    public int compareTo(Comida other){
+        double precoEste = this.valorFinal();
+        double precoOutro = other.valorFinal();
+      
+        int resposta = ( precoEste > precoOutro? 1 : -1);
+        
+        if(precoOutro == precoEste) 
+            resposta = 0;
+        
+        return resposta;
+    }
+
     private boolean podeAdicionar(int quantos) {
 		int total = quantos + quantidadeIngredientes; 
 		return ( total >= 0 && total <= maxIngredientes);
@@ -49,7 +41,7 @@ public abstract class Comida {
 
     public int adicionarIngredientes(int quantos){
 		if(!podeAdicionar(quantos)){
-           throw new IngredientesEmExcessoException(quantos+quantidadeIngredientes);
+           throw new IngredientesIncorretos(quantos+quantidadeIngredientes);
         }
         quantidadeIngredientes += quantos;
         return quantidadeIngredientes;
