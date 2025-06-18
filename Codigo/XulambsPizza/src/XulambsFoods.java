@@ -1,17 +1,12 @@
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
-import javax.sound.sampled.AudioFormat.Encoding;
+import java.security.InvalidParameterException;
+import java.util.Scanner;
+import javax.naming.OperationNotSupportedException;
 
 /**
  * MIT License
  *
- * Copyright(c) 2022-24 João Caram <caram@pucminas.br>
+ * Copyright(c) 2022-25 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +29,29 @@ import javax.sound.sampled.AudioFormat.Encoding;
  */
 
 public class XulambsFoods {
+
+    static final int MAX_PEDIDOS = 100;
+    static Pedido[] pedidos = new Pedido[MAX_PEDIDOS];
+    static int quantPedidos = 0;
+
+    // #region utilidades
     static Scanner teclado;
-    static List<Pedido> todosOsPedidos;
-    static List<Cliente> todosOsClientes;
+
+    /**
+     * Lê um inteiro, mostrando uma mensagem para o usuário
+     * @param mensagem Mensagem a ser mostrada
+     * @return O inteiro digitado pelo usuário, ou -1 em caso
+     * de leitura inválida. 
+     */
+    static int lerInteiro(String mensagem) {
+        System.out.print(mensagem + ": ");
+        try {
+            return Integer.parseInt(teclado.nextLine());    
+        } catch (NumberFormatException nException) {
+            throw new InvalidParameterException();
+        }
+        
+    }
 
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -50,264 +65,252 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS - v0.5\n=============");
+        System.out.println("XULAMBS FOODS v0.6\n================");
     }
+    // #endregion
 
-    static int exibirMenu() {
+    static int exibirMenuPrincipal() {
         cabecalho();
-       
         System.out.println("1 - Abrir Pedido");
-        System.out.println("2 - Alterar Pedido");
-        System.out.println("3 - Relatório de Pedido");
-        System.out.println("4 - Encerrar Pedido");
-        System.out.println("5 - Relatório Clientes (nome)");
-        System.out.println("6 - Relatório Clientes (id)");
-        System.out.println("7 - Pedido mais caro");
+        System.out.println("2 - Acrescentar Comidas a um Pedido");
+        System.out.println("3 - Verificar um Pedido");
+        System.out.println("4 - Fechar um Pedido");
         System.out.println("0 - Finalizar");
-        System.out.print("Digite sua escolha: ");
-        
-        return Integer.parseInt(teclado.nextLine());
+       
+        return lerInteiro("Digite sua opção");
     }
 
-    static void config() throws Exception{
-        teclado = new Scanner(System.in);
-        todosOsPedidos = new LinkedList<Pedido>();
-        todosOsClientes = new LinkedList<Cliente>();
-        gerarClientes();    
-        gerarPedidos();
-        
-    }
-    static void gerarClientes() throws Exception{
-        Scanner arq = new Scanner(new File("clientes.txt"), Charset.forName("UTF-8"));
-        List<String> nomes = new LinkedList<>();
-        while(arq.hasNextLine()){
-            nomes.add(arq.nextLine());
-        }
-        for (String nome : nomes) {
-            Cliente cliente = new Cliente(nome);
-            todosOsClientes.add(cliente);
-        }
-        arq.close();
-    }
-
-    private static void gerarPedidos() {
-        Random aleat = new Random(42);
-        int quantos = todosOsClientes.size() * 13;
-        for (int i = 0; i < quantos; i++)
-        {
-            Pedido novoPedido;
-            int tipoPedido = aleat.nextInt(100)%2;
-            switch (tipoPedido) {
-                case 0 -> novoPedido = new PedidoLocal();
-                case 1 -> novoPedido = new PedidoEntrega(aleat.nextDouble() * 12);
-                default -> novoPedido = null;                 
-            }
-            
-            int quantasComidas = aleat.nextInt(1, 7);
-            for (int j = 0; j < quantasComidas; j++)
-            {
-                Comida novaComida = null;
-                int tipoComida = aleat.nextInt(1, 4);
-                int ingredientes = aleat.nextInt(6);
-                switch (tipoComida) {
-                    case 1 -> novaComida = new Comida(EComida.PIZZA);
-                    case 2 -> novaComida = new Comida(new Sanduiche(true));                                 
-                    case 3 -> novaComida = new Comida(EComida.SANDUICHE);                   
-                }
-                novaComida.adicionarIngredientes(ingredientes);
-                novoPedido.adicionar(novaComida);
-            }
-    
-            novoPedido.fecharPedido();
-            int id = aleat.nextInt(1, todosOsClientes.size());
-            todosOsPedidos.add(novoPedido);
-            Cliente cliente = todosOsClientes.get(id);
-            cliente.RegistrarPedido(novoPedido);
-        }           
-    }
-
-    static Pedido criarPedidoEntrega(){
-        System.out.print("\nDistância para entrega: ");
-        double distancia = Double.parseDouble(teclado.nextLine());
-        return new PedidoEntrega(distancia);
-    }
-    static Pedido escolherTipoPedido(){
-        Pedido novo = null;
+    static int exibirMenuPedido() {
         cabecalho();
-        int escolha;
-        System.out.println("Escolha o tipo de pedido:");
-        System.out.println("1 - Local");
-        System.out.println("2 - Para entrega");
-        System.out.print("Sua opção: ");
-        escolha = Integer.parseInt(teclado.nextLine());
-        switch (escolha) {
-            case 1: novo = new PedidoLocal();
-                break;
-            case 2: novo = criarPedidoEntrega();
-                break;
-        }
-        return novo;
-    }
-    static Pedido abrirPedido() {
+        System.out.println("1 - Pedido Local");
+        System.out.println("2 - Pedido para Entrega");
         
-        Pedido novoPedido = escolherTipoPedido();  
-        System.out.println(novoPedido.toString());
-        pausa();
-        adicionarComidas(novoPedido);
-        return novoPedido;
+        return lerInteiro("Digite sua opção");
     }
 
-    static void relatorioPedido(Pedido pedido) {
+    static int exibirMenuComidas() {
         cabecalho();
-        System.out.println(pedido.toString() + "\n");
+        System.out.println("1 - Pizza (padrão)");
+        System.out.println("2 - Sanduíche");
+        
+        return lerInteiro("Digite sua opção");
     }
 
-    static Pedido localizarPedido(List<Pedido> pedidos) {
+    static int exibirMenuIngredientes(Comida comida) {
         cabecalho();
-        int id;
-        System.out.println("Localizando um pedido.");
-        System.out.print("ID do pedido: ");
-        id = Integer.parseInt(teclado.nextLine());
+        mostrar(comida, "Personalizar sua comida:");
+        System.out.println("\n1 - Acrescentar ingredientes");
+        System.out.println("2 - Retirar ingredientes");
+        System.out.println("0 - Não quero alterar");
+        return lerInteiro("Digite sua escolha");
+    }
 
-        for (Pedido ped : pedidos) {
-            if (ped.toString().contains("Pedido " + String.format("%02d", id)))
-                return ped;
+    static int exibirMenuBorda() {
+        EBorda[] bordas = EBorda.values();
+        System.out.println("\nEscolha o tipo de borda: ");
+        for (int i = 0; i < bordas.length; i++) {
+            System.out.printf("%d - %s\n", (i+1), bordas[i].descricao());
         }
-        return null;
+        return lerInteiro("Digite sua escolha");
     }
 
-    private static void adicionarComidas(Pedido procurado) {
-        String escolha = "n";
-        do {
-            relatorioPedido(procurado);
-            Comida novaComida = comprarComida();
-            
-            procurado.adicionar(novaComida);
-            System.out.print("\nDeseja outra comida? (s/n) ");
-            escolha = teclado.nextLine();
-        } while (escolha.toLowerCase().equals("s"));
-    }
-
-    private static Comida comprarComida() {
+    static Comida escolherComida() {
+        cabecalho();
+        System.out.println("Incluindo uma nova comida:");
+        int opcao = exibirMenuComidas();
         Comida novaComida = null;
-        int escolha = 0;
-        System.out.println("Escolha sua comida: ");
-        System.out.println("1 - Pizza");
-        System.out.println("2 - Sanduiche");
-        System.out.print("Opção: ");
-        escolha = Integer.parseInt(teclado.nextLine());
-        switch (escolha) {
-            case 1: novaComida = comprarPizza();
-                break;
-            case 2:
-                System.out.print("Sanduiche: Deseja combo com fritas? (s/n) ");
-                String combo = teclado.nextLine();
-                boolean querCombo = combo.toLowerCase().equals("s")? true : false;
-                novaComida = new Comida(new Sanduiche(querCombo));
-                break;
+        switch (opcao) {
+            case 1 -> novaComida = comprarPizza();
+            case 2 -> novaComida = comprarSanduiche();
+            default -> novaComida = comprarPizza();    
         }
-        if(novaComida!=null){
-            escolherIngredientes(novaComida);
-            mostrarNota(novaComida);
-        }
+        escolherIngredientes(novaComida);
+        mostrar(novaComida, "Incluído:");
         return novaComida;
     }
 
-    static Comida comprarPizza() {
-        System.out.println("Comprando uma nova pizza:");
-        Comida novaPizza = new Comida(EComida.PIZZA);
-        return novaPizza;
+    static Comida comprarPizza(){
+        Pizza pizza = new Pizza();
+        escolherBorda(pizza);
+        return pizza;
+    }
+
+    static Comida comprarSanduiche(){
+        System.out.print("\nDeseja combo com fritas (S/N)? ");
+        String opcao = teclado.nextLine().toLowerCase();
+        boolean combo = (opcao.equals("s"));
+        return new Sanduiche(combo);
+    }
+
+    static void escolherBorda(Pizza pizza){
+        cabecalho();
+        mostrar(pizza, "Pizza atual:");
+        int borda = exibirMenuBorda();
+        pizza.adicionarBorda(EBorda.values()[borda-1]);
     }
 
     static void escolherIngredientes(Comida comida) {
-        System.out.print("Quantos adicionais você deseja? (máx. 8): ");
-        int adicionais = Integer.parseInt(teclado.nextLine());
-        comida.adicionarIngredientes(adicionais);
-    }
-
-    static void mostrarNota(Comida comida) {
-        System.out.println("Você acabou de comprar: ");
-        System.out.println(comida.notaDeCompra());
-
-    }
-
-    public static void main(String[] args) throws Exception {
-        config();
-        Comparator<Cliente> comp = (c1, c2) -> 
-                                   (c1.hashCode()-c2.hashCode());
-        
-        Comparator<Pedido> compPed = (p1, p2) -> 
-                                     (p1.precoAPagar()-p2.precoAPagar())>0? 1 : -1;
-        
-        Pedido pedido = null;
-        
-        int opcao;
-        opcao = exibirMenu();
-        do {
+        int opcao = exibirMenuIngredientes(comida);
+        while (opcao != 0) {
             switch (opcao) {
-                case 1:
-                    pedido = abrirPedido();
-                    todosOsPedidos.add(pedido);
-                    relatorioPedido(pedido);
-                    break;
-                case 2:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null){
-                        adicionarComidas(pedido);
-                        relatorioPedido(pedido);
-                    }
-                    else
-                        System.out.println("Pedido não existente.");
-                    break;
-                case 3:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null)
-                        relatorioPedido(pedido);
-                    else
-                        System.out.println("Pedido não existente.");
-                    break;
-                case 4:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null) {
-                        pedido.fecharPedido();
-                        System.out.println("Pedido encerrado: ");
-                        System.out.println(pedido.toString());
-                    } else
-                        System.out.println("Pedido não existente.");
-                    break;
-                case 5:
-                    Cliente maior = todosOsClientes.get(0);
-                    for (Cliente cli : todosOsClientes) {
-                            if(cli.compareTo(maior) > 0)
-                                    maior = cli;                        
-                    }
-                    System.out.println(maior);
-                    break;
-                case 6:
-                    Cliente maiorGasto = todosOsClientes.get(0);
-                    
-                    for (Cliente cli : todosOsClientes) {
-                        if(comp.compare(cli, maiorGasto)> 0)
-                                    maiorGasto = cli;                        
-                    }
-                    System.out.println(maiorGasto);
-                    break;
-                case 7: 
-                    Pedido maisCaro = todosOsPedidos.get(0);       
-                    for (Pedido pedidoAtual : todosOsPedidos) {
-                        if(compPed.compare(pedidoAtual, maisCaro)> 0)
-                                    maisCaro = pedidoAtual;                        
-                    }
-                    System.out.println(maisCaro);
-                    break;
-
+                case -1 -> System.out.println("Opção inválida");
+                case 1 -> adicionarIngredientes(comida);
+                case 2 -> retirarIngredientes(comida);
             }
+            mostrar(comida, "Comprando: ");
             pausa();
-            opcao = exibirMenu();
-        } while (opcao != 0);
-
-        teclado.close();
-        System.out.println("FLW T+ VLW ABS.");
+            opcao = exibirMenuIngredientes(comida);
+        }
     }
 
+    static void adicionarIngredientes(Comida comida){
+        int adicionais = lerInteiro("Quantidade de adicionais para acrescentar:");
+        try{
+             comida.adicionarIngredientes(adicionais); 
+        }catch (IngredientesEmExcessoException e) {
+             int quantos = e.getQuantosIngredientes();    
+             System.out.println("Ingredientes em excesso: "+quantos);
+             pausa();
+        }
+    }
+
+    static void retirarIngredientes(Comida comida){
+        int adicionais = lerInteiro("Quantidade de adicionais para retirar:");
+        try{
+             comida.retirarIngredientes(adicionais); 
+        }catch (IngredientesEmExcessoException e) {
+             int quantos = e.getQuantosIngredientes();    
+             System.out.println("Ingredientes em excesso: "+quantos);
+             pausa();
+        }
+
+    }
+    static void mostrar(Object objeto, String mensagem){
+        System.out.println(mensagem);
+        System.out.println(objeto);
+    }
+   
+    static Pedido abrirPedido() {
+            Pedido novoPedido = escolherTipoPedido();
+            adicionarComidas(novoPedido);
+            return novoPedido;
+    }
+
+    static Pedido escolherTipoPedido(){
+        Pedido novo = null;
+        int opcao = exibirMenuPedido();
+        switch (opcao) {
+            case 1 -> novo = criarPedidoLocal();
+            case 2 -> novo = criarPedidoEntrega();
+        }
+        return novo;
+    }
+
+    static Pedido criarPedidoLocal(){
+        return new PedidoLocal();
+    }
+
+    static Pedido criarPedidoEntrega(){
+        cabecalho();
+        System.out.println("Pedido para entrega.");
+        System.out.print("Distância: ");
+        double distancia = Double.parseDouble(teclado.nextLine());
+        return new PedidoEntrega(distancia);
+    }
+
+    static void adicionarComidas(Pedido pedido) {
+        String conf;
+        do {
+            Comida novaComida = escolherComida();
+            try {
+                pedido.adicionar(novaComida);
+                System.out.print("\nIncluir outra comida (S/N)? ");
+                conf = teclado.nextLine().toUpperCase();    
+            } catch (OperationNotSupportedException operException) {
+                System.out.println("\n\nO PEDIDO JÁ ESTÁ FECHADO!!");
+                pausa();
+                conf = "N";
+            } catch(NullPointerException npException){
+                System.out.println("\nComida inválida. Tente novamente");
+                pausa();
+                conf="S";
+            }
+            
+        } while (conf.equals("S"));
+    }
+
+    static void armazenarPedido(Pedido pedido) {
+        if(quantPedidos < MAX_PEDIDOS) {
+            pedidos[quantPedidos] = pedido;
+            quantPedidos++;
+        }
+    }
+
+    static Pedido localizarPedido() {
+        cabecalho();
+        System.out.println("Localizando um pedido");
+        int numero = lerInteiro("Digite o número do pedido");
+        Pedido localizado = null;
+        
+        for (int i = 0; i < quantPedidos && localizado == null; i++) {
+            if (pedidos[i].hashCode() == numero)
+                localizado = pedidos[i];
+        }
+        return localizado;
+    }
+
+    static void alterarPedido() {
+        Pedido pedidoParaAlteracao = localizarPedido();
+        if (pedidoParaAlteracao != null) {
+            adicionarComidas(pedidoParaAlteracao);
+            mostrar(pedidoParaAlteracao, "Pedido localizado:");
+        }
+        else
+            System.out.println("Pedido não encontrado");
+    }
+
+    static void relatorioDePedido() {
+        Pedido localizado = localizarPedido();
+        if (localizado != null)
+            mostrar(localizado, "Pedido localizado"); 
+        else
+            System.out.println("Pedido não existente");
+    }
+
+    static void fecharPedido() {
+        Pedido localizado = localizarPedido();
+        if (localizado != null){
+            localizado.fecharPedido();
+            mostrar(localizado, "Pedido localizado");
+        }
+        else
+            System.out.println("Pedido não existente");
+    }
+    public static void main(String[] args) {
+        teclado = new Scanner(System.in);
+        int opcao = -1;
+            do {
+                opcao = exibirMenuPrincipal();
+                switch (opcao) {
+                    case 1:
+                        Pedido novoPedido = abrirPedido();
+                        mostrar(novoPedido, "Novo pedido:");
+                        armazenarPedido(novoPedido);
+                        break;
+                    case 2:
+                        alterarPedido();
+                        break;
+                    case 3:
+                        relatorioDePedido();
+                        break;
+                    case 4:
+                        fecharPedido();
+                        break;
+                    case 0: System.out.println("FLW VLW OBG VLT SMP.");
+                        break;
+                }
+                pausa();
+            } while (opcao != 0);
+        teclado.close();
+    }
 }

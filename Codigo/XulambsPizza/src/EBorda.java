@@ -1,4 +1,5 @@
 import java.text.NumberFormat;
+
 /**
  * MIT License
  *
@@ -23,52 +24,37 @@ import java.text.NumberFormat;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public abstract class Comida {
+
+ /** Enumerador para bordas de pizza */
+public enum EBorda {
     
-    private int maxIngredientes;
-    protected int quantidadeIngredientes;
-    private double precoBase;
-    private double valorAdicionais;
+    SEM_BORDA("Borda tradicional", 0),
+    CHEDDAR("Borda de Cheddar", 10d),
+    CHOCOLATE("Borda de Chocolate", 8d),
+    REQUEIJAO("Borda de Requeijão", 7d);
+
     private String descricao;
+    private double valor;
 
-    protected Comida(String desc, int max, double base, double valorAdc){
+    EBorda(String desc, double valor){
         descricao = desc;
-        maxIngredientes = max;
-        precoBase = base;
-        valorAdicionais = valorAdc;
+        this.valor = valor;
     }
 
-    private boolean podeAdicionar(int quantos) {
-		int total = quantos + quantidadeIngredientes; 
-		return ( total >= 0 && total <= maxIngredientes);
-	}
-
-    protected double valorAdicionais() {
-		return quantidadeIngredientes * valorAdicionais;
-	}
-
-    public int adicionarIngredientes(int quantos){
-		if(!podeAdicionar(quantos)){
-           throw new IngredientesEmExcessoException(quantos+quantidadeIngredientes);
-        }
-        quantidadeIngredientes += quantos;
-        return quantidadeIngredientes;
-	}
-
-	public int retirarIngredientes(int quantos){
-		quantos *=-1;
-        return adicionarIngredientes(quantos);
-	}
-
-    public abstract double valorFinal();
-
-    @Override
-    public String toString(){
+    /**
+     * Descrição contendo descrição da borda e seu valor. 
+     * @return String de uma linha contendo a descrição da borda e seu valor. 
+     */
+    public String descricao(){
         NumberFormat moeda = NumberFormat.getCurrencyInstance();
-		String notinha = String.format("%s com %d ingredientes\n", descricao, quantidadeIngredientes);
-		notinha+= (String.format("   Valor base : %s", moeda.format(precoBase)));
-        return notinha;
-
+        return String.format("%s (%s)", descricao, moeda.format(valor));
     }
-    
+
+    /**
+     * Retorna o valor da borda atual.
+     * @return Double (não negativo)
+     */
+    public double valor(){
+        return valor;
+    }
 }

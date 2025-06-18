@@ -1,11 +1,12 @@
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/** 
+import javax.naming.OperationNotSupportedException;
+
+/**
  * MIT License
  *
- * Copyright(c) 2024 João Caram <caram@pucminas.br>
+ * Copyright(c) 2022-25 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,7 +15,8 @@ import java.time.format.DateTimeFormatter;
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -26,56 +28,100 @@ import java.time.format.DateTimeFormatter;
  * SOFTWARE.
  */
 
-/** Classe Pedido: composição com classe Pizza. Um pedido pode conter diversas pizzas. Elas podem
- * ser adicionadas desde que o pedido esteja aberto. Um pedido tem um identificador único e armazena
- * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
- * e o valor a pagar.
- */
 public abstract class Pedido {
-
-	//#region static/constantes
+    //#region static/constantes
+	/** Para controlar o vetor de Pizzas */
+    private static final int MAX_COMIDAS = 100;
+	
 	/** Para gerar o id incremental automático */
-	private static int ultimoPedido;
-	//#endregion
+	private static int ultimoPedido = 0;
+    //#endregion
 	
 	//#region atributos
-	private LocalDate data;
-	protected IComida[] comidas;
 	private int idPedido;
+	private LocalDate data;
+	private Comida[] comidas;
+	private boolean aberto;
 	protected int quantComidas;
-	protected EEstadoPedido estado;
 	//#endregion
 
-	protected abstract double valorTaxa();
-	protected abstract boolean podeAdicionar();
-
+	
 	//#region construtores
-	/**
-	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
-	 * do último identificador armazenado.
-	 */
-	protected Pedido(int maxComidas) {
+	private void init(int maxComidas){
+		if(maxComidas < 1 || maxComidas > MAX_COMIDAS)
+			maxComidas = MAX_COMIDAS;
 		idPedido = ++ultimoPedido;
         comidas = new Comida[maxComidas];
         quantComidas = 0;
-        estado = EEstadoPedido.ABERTO;
 		data = LocalDate.now();
+        aberto = true;
+	}
+	
+	protected Pedido(int maxComidas){
+		init(maxComidas);
 	}
 	//#endregion
 
-	
+    /**
+     * Verifica se pode adicionar um novo item ao pedido (no caso, se o pedido estiver aberto e
+     * protegendo o tamanho do vetor)
+     * @return TRUE / FALSE conforme seja possível ou não adicionar o novo item.
+     */
+	protected boolean podeAdicionar(){
+        return aberto;
+    }
+
+	protected final double valorItens(){
+		double valor = 0d;
+		for (int i = 0; i < quantComidas; i++) {
+			valor += comidas[i].valorFinal();
+		}
+		return valor;
+	}
+
+	protected String detalhesPedido(){
+		StringBuilder relat = new StringBuilder();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String estado = "FECHADO\n";
+
+		relat.append(String.format("%02d - %s - ", idPedido, formatter.format(data)));
+		
+        if(aberto)
+			estado = "ABERTO\n";
+        
+		relat.append(estado);
+        relat.append("=============================\n");
+        
+        for (int i=0; i<quantComidas; i++) {
+            relat.append(String.format("%02d - %s\n\n", (i+1), comidas[i].toString()));            
+        }
+		return relat.toString();
+	}
 
 	/**
-	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
-	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
+	 * Calcula o preço a ser pago pelo pedido 
+	 * @return Double com o valor a ser pago pelo pedido (> 0)
+	 */
+	public abstract double precoAPagar();
+
+	/**
+	 * Adiciona uma comida ao pedido, se for possível. 
+	 * Caso não seja, será lançada uma exceção. 
+	 * Retorna a quantidade de pizzas do pedido após a execução.
 	 * @param comida Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
+	 * @throws OperationNotSupportedException caso o pedido esteja fechado.
+	 * @throws NullPointerException caso a comida adicionada seja nula.
 	 */
-	public final int adicionar(IComida comida) {
-		if(podeAdicionar()){
-			comidas[quantComidas] = comida;
-			quantComidas++;
+	public int adicionar(Comida comida) throws OperationNotSupportedException{
+		if(!podeAdicionar()){ 
+			throw new OperationNotSupportedException("Não posso adicionar comida em pedido fechado");
 		}
+		if(comida == null){
+			throw new NullPointerException("Comida não foi criada");
+		}
+		comidas[quantComidas] = comida;
+		quantComidas++;
 		return quantComidas;
 	}
 
@@ -84,67 +130,29 @@ public abstract class Pedido {
 	 * a operação é ignorada.
 	 */
 	public void fecharPedido() {
-		if(quantComidas>0)
-			estado = EEstadoPedido.FECHADO;
+		if(quantComidas==0)
+			throw new IllegalStateException("Pedido sem comidas não pode ser fechado");
+		aberto = false;
 	}
 
+	//#region Herança Object
+	@Override
+	public boolean equals(Object obj){
+		Pedido outro = (Pedido)obj;
 
-	protected double valorItens(){
-		double precoItens =0d;
-        for (int i=0; i<quantComidas; i++) {
-            precoItens += comidas[i].valorFinal();
-        }
-        return precoItens;
-	}
-	/**
-	 * Calcula o preço a ser pago pelo pedido (no momento, a soma dos preços de todas as
-	 * pizzas contidas no pedido)
-	 * @return Double com o valor a ser pago pelo pedido (> 0)
-	 */
-
-	public double precoAPagar() {
-		return valorItens() + valorTaxa();
+		return (this.idPedido == outro.idPedido &&
+				this.data.equals(outro.data));
 	}
 
 	/**
-	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
-	 * de cada pizza e o preço final a ser pago.
-	 * @return String com os detalhes especificados:. 
-	 * <br/><pre>
-	 * PEDIDO - NÚMERO - DD/MM/AAAA
-	 * 01 - DESCRICAO DA PIZZA
-	 * 02 - DESCRICAO DA PIZZA
-	 * 03 - DESCRICAO DA PIZZA
-	 * 
-	 * TOTAL A PAGAR: R$ VALOR
-	 * </pre>
+	 * Retorna o hashcode de um pedido (seu identificador + inteiro representando a data).
+	 * @return código único do pedido (inteiro positivo)
 	 */
 	@Override
-	public String toString() {
-        NumberFormat moeda = NumberFormat.getCurrencyInstance();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido ");
-        relat.append(String.format("%02d %s - %s\n", idPedido, estado.toString(), formatter.format(data)));
-        relat.append("=============================");
-        
-        for (int i=0; i<quantComidas; i++) {
-            relat.append(String.format("\n%02d - %s\n", (i+1), comidas[i].notaDeCompra()));            
-        }
-		relat.append(String.format("\nTAXA: %s\n", moeda.format(valorTaxa())));
-        relat.append(String.format("TOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
-        relat.append("=============================");
-        return relat.toString();
+	public int hashCode(){
+		return (int)(idPedido);
 	}
 
-	@Override
-	public int hashCode() {
-		return idPedido + data.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		Pedido outro = (Pedido) obj;
-		return (idPedido == outro.idPedido && data.equals(outro.data));
-	}
-
+	
+	//#endregion
 }
