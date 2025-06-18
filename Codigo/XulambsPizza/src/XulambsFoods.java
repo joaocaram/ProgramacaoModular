@@ -6,11 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import javax.naming.OperationNotSupportedException;
 
 /**
@@ -41,8 +45,9 @@ import javax.naming.OperationNotSupportedException;
 public class XulambsFoods {
 
     static final int MAX_PEDIDOS = 10_000;
-    static Pedido[] pedidos;
-    static Map<Integer, Cliente> clientes = new HashMap<>();
+    static final int TAM_BASE = 100;
+    static BaseDados<Pedido> pedidos = new BaseDados<>(MAX_PEDIDOS);
+    static BaseDados<Cliente> clientes = new BaseDados<>(TAM_BASE);
     static int quantPedidos = 0;
 
     // #region utilidades
@@ -77,20 +82,20 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.7\n================");
+        System.out.println("XULAMBS FOODS v0.9\n================");
     }
     // #endregion
 
     // #region geradorAleatorio
     static void gerarClientes() {
-        clientes.put(0, new Cliente(0, "Anônimo"));
+        clientes.put(new Cliente(0, "Anônimo"));
         try {
             Path caminho = Path.of("medalhistas.txt");
             List<String> nomes = Files.readAllLines(caminho, Charset.forName("UTF-8"));
             int doc = 1;
             for (String nome : nomes) {
                 Cliente novo = new Cliente(doc, nome);
-                clientes.put(novo.hashCode(), novo);
+                clientes.put(novo);
                 doc++;
             }
         } catch (IOException exception) {
@@ -99,10 +104,10 @@ public class XulambsFoods {
         }
     }
 
-    static void gerarPedidos(int quantCli) {
+    static void gerarPedidos() {
         Random aleat = new Random(42);
-        int quantos = quantCli * 16;
-        pedidos = new Pedido[quantos*2];
+        int quantos = TAM_BASE * 16;
+        //pedidos = new Pedido[quantos*2];
         Pedido pedido;
         Comida comida;
         for (int i = 0; i < quantos; i++) {
@@ -135,7 +140,9 @@ public class XulambsFoods {
                     System.err.println("Comida inválida e pedido sem comida");
                 }
             }
-            Cliente quem = clientes.get(aleat.nextInt(quantCli));
+            Cliente quem = clientes.get(aleat.nextInt(TAM_BASE));
+            if(quem == null)
+                quem = clientes.get(0);
             quem.registrarPedido(pedido);
             pedido.fecharPedido();
             armazenarPedido(pedido);
@@ -144,7 +151,7 @@ public class XulambsFoods {
 
     static void config() {
         gerarClientes();
-        gerarPedidos(clientes.size());
+        gerarPedidos();
     }
     // #endregion
 
@@ -157,6 +164,10 @@ public class XulambsFoods {
         System.out.println("5 - Pedido mais caro do dia");
         System.out.println("6 - Mostrar dados do cliente");
         System.out.println("7 - Atualizar fidelidade");
+        System.out.println("8 - Relatório resumido de clientes");
+        System.out.println("9 - Relatório ordenado de clientes");
+        System.out.println("10 - Total de vendas do restaurante");
+        System.out.println("11 - Clientes com gasto mínimo");
         System.out.println("0 - Finalizar");
 
         return lerInteiro("Digite sua opção");
@@ -344,7 +355,7 @@ public class XulambsFoods {
 
     static void armazenarPedido(Pedido pedido) {
         if (quantPedidos < MAX_PEDIDOS) {
-            pedidos[quantPedidos] = pedido;
+            pedidos.put(pedido);
             quantPedidos++;
         }
     }
@@ -353,12 +364,7 @@ public class XulambsFoods {
         cabecalho();
         System.out.println("Localizando um pedido");
         int numero = lerInteiro("Digite o número do pedido");
-        Pedido localizado = null;
-
-        for (int i = 0; i < quantPedidos && localizado == null; i++) {
-            if (pedidos[i].hashCode() == numero)
-                localizado = pedidos[i];
-        }
+        Pedido localizado = pedidos.get(numero);
         return localizado;
     }
 
@@ -389,10 +395,10 @@ public class XulambsFoods {
     }
 
     static <T extends Comparable<T>> void maiorDoVetor(T[] comp, int limite) {
-        cabecalho();
-        System.out.println("Pedido mais caro do restaurante: ");
-        Comparable<T> maisCaro = localizarMaior(comp, limite);
-        System.out.println(maisCaro);
+        // cabecalho();
+        // System.out.println("Pedido mais caro do restaurante: ");
+        // Comparable<T> maisCaro = localizarMaior(comp, limite);
+        // System.out.println(maisCaro);
     }
 
     static void registrarPedidoParaCliente(Pedido pedido) {
@@ -420,9 +426,7 @@ public class XulambsFoods {
     static void atualizarFidelidades(){
         cabecalho();
         System.out.println("Atualizando fidelidades...");
-        for (Cliente cliente : clientes.values()) {
-            cliente.atualizarCategoria();
-        }
+        clientes.update((cli) -> cli.atualizarCategoria());
     }
 
     static void mostrarCliente(){
@@ -431,6 +435,49 @@ public class XulambsFoods {
         int id = lerInteiro("Digite o ID do cliente");
         Cliente quem = clientes.get(id);
         System.out.println(quem);
+    }
+    static void relatorioDeClientes(){
+        cabecalho();
+        System.out.println("Relatório resumido de clientes: ");
+        System.out.println(clientes.report());
+    }
+
+    static void relatorioOrdenadoDeClientes(){
+        cabecalho();
+        System.out.println("Relatório ordenado de clientes: ");
+        Comparator<Cliente> comp = escolherComparador();
+        System.out.println(clientes.sortedReport(comp));
+    }
+    static Comparator<Cliente> escolherComparador(){
+        System.out.println("1 - Ordenação alfabética");
+        System.out.println("2 - Ordenação por valor gasto");
+        int opcao = lerInteiro("Digite sua opção");
+        Comparator<Cliente> comp = null;
+        switch (opcao) {
+            case 1 -> comp =  
+                        (cli1,cli2) -> cli1.toString().compareTo(cli2.toString());
+            case 2 -> comp =  
+                        (cli1,cli2) -> cli1.totalGasto() > cli2.totalGasto() ? 1 : -1;      
+        }
+        return comp;
+    }
+    static void totalDeGastosClientes(){
+        cabecalho();
+        System.out.print("Total gasto no restaurante: ");
+        Function<Cliente, Double> totalCliente =
+                                    (cli) -> cli.totalGasto();
+        double valor = clientes.aggregator(totalCliente);
+        System.out.printf("R$ %,.2f\n", valor);
+    }
+    static void  filtroDeClientesPorGasto(){
+        cabecalho();
+        System.out.println("Filtro de clientes por gasto");
+        System.out.print("Gasto mínimo: ");
+        double minimo = Double.parseDouble(teclado.nextLine());
+        Predicate<Cliente> cond = 
+                    (cliente) -> cliente.totalGasto() >= minimo 
+                                 && cliente.hashCode()!=0;
+        System.out.println(clientes.filteredReport(cond));
     }
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
@@ -443,9 +490,13 @@ public class XulambsFoods {
                 case 2 -> alterarPedido();
                 case 3 -> relatorioDePedido();
                 case 4 -> fecharPedido();
-                case 5 -> maiorDoVetor(pedidos, quantPedidos);
+                case 5 -> {}//maiorDoVetor(pedidos, quantPedidos);
                 case 6 -> mostrarCliente();
                 case 7 -> atualizarFidelidades();
+                case 8 -> relatorioDeClientes();
+                case 9 -> relatorioOrdenadoDeClientes();
+                case 10 -> totalDeGastosClientes();
+                case 11 -> filtroDeClientesPorGasto();
                 case 0 -> System.out.println("FLW VLW OBG VLT SMP.");
             }
             pausa();
