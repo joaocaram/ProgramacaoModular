@@ -1,17 +1,19 @@
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidParameterException;
+import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -46,8 +48,10 @@ public class XulambsFoods {
 
     static final int MAX_PEDIDOS = 10_000;
     static final int TAM_BASE = 100;
+    static final NumberFormat moeda = NumberFormat.getCurrencyInstance();
     static BaseDados<Pedido> pedidos = new BaseDados<>(MAX_PEDIDOS);
     static BaseDados<Cliente> clientes = new BaseDados<>(TAM_BASE);
+    static Map<LocalDate, List<Pedido>> pedidosPorDia = new HashMap<>();
     static int quantPedidos = 0;
 
     // #region utilidades
@@ -82,7 +86,7 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.9\n================");
+        System.out.println("XULAMBS FOODS v0.10\n================");
     }
     // #endregion
 
@@ -107,7 +111,7 @@ public class XulambsFoods {
     static void gerarPedidos() {
         Random aleat = new Random(42);
         int quantos = TAM_BASE * 16;
-        //pedidos = new Pedido[quantos*2];
+        // pedidos = new Pedido[quantos*2];
         Pedido pedido;
         Comida comida;
         for (int i = 0; i < quantos; i++) {
@@ -115,7 +119,7 @@ public class XulambsFoods {
             if (tipo <= 1)
                 pedido = new PedidoLocal();
             else
-                pedido = new PedidoEntrega(aleat.nextInt(10)+1);
+                pedido = new PedidoEntrega(aleat.nextInt(10) + 1);
 
             int quantComidas = aleat.nextInt(1000);
             if (quantComidas > 950)
@@ -141,7 +145,7 @@ public class XulambsFoods {
                 }
             }
             Cliente quem = clientes.get(aleat.nextInt(TAM_BASE));
-            if(quem == null)
+            if (quem == null)
                 quem = clientes.get(0);
             quem.registrarPedido(pedido);
             pedido.fecharPedido();
@@ -158,26 +162,47 @@ public class XulambsFoods {
     static int exibirMenuPrincipal() {
         cabecalho();
         System.out.println("1 - Abrir Pedido");
-        System.out.println("2 - Acrescentar Comidas a um Pedido");
-        System.out.println("3 - Verificar um Pedido");
-        System.out.println("4 - Fechar um Pedido");
-        System.out.println("5 - Pedido mais caro do dia");
-        System.out.println("6 - Mostrar dados do cliente");
-        System.out.println("7 - Atualizar fidelidade");
-        System.out.println("8 - Relatório resumido de clientes");
-        System.out.println("9 - Relatório ordenado de clientes");
-        System.out.println("10 - Total de vendas do restaurante");
-        System.out.println("11 - Clientes com gasto mínimo");
+        System.out.println("2 - Alterar Pedido");
+        System.out.println("3 - Relatório de Pedido");
+        System.out.println("4 - Fechar Pedido");
+        System.out.println("=============================");
+        System.out.println("5 - Menu Gerente");
         System.out.println("0 - Finalizar");
+        return lerInteiro("Digite sua escolha");
+    }
 
-        return lerInteiro("Digite sua opção");
+    static int exibirMenuGerente() {
+        cabecalho();
+        System.out.println("Funções Gerenciais");
+        System.out.println("=================================");
+        System.out.println("CLIENTES");
+        System.out.println("1 - Atualizar programa de fidelidade");
+        System.out.println("2 - Relatório de um cliente");
+        System.out.println("3 - Relatório resumido dos clientes");
+        System.out.println("4 - Relatório resumido ordenado dos clientes ");
+        System.out.println("5 - Relatório de clientes com gasto mínimo");
+        System.out.println("=================================");
+        System.out.println("PEDIDOS");
+        System.out.println("6 - Maior pedido do restaurante");
+        System.out.println("7 - Pedidos de um dia");
+        System.out.println("8 - Pedidos com um prato");
+        System.out.println("9 - Pedidos com um valor mínimo");
+        System.out.println("=================================");
+        System.out.println("FINANCEIRO");
+        System.out.println("10 - Gasto total dos clientes");
+        System.out.println("11 - Gasto médio por cliente");
+        System.out.println("12 - Gasto médio por pedido");
+        System.out.println("13 - Arrecadação em um dia");
+
+        System.out.println("\n0 - Voltar");
+        return lerInteiro("Digite sua escolha");
+
     }
 
     static int exibirMenuPedido() {
         cabecalho();
         System.out.println("1 - Pedido Local");
         System.out.println("2 - Pedido para Entrega");
-        System.out.println("3 - Pedido Promocional");
 
         return lerInteiro("Digite sua opção");
     }
@@ -311,17 +336,13 @@ public class XulambsFoods {
         switch (opcao) {
             case 1 -> novo = criarPedidoLocal();
             case 2 -> novo = criarPedidoEntrega();
-            case 3 -> novo = criarPedidoPromocional();
+
         }
         return novo;
     }
 
     static Pedido criarPedidoLocal() {
         return new PedidoLocal();
-    }
-
-    static Pedido criarPedidoPromocional() {
-        return new PedidoPromocional();
     }
 
     static Pedido criarPedidoEntrega() {
@@ -354,9 +375,16 @@ public class XulambsFoods {
     }
 
     static void armazenarPedido(Pedido pedido) {
-        if (quantPedidos < MAX_PEDIDOS) {
-            pedidos.put(pedido);
-            quantPedidos++;
+        LocalDate dataPedido = pedido.data();
+        pedidos.put(pedido);
+        if(!pedidosPorDia.containsKey(dataPedido)){
+            List<Pedido> novaLista = new LinkedList<>();
+            novaLista.add(pedido);
+            pedidosPorDia.put(dataPedido, novaLista);
+        }
+        else{
+            List<Pedido> listaDoDia = pedidosPorDia.get(dataPedido);
+            listaDoDia.add(pedido);
         }
     }
 
@@ -394,11 +422,15 @@ public class XulambsFoods {
             System.out.println("Pedido não existente");
     }
 
-    static <T extends Comparable<T>> void maiorDoVetor(T[] comp, int limite) {
-        // cabecalho();
-        // System.out.println("Pedido mais caro do restaurante: ");
-        // Comparable<T> maisCaro = localizarMaior(comp, limite);
-        // System.out.println(maisCaro);
+    static <T> void exibirMaior(BaseDados<T> dados, String mensagem,
+                                Comparator<T> comparacao) {
+            cabecalho();
+            System.out.println(mensagem);
+            T dado = dados.max(comparacao);
+            if(dado!=null)
+                System.out.println(dado);
+            else
+                System.out.println("Não existe dado na base neste momento");
     }
 
     static void registrarPedidoParaCliente(Pedido pedido) {
@@ -423,62 +455,129 @@ public class XulambsFoods {
         armazenarPedido(novoPedido);
     }
 
-    static void atualizarFidelidades(){
+    static void atualizarFidelidades() {
         cabecalho();
         System.out.println("Atualizando fidelidades...");
         clientes.update((cli) -> cli.atualizarCategoria());
     }
 
-    static void mostrarCliente(){
+    static void mostrarCliente() {
         cabecalho();
         System.out.println("Mostrar situação do cliente.");
         int id = lerInteiro("Digite o ID do cliente");
         Cliente quem = clientes.get(id);
         System.out.println(quem);
     }
-    static void relatorioDeClientes(){
+
+    static void relatorioDeClientes() {
         cabecalho();
         System.out.println("Relatório resumido de clientes: ");
         System.out.println(clientes.report());
     }
 
-    static void relatorioOrdenadoDeClientes(){
+    static void relatorioOrdenadoDeClientes() {
         cabecalho();
         System.out.println("Relatório ordenado de clientes: ");
         Comparator<Cliente> comp = escolherComparador();
         System.out.println(clientes.sortedReport(comp));
     }
-    static Comparator<Cliente> escolherComparador(){
+
+    static Comparator<Cliente> escolherComparador() {
         System.out.println("1 - Ordenação alfabética");
         System.out.println("2 - Ordenação por valor gasto");
         int opcao = lerInteiro("Digite sua opção");
         Comparator<Cliente> comp = null;
         switch (opcao) {
-            case 1 -> comp =  
-                        (cli1,cli2) -> cli1.toString().compareTo(cli2.toString());
-            case 2 -> comp =  
-                        (cli1,cli2) -> cli1.totalGasto() > cli2.totalGasto() ? 1 : -1;      
+            case 1 -> comp = (cli1, cli2) -> cli1.toString().compareTo(cli2.toString());
+            case 2 -> comp = (cli1, cli2) -> cli1.totalGasto() > cli2.totalGasto() ? 1 : -1;
         }
         return comp;
     }
-    static void totalDeGastosClientes(){
+
+    static void totalDeGastosClientes() {
         cabecalho();
         System.out.print("Total gasto no restaurante: ");
-        Function<Cliente, Double> totalCliente =
-                                    (cli) -> cli.totalGasto();
+        Function<Cliente, Double> totalCliente = (cli) -> cli.totalGasto();
         double valor = clientes.aggregator(totalCliente);
         System.out.printf("R$ %,.2f\n", valor);
     }
-    static void  filtroDeClientesPorGasto(){
+
+    static void filtroDeClientesPorGasto() {
         cabecalho();
         System.out.println("Filtro de clientes por gasto");
         System.out.print("Gasto mínimo: ");
         double minimo = Double.parseDouble(teclado.nextLine());
-        Predicate<Cliente> cond = 
-                    (cliente) -> cliente.totalGasto() >= minimo 
-                                 && cliente.hashCode()!=0;
+        Predicate<Cliente> cond = (cliente) -> cliente.totalGasto() >= minimo
+                && cliente.hashCode() != 0;
         System.out.println(clientes.filteredReport(cond));
     }
+
+    static <T> void gastoMedio(BaseDados<T> basedados, Function<T, Double> funcao, String nome) {
+        //TODO
+    }
+
+    static void arrecadacaoDeUmDia() {
+        //TODO
+    }
+
+    static void pedidosDeUmDia(){
+        //TODO
+    }
+
+    static void pedidosComUmPrato(){
+        cabecalho();
+        System.out.println("Pedidos com um prato escolhido:");
+        System.out.print("Digite o nome do prato: ");
+        String nomePrato = teclado.nextLine().toLowerCase();
+        System.out.println(    
+            pedidos.filteredReport((ped -> ped.toString().toLowerCase().contains(nomePrato)))
+        );
+     }
+
+    static void pedidosComValorMinimo(){
+        //TODO
+    }
+
+    static void  dataComAMaiorArrecadacao(){
+        Comparator<List<Pedido>> compListaPorValor =
+            (lista1, lista2) -> 
+                lista1.stream().mapToDouble(ped -> ped.precoAPagar()).sum() >
+                lista2.stream().mapToDouble(ped -> ped.precoAPagar()).sum() ?
+                        1 : -1;
+
+        List<Pedido> maiorDia = pedidosPorDia.values().stream()
+                                    .max(compListaPorValor)
+                                    .orElse(new LinkedList<>());
+        System.out.println("Data com a maior arrecadação: "
+                        + maiorDia.getFirst().data());
+                                    ;
+    }
+    static void modoGerente() {
+        int opcao = -1;
+        do {
+            opcao = exibirMenuGerente();
+            switch (opcao) {
+                case 1 -> atualizarFidelidades();
+                case 2 -> mostrarCliente();
+                case 3 -> relatorioDeClientes();
+                case 4 -> relatorioOrdenadoDeClientes();
+                case 5 -> filtroDeClientesPorGasto();
+                case 6 -> exibirMaior(pedidos, "Pedido mais caro:",
+                                        Pedido::compareTo);
+                case 7 -> pedidosDeUmDia();
+                case 8 -> pedidosComUmPrato();
+                case 9 -> pedidosComValorMinimo();
+                case 10 -> totalDeGastosClientes();
+                case 11 -> gastoMedio(clientes, cli -> cli.totalGasto(), "clientes");
+                case 12 -> gastoMedio(pedidos, ped -> ped.precoAPagar(), "pedidos");
+                case 13 -> arrecadacaoDeUmDia();
+                case 14 -> dataComAMaiorArrecadacao();
+            }
+            pausa();
+        } while (opcao != 0);
+        System.out.println("Retornando ao menu principal.");
+    }
+
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
         config();
@@ -490,13 +589,8 @@ public class XulambsFoods {
                 case 2 -> alterarPedido();
                 case 3 -> relatorioDePedido();
                 case 4 -> fecharPedido();
-                case 5 -> {}//maiorDoVetor(pedidos, quantPedidos);
-                case 6 -> mostrarCliente();
-                case 7 -> atualizarFidelidades();
-                case 8 -> relatorioDeClientes();
-                case 9 -> relatorioOrdenadoDeClientes();
-                case 10 -> totalDeGastosClientes();
-                case 11 -> filtroDeClientesPorGasto();
+                case 5 -> modoGerente();
+
                 case 0 -> System.out.println("FLW VLW OBG VLT SMP.");
             }
             pausa();

@@ -1,7 +1,12 @@
 import java.security.InvalidParameterException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -31,9 +36,12 @@ import javax.naming.OperationNotSupportedException;
  */
 
 public abstract class Pedido implements Comparable<Pedido> {
-    //#region static/constantes
+    static LocalDateTime dataBase = LocalDateTime.of(2025, 02, 01,12,0,0);
+	static Random sorteio = new Random(42);
+	
+	//#region static/constantes
 	/** Para controlar o vetor de Pizzas */
-    private static final int MAX_COMIDAS = 100;
+    
 	
 	/** Para gerar o id incremental automático */
 	private static int ultimoPedido = 0;
@@ -42,7 +50,7 @@ public abstract class Pedido implements Comparable<Pedido> {
 	//#region atributos
 	private int idPedido;
 	private LocalDate data;
-	protected Comida[] comidas;
+	protected List<Comida> comidas;
 	private boolean aberto;
 	private double desconto;
 	protected int quantComidas;
@@ -50,18 +58,30 @@ public abstract class Pedido implements Comparable<Pedido> {
 
 	
 	//#region construtores
-	private void init(int maxComidas){
-		if(maxComidas < 1 || maxComidas > MAX_COMIDAS)
-			maxComidas = MAX_COMIDAS;
+	private void init(LocalDate dataPedido){
+		
 		idPedido = ++ultimoPedido;
-        comidas = new Comida[maxComidas];
-        quantComidas = 0;
-		data = LocalDate.now();
-        aberto = true;
+		
+		if (data != null)
+    		data = dataPedido;
+		else {
+    		dataBase = dataBase.plusMinutes(sorteio.nextInt(38)+12);
+    		if (dataBase.getHour() < 12)
+        		dataBase.plusHours(13 - dataBase.getHour());
+
+    		data = LocalDate.from(dataBase);
+		}            
+		comidas = new LinkedList<Comida>();
+		desconto = 0d;
+		aberto = true;
 	}
 	
-	protected Pedido(int maxComidas){
-		init(maxComidas);
+	protected Pedido(){
+		init(null);
+	}
+
+	protected Pedido(LocalDate dataPedido){
+		init(dataPedido);
 	}
 	//#endregion
 
@@ -83,13 +103,15 @@ public abstract class Pedido implements Comparable<Pedido> {
      */
 	protected boolean podeAdicionar(){
         return aberto;
-    }
-
+	}
 	protected final double valorItens(){
-		double valor = 0d;
-		for (int i = 0; i < quantComidas; i++) {
-			valor += comidas[i].valorFinal();
-		}
+		double valor = comidas.stream()
+							 .mapToDouble(comida -> comida.valorFinal())
+							 .sum();
+		// double valor = 0d;
+		// for (int i = 0; i < quantComidas; i++) {
+		// 	valor += comidas[i].valorFinal();
+		// }
 		return valor - desconto;
 	}
 
@@ -105,10 +127,12 @@ public abstract class Pedido implements Comparable<Pedido> {
         
 		relat.append(estado);
         relat.append("=============================\n");
-        
-        for (int i=0; i<quantComidas; i++) {
-            relat.append(String.format("%02d - %s\n\n", (i+1), comidas[i].toString()));            
+        int posicao = 1;
+		
+		for (Comida comida : comidas) {
+            relat.append(String.format("%02d - %s\n\n", (posicao++), comida));            
         }
+									  
 		return relat.toString();
 	}
 
@@ -140,9 +164,9 @@ public abstract class Pedido implements Comparable<Pedido> {
 		if(comida == null){
 			throw new NullPointerException("Comida não foi criada");
 		}
-		comidas[quantComidas] = comida;
-		quantComidas++;
-		return quantComidas;
+		comidas.add(comida);
+		
+		return comidas.size();
 	}
 
 	/**
@@ -163,6 +187,9 @@ public abstract class Pedido implements Comparable<Pedido> {
 		return desconto;
 	}
 
+	public LocalDate data(){
+		return data;
+	}
 	//#region Herança Object
 	@Override
 	public boolean equals(Object obj){

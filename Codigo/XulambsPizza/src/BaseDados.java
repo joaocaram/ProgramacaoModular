@@ -25,47 +25,95 @@ public class BaseDados<T> {
         return dados.get(codigo);
     }
 
+    public boolean exists(Predicate<T> condicao){
+        return dadosEmLista.stream()
+                    .anyMatch(condicao);
+    }
+    public T find(Predicate<T> condicao){
+        return dadosEmLista.stream()
+                    .filter(condicao)
+                    .findFirst()
+                    .orElse(null);
+    }
+
     public String report(){
         StringBuilder sb = new StringBuilder();
-        for (T dado : dadosEmLista) {
-            sb.append("\n"+dado+"\n");
-        }
+        // return dadosEmLista.stream()
+        //             .map(dado -> dado.toString())
+        //             .reduce((s1, s2) -> s1.concat("\n").concat(s2).concat("\n"))
+        //             .orElse("Sem dados para relatório");
+        dadosEmLista.stream()
+                    .map(dado -> dado.toString())
+                    .forEach(dado -> sb.append("\n"+dado+"\n"));
         return sb.toString();
+
+        // StringBuilder sb = new StringBuilder();
+
+        // for (T dado : dadosEmLista) {
+        //     sb.append("\n"+dado+"\n");
+        // }
+        // return sb.toString();
     }
 
     public String sortedReport(Comparator<T> comparator){
         StringBuilder sb = new StringBuilder();
-        List<T> dadosOrdenados = new ArrayList<>(dadosEmLista.size());
-        dadosOrdenados.addAll(dadosEmLista);
+        // List<T> dadosOrdenados = new ArrayList<>(dadosEmLista.size());
+        // dadosOrdenados.addAll(dadosEmLista);
 
-        dadosOrdenados.sort(comparator);
-        for (T dado : dadosOrdenados) {
-            sb.append("\n"+dado+"\n");
-        }
+        // dadosOrdenados.sort(comparator);
+
+        dadosEmLista.stream()
+                    .sorted(comparator)
+                    .map(dado -> dado.toString())
+                    .forEach(dado -> sb.append("\n"+dado+"\n"));
+
+        // for (T dado : dadosOrdenados) {
+        //     sb.append("\n"+dado+"\n");
+        // }
         return sb.toString();
     }
 
     public String filteredReport(Predicate<T> condition){
         StringBuilder sb = new StringBuilder();
-        
-        for (T dado : dadosEmLista) {
-            if(condition.test(dado))
-                sb.append("\n"+dado+"\n");
-        }
+
+        dadosEmLista.stream()
+                    .filter(condition)
+                    .forEach(dado -> sb.append("\n"+dado+"\n"));
+                
+        // for (T dado : dadosEmLista) {
+        //     if(condition.test(dado))
+        //         sb.append("\n"+dado+"\n");
+        // }
         return sb.toString();
     }
 
     public double aggregator(Function<T,Double> extratora) {
-        double resultado = 0;
-        for (T dado : dadosEmLista) {
-            resultado += extratora.apply(dado); 
-        }
-        return resultado;
+        return dadosEmLista.stream()
+                    .mapToDouble(dado -> extratora.apply(dado))
+                    .sum();
+        // double resultado = 0;
+        // for (T dado : dadosEmLista) {
+        //     resultado += extratora.apply(dado); 
+        // }
+        // return resultado;
     }
 
     public void update(Consumer<T> updater){
         for (T dado : dadosEmLista) {
             updater.accept(dado); 
         }
+    }
+
+    public T max(Comparator<T> comparador){
+        return dadosEmLista.stream()
+                    .max(comparador)
+                    .orElse(null);
+    }
+
+    public double average(Function<T, Double> extratora){
+        return dadosEmLista.stream()
+                    .mapToDouble(d -> extratora.apply(d))
+                    .average()
+                    .orElse(0);
     }
 }

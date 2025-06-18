@@ -1,9 +1,14 @@
 import java.text.NumberFormat;
+import java.time.LocalDate;
 
 public class PedidoLocal extends Pedido {
 
-    protected PedidoLocal() {
-        super(0);
+    public PedidoLocal() {
+        super(null);
+    }
+
+	public PedidoLocal(LocalDate data) {
+        super(data);
     }
 
     @Override

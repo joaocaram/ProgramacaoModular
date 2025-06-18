@@ -1,19 +1,27 @@
 import java.security.InvalidParameterException;
 import java.text.NumberFormat;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 public class PedidoEntrega extends Pedido{
-    private static final int MAX_PIZZAS = 8;
+    private static final int MAX_COMIDAS = 8;
     private static final double[] DISTANCIAS =  {4d,8d,Double.MAX_VALUE};
     private static final double[] TAXAS =       {0d,5d,8d};
     private double distanciaEntrega;
 
-    public PedidoEntrega(double distancia) {
-        super(MAX_PIZZAS);
+    private void init(double distancia){
         if(distancia <=0 )
             throw new InvalidParameterException("Distância deve ser maior que 0.");
         
         distanciaEntrega = distancia;
+    }
+
+    public PedidoEntrega(double distancia, LocalDate data){
+        super(data);
+        init(distancia);
+    }
+    public PedidoEntrega(double distancia) {
+        super(null);
+        init(distancia);
     }
 
     private double valorTaxa(){
@@ -26,7 +34,7 @@ public class PedidoEntrega extends Pedido{
     @Override
     protected boolean podeAdicionar(){
         return super.podeAdicionar() 
-                    && quantComidas < MAX_PIZZAS;
+                    && quantComidas < MAX_COMIDAS;
     }
 
 
