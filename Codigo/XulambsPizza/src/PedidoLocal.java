@@ -4,11 +4,11 @@ import java.time.LocalDate;
 public class PedidoLocal extends Pedido {
 
     public PedidoLocal() {
-        super(null);
+        super(null, null);
     }
 
-	public PedidoLocal(LocalDate data) {
-        super(data);
+	public PedidoLocal(LocalDate data, IPromocao promo) {
+        super(data, promo);
     }
 
     @Override

@@ -15,12 +15,12 @@ public class PedidoEntrega extends Pedido{
         distanciaEntrega = distancia;
     }
 
-    public PedidoEntrega(double distancia, LocalDate data){
-        super(data);
+    public PedidoEntrega(double distancia, LocalDate data, IPromocao promo){
+        super(data, promo);
         init(distancia);
     }
     public PedidoEntrega(double distancia) {
-        super(null);
+        super(null, null);
         init(distancia);
     }
 
@@ -34,7 +34,7 @@ public class PedidoEntrega extends Pedido{
     @Override
     protected boolean podeAdicionar(){
         return super.podeAdicionar() 
-                    && quantComidas < MAX_COMIDAS;
+                    && comidas.size() < MAX_COMIDAS;
     }
 
 

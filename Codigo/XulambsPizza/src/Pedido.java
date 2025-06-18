@@ -52,13 +52,18 @@ public abstract class Pedido implements Comparable<Pedido> {
 	private LocalDate data;
 	protected List<Comida> comidas;
 	private boolean aberto;
+	private IPromocao promoAtiva; 
 	private double desconto;
-	protected int quantComidas;
+	
 	//#endregion
 
 	
 	//#region construtores
-	private void init(LocalDate dataPedido){
+	private void init(LocalDate dataPedido, IPromocao promo){
+	
+		promoAtiva = promo;
+		if(promoAtiva == null)
+			promoAtiva = new PromocaoBasica();
 		
 		idPedido = ++ultimoPedido;
 		
@@ -77,11 +82,11 @@ public abstract class Pedido implements Comparable<Pedido> {
 	}
 	
 	protected Pedido(){
-		init(null);
+		init(null, null);
 	}
 
-	protected Pedido(LocalDate dataPedido){
-		init(dataPedido);
+	protected Pedido(LocalDate dataPedido, IPromocao promo){
+		init(dataPedido, promo);
 	}
 	//#endregion
 
@@ -105,14 +110,8 @@ public abstract class Pedido implements Comparable<Pedido> {
         return aberto;
 	}
 	protected final double valorItens(){
-		double valor = comidas.stream()
-							 .mapToDouble(comida -> comida.valorFinal())
-							 .sum();
-		// double valor = 0d;
-		// for (int i = 0; i < quantComidas; i++) {
-		// 	valor += comidas[i].valorFinal();
-		// }
-		return valor - desconto;
+		double valorPromo = promoAtiva.valorItens(comidas);
+		return valorPromo - desconto;
 	}
 
 	protected String detalhesPedido(){

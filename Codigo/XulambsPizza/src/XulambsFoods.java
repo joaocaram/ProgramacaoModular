@@ -16,10 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -56,7 +54,7 @@ public class XulambsFoods {
     static BaseDados<Pedido> pedidos = new BaseDados<>(MAX_PEDIDOS);
     static BaseDados<Cliente> clientes = new BaseDados<>(TAM_BASE);
     static BaseDados<IFabrica<Comida>> fabricas = new BaseDados<>(10);
-
+    static IPromocao promocaoDeHoje;
     static Map<LocalDate, List<Pedido>> pedidosPorDia = new HashMap<>();
     static int quantPedidos = 0;
 
@@ -92,7 +90,7 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.11\n================");
+        System.out.println("XULAMBS FOODS v0.12\n================");
     }
     // #endregion
 
@@ -179,16 +177,28 @@ public class XulambsFoods {
         } catch (FileNotFoundException e) {
             System.err.println("Arquivo de configuração não encontrado. Corrija e reinicie o sistema.");
         }
-        
+    }
+
+    static void configPromo(){
+        cabecalho();
+        System.out.println("Iniciando o sistema");
+        System.out.println("Informe a promoção do dia: ");
+        System.out.println("1 - Básica (padrão)");
+        System.out.println("2 - Dia da Pizza");
+        System.out.println("3 - Fim de semana");
+        int opcao = lerInteiro("Digite sua escolha");
+        switch (opcao) {
+            case 2 -> promocaoDeHoje = new PromocaoDiaDaPizza();
+            case 3 -> promocaoDeHoje = new PromocaoFimDeSemana();
+            default -> promocaoDeHoje = new PromocaoBasica();
+        }
+
     }
     static void config() {
         gerarClientes();
         gerarPedidos();
         configFabricas();
-        // fabricas.put(new FabricaPizza());
-        // fabricas.put(new FabricaCombo());
-        // fabricas.put(new FabricaSanduiche());
-        // fabricas.put(new FabricaPizzaCheddar());
+        configPromo();    
     }
     // #endregion
 
@@ -226,6 +236,10 @@ public class XulambsFoods {
         System.out.println("11 - Gasto médio por cliente");
         System.out.println("12 - Gasto médio por pedido");
         System.out.println("13 - Arrecadação em um dia");
+        System.out.println("=================================");
+        System.out.println("PROMOÇÕES");
+        System.out.println("14 - Alterar promoção");
+        
 
         System.out.println("\n0 - Voltar");
         return lerInteiro("Digite sua escolha");
@@ -375,7 +389,7 @@ public class XulambsFoods {
     }
 
     static Pedido criarPedidoLocal() {
-        return new PedidoLocal();
+        return new PedidoLocal(LocalDate.now(), promocaoDeHoje);
     }
 
     static Pedido criarPedidoEntrega() {
@@ -383,7 +397,7 @@ public class XulambsFoods {
         System.out.println("Pedido para entrega.");
         System.out.print("Distância: ");
         double distancia = Double.parseDouble(teclado.nextLine());
-        return new PedidoEntrega(distancia);
+        return new PedidoEntrega(distancia, LocalDate.now(), promocaoDeHoje);
     }
 
     static void adicionarComidas(Pedido pedido) {
@@ -604,7 +618,7 @@ public class XulambsFoods {
                 case 11 -> gastoMedio(clientes, cli -> cli.totalGasto(), "clientes");
                 case 12 -> gastoMedio(pedidos, ped -> ped.precoAPagar(), "pedidos");
                 case 13 -> arrecadacaoDeUmDia();
-                case 14 -> dataComAMaiorArrecadacao();
+                case 14 -> configPromo();
             }
             pausa();
         } while (opcao != 0);
