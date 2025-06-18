@@ -1,0 +1,5 @@
+pizza;FabricaPizza
+sanduiche;FabricaSanduiche
+combo;FabricaCombo
+pizzacheddar;FabricaPizzaCheddar
+pizzachoco;FabricaPizzaChocolate

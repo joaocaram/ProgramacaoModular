@@ -174,7 +174,7 @@ public abstract class Pedido implements Comparable<Pedido> {
 	 * a operação é ignorada.
 	 */
 	public void fecharPedido() {
-		if(quantComidas==0)
+		if(comidas.size()==0)
 			throw new IllegalStateException("Pedido sem comidas não pode ser fechado");
 		aberto = false;
 	}

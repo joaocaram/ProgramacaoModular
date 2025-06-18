@@ -1,5 +1,8 @@
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +19,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -51,6 +55,8 @@ public class XulambsFoods {
     static final NumberFormat moeda = NumberFormat.getCurrencyInstance();
     static BaseDados<Pedido> pedidos = new BaseDados<>(MAX_PEDIDOS);
     static BaseDados<Cliente> clientes = new BaseDados<>(TAM_BASE);
+    static BaseDados<IFabrica<Comida>> fabricas = new BaseDados<>(10);
+
     static Map<LocalDate, List<Pedido>> pedidosPorDia = new HashMap<>();
     static int quantPedidos = 0;
 
@@ -86,7 +92,7 @@ public class XulambsFoods {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS FOODS v0.10\n================");
+        System.out.println("XULAMBS FOODS v0.11\n================");
     }
     // #endregion
 
@@ -153,9 +159,36 @@ public class XulambsFoods {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static void configFabricas(){
+        try (Scanner arqConfig = new Scanner(new File("config.txt"))) {
+        while (arqConfig.hasNextLine()) {
+            String[] configuracoes = arqConfig.nextLine().split(";");
+            try {
+                IFabrica<Comida> fabrica = (IFabrica<Comida>)Class.forName(configuracoes[1])
+                                                .getConstructor(null)
+                                                .newInstance(null);
+                fabricas.put(fabrica);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException | NoSuchMethodException | SecurityException
+                    | ClassNotFoundException e) {
+                System.err.println("Erro no arquivo de configuração. Corrija e reinicie o sistema.");
+                
+            }    
+        }    
+        } catch (FileNotFoundException e) {
+            System.err.println("Arquivo de configuração não encontrado. Corrija e reinicie o sistema.");
+        }
+        
+    }
     static void config() {
         gerarClientes();
         gerarPedidos();
+        configFabricas();
+        // fabricas.put(new FabricaPizza());
+        // fabricas.put(new FabricaCombo());
+        // fabricas.put(new FabricaSanduiche());
+        // fabricas.put(new FabricaPizzaCheddar());
     }
     // #endregion
 
@@ -211,6 +244,9 @@ public class XulambsFoods {
         cabecalho();
         System.out.println("1 - Pizza (padrão)");
         System.out.println("2 - Sanduíche");
+        System.out.println("3 - Sanduíche combo");
+        System.out.println("4 - Pizza com borda de cheddar");
+        System.out.println("5 - Pizza com borda de chocolate");
 
         return lerInteiro("Digite sua opção");
     }
@@ -253,22 +289,19 @@ public class XulambsFoods {
 
     static Comida escolherComida() {
         cabecalho();
+        String[] cardapio = {"pizza", "sanduiche", "combo", "pizzacheddar", "pizzachoco"};
         System.out.println("Incluindo uma nova comida:");
         int opcao = exibirMenuComidas();
-        Comida novaComida = null;
-        switch (opcao) {
-            case 1 -> novaComida = comprarPizza();
-            case 2 -> novaComida = comprarSanduiche();
-            default -> novaComida = comprarPizza();
-        }
+        String escolha = cardapio[opcao-1];
+        Comida novaComida = fabricas.get(escolha.hashCode()).criar();
         escolherIngredientes(novaComida);
         mostrar(novaComida, "Incluído:");
         return novaComida;
     }
 
     static Comida comprarPizza() {
-        Pizza pizza = new Pizza();
-        escolherBorda(pizza);
+        Comida pizza = fabricas.get("pizza".hashCode()).criar();
+       // escolherBorda(pizza);
         return pizza;
     }
 
