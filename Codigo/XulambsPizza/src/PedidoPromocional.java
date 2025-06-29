@@ -5,20 +5,14 @@ public class PedidoPromocional extends Pedido {
     private static final int COMIDAS_DESCONTO = 3;
 
     public PedidoPromocional(){
-        super(100);         //conceitualmente, não há limite. Melhoraremos isso em breve.
+        
     }
 
     private double comidaMaisBarata(){
-        double valorMaisBarato = 0;
-        if(quantComidas > 0){
-            Comida maisBarata = comidas[0];
-            for (int i = 1; i < quantComidas; i++) {
-                if(comidas[i].compareTo(maisBarata) < 0)
-                    maisBarata = comidas[i];
-            }
-            valorMaisBarato = maisBarata.valorFinal();
-        }
-        return valorMaisBarato;
+        return comidas.stream()
+                      .min((c1, c2) -> c1.valorFinal()>c2.valorFinal()?1:-1)
+                      .map( c -> c.valorFinal())
+                      .orElse(0d);
     }
 
     @Override
