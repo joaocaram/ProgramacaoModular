@@ -3,9 +3,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.InvalidParameterException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -513,15 +512,49 @@ public class XulambsFoods {
     }
 
     static <T> void gastoMedio(BaseDados<T> basedados, Function<T, Double> funcao, String nome) {
-        //TODO
+        cabecalho();
+        System.out.print("Gasto médio de "+nome+ ": R$ ");
+        System.out.println(basedados.average(funcao));
+        System.out.println();
+
+    }
+
+    static List<Pedido> localizarPedidosDia(){
+        System.out.print("Digite a data (DD/MM/AAAA): ");
+        String dataPedidos = teclado.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate data = LocalDate.parse(dataPedidos, formatter);
+        return pedidosPorDia.get(data);
     }
 
     static void arrecadacaoDeUmDia() {
-        //TODO
+        cabecalho();
+        NumberFormat moeda = NumberFormat.getCurrencyInstance();
+        String resposta = "Não há pedidos para esta data";
+        System.out.println("Arrecadação de um dia do restaurante");
+        System.out.println("======================================");
+        List<Pedido> pedidos = localizarPedidosDia();
+        if(pedidos != null){
+            double valor = pedidos.stream().mapToDouble(Pedido::precoAPagar).sum();
+            resposta = String.format("Valor arrecadado: %s", moeda.format(valor));
+        }
+        System.out.println(resposta);
+
     }
 
     static void pedidosDeUmDia(){
-        //TODO
+        cabecalho();
+        String resposta = "Não há pedidos para esta data";
+        System.out.println("Pedidos de um dia do restaurante");
+        System.out.println("======================================");
+        List<Pedido> pedidos = localizarPedidosDia();
+        if(pedidos != null){
+            resposta = pedidos.stream()
+                              .map(ped -> ped.toString())
+                              .reduce((a,b) -> "\n"+a+"\n"+b)
+                              .get();
+        }
+        System.out.println(resposta);
     }
 
     static void pedidosComUmPrato(){
@@ -535,7 +568,17 @@ public class XulambsFoods {
      }
 
     static void pedidosComValorMinimo(){
-        //TODO
+        cabecalho();
+        double valor;
+        System.out.println("Pedidos com um valor mínimo");
+        System.out.print("Digite o valor mínimo para filtro (valor inclusivo): ");
+
+        try {
+             valor = Double.parseDouble(teclado.nextLine());    
+             System.out.println(pedidos.filteredReport(ped -> ped.precoAPagar() >= valor));
+        } catch (NumberFormatException ex) {
+            System.out.println("Valor inválido.");
+        }
     }
 
     static void  dataComAMaiorArrecadacao(){
