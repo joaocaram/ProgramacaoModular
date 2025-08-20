@@ -24,35 +24,22 @@
  
 public class Produto {
     String descricao;
-    double valorUnitario;
+    double precoCusto;
+    double margemLucro;
 
-    /**
-     * Registra um produto com descrição e valor unitário.
-     * A descricão tem pelo menos 2 caracteres e o valor unitário mínimo é R$0,01.
-     * Em caso de violação das regras, o produto ficará "Sem descrição" e com valor de R$0,01.
-     * @param desc Descrição do produto (mínimo 2 caracteres)
-     * @param valor Preço unitário (mínimo R$0,01)
-     */
-    public void registrar(String desc, double valor){
-            descricao = desc;
-            valorUnitario = valor;
-            if(descricao.length()<2)    
-                descricao = "Sem descrição";
-            if(valorUnitario<=0d)
-                valorUnitario = 0.01;
+    public Produto(String desc, double precoCusto, double margemLucro){
+        descricao = desc;
+        this.precoCusto = precoCusto;
+        this.margemLucro = margemLucro;
     }
 
-    /**
-     * Calcula o preço de venda de um lote de "quant" produtos.
-     * Em caso de quantidade não positiva, retorna 0.
-     * @param quant Quantidade de produtos a ser vendida (>0)
-     * @return Double com o valor do lote, ou valor 0.0 em caso de lote/quantidade inválida.    
-     */
-    public double valorLote(int quant){
-        double resposta = 0d;
-        if(quant >0 )
-            resposta = valorUnitario * quant; 
-        return resposta;
+    public double valorVenda(){
+        return precoCusto*(1+margemLucro);
+    }
+
+    @Override
+    public String toString(){
+        return String.format("%s - Valor de venda: R$ %.2f", descricao, valorVenda());
     }
      
 }
