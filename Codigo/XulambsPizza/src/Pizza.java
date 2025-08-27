@@ -29,18 +29,25 @@
    */
  public class Pizza {
  
-     private static final int MAX_INGREDIENTES = 8;
-     private static final String DESCRICAO = "Pizza";
-     private static final double PRECO_BASE = 29d;
-     private static final double VALOR_ADICIONAL = 5d;
+     private int maxIngredientes;
+     private String descricao;
+     private double precoBase;
+     private double valorPorAdicional;
      private int quantidadeIngredientes;
  
  
+     private void init(int adicionais){
+        maxIngredientes = 8;
+        descricao = "Pizza";
+        precoBase = 29d;
+        valorPorAdicional = 5d;
+        adicionarIngredientes(adicionais);
+     }
      /**
       * Construtor padrão. Cria uma pizza sem adicionais.
       */
      public Pizza() {
-         quantidadeIngredientes = 0;
+         init(0);
      }
  
      /**
@@ -48,18 +55,18 @@
       * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
       */
      public Pizza(int quantosAdicionais) {
-         adicionarIngredientes(quantosAdicionais);
+         init(quantosAdicionais);
      }
  
      private double valorAdicionais(){
-         return quantidadeIngredientes*VALOR_ADICIONAL;
+         return quantidadeIngredientes*valorPorAdicional;
      }
      /**
       * Retorna o valor final da pizza, incluindo seus adicionais.
       * @return Double com o valor final da pizza.
       */
      public double valorFinal() {
-         return PRECO_BASE + valorAdicionais();
+         return precoBase + valorAdicionais();
      }
  
      /**
@@ -82,7 +89,7 @@
       * @return TRUE/FALSE conforme seja possível ou não adicionar esta quantidade de ingredientes.
       */
      private boolean podeAdicionar(int quantos) {
-         return (quantos>0 && quantos+quantidadeIngredientes<=MAX_INGREDIENTES);
+         return (quantos>0 && quantos+quantidadeIngredientes<=maxIngredientes);
      }
  
      /**
@@ -92,7 +99,7 @@
      public String notaDeCompra() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
          return String.format("%s (%s) com %d ingredientes (%s), no valor de %s", 
-                                     DESCRICAO, moeda.format(PRECO_BASE), 
+                                     descricao, moeda.format(precoBase), 
                                      quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));
      }
  
