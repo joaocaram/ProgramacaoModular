@@ -97,10 +97,14 @@ public class Pedido {
 	 */
 	public double precoAPagar() {
 		double precoFinal =0d;
-        for (int i=0; i<pizzas.size(); i++) {
-            precoFinal += pizzas.get(i).valorFinal();
-        }
-        return precoFinal;
+		for (Pizza pizza : pizzas) {		//forEach
+			precoFinal += pizza.valorFinal();
+		}
+		return precoFinal;
+        //For tradicional
+		// for (int i=0; i<pizzas.size(); i++) {
+        //     precoFinal += pizzas.get(i).valorFinal();
+        // }  
 	}
 
 	/**
