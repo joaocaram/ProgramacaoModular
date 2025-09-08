@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -42,34 +43,37 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA\n=============");
+        System.out.println("XULAMBS PIZZA v0.2\n=============");
     }
 
     static int exibirMenu() {
         cabecalho();
-       
+
         System.out.println("1 - Abrir Pedido");
         System.out.println("2 - Alterar Pedido");
         System.out.println("3 - Relatório de Pedido");
         System.out.println("4 - Encerrar Pedido");
         System.out.println("0 - Finalizar");
         System.out.print("Digite sua escolha: ");
-        
+
         return Integer.parseInt(teclado.nextLine());
     }
 
-    static Pedido abrirPedido() {
+    static void abrirPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
-        Pedido novoPedido = new Pedido();   
-        System.out.println(novoPedido.relatorio());
-        pausa();
+        Pedido novoPedido = new Pedido();
         adicionarPizzas(novoPedido);
-        return novoPedido;
+        mostrarPedido(novoPedido);
+        todosOsPedidos.add(novoPedido);
     }
 
-    static void relatorioPedido(Pedido pedido) {
+    static void relatorioPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
-        System.out.println(pedido.relatorio() + "\n");
+        Pedido pedido = localizarPedido(todosOsPedidos);
+        if (pedido != null)
+            mostrarPedido(pedido);
+        else
+            System.out.println("Pedido não existente.");
     }
 
     static Pedido localizarPedido(List<Pedido> pedidos) {
@@ -86,15 +90,34 @@ public class XulambsPizza {
         return null;
     }
 
+    static void alterarPedido(List<Pedido> pedidos){
+        Pedido pedido = localizarPedido(pedidos);
+        if (pedido != null) {
+            adicionarPizzas(pedido);
+            mostrarPedido(pedido);
+        } else
+            System.out.println("Pedido não existente.");
+    }
+
     private static void adicionarPizzas(Pedido procurado) {
         String escolha = "n";
         do {
-            relatorioPedido(procurado);
+            mostrarPedido(procurado);
             Pizza novaPizza = comprarPizza();
             procurado.adicionar(novaPizza);
             System.out.print("\nDeseja outra pizza? (s/n) ");
             escolha = teclado.nextLine();
         } while (escolha.toLowerCase().equals("s"));
+    }
+
+    static void encerrarPedido(List<Pedido> todosOsPedidos) {
+        Pedido pedido = localizarPedido(todosOsPedidos);
+        if (pedido != null) {
+            pedido.fecharPedido();
+            System.out.println("Pedido encerrado: ");
+            System.out.println(pedido.relatorio());
+        } else
+            System.out.println("Pedido não existente.");
     }
 
     static Pizza comprarPizza() {
@@ -114,48 +137,25 @@ public class XulambsPizza {
     static void mostrarNota(Pizza pizza) {
         System.out.println("Você acabou de comprar: ");
         System.out.println(pizza.notaDeCompra());
+    }
+
+    static void mostrarPedido(Pedido pedido) {
+        System.out.println("Relatório do Pedido: ");
+        System.out.println(pedido.relatorio());
 
     }
 
     public static void main(String[] args) throws Exception {
         teclado = new Scanner(System.in);
-        Pedido pedido = null;
         List<Pedido> todosOsPedidos = new LinkedList<>();
         int opcao;
         opcao = exibirMenu();
         do {
             switch (opcao) {
-                case 1:
-                    pedido = abrirPedido();
-                    todosOsPedidos.add(pedido);
-                    relatorioPedido(pedido);
-                    break;
-                case 2:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null){
-                        adicionarPizzas(pedido);
-                        relatorioPedido(pedido);
-                    }
-                    else
-                        System.out.println("Pedido não existente.");
-                    break;
-                case 3:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null)
-                        relatorioPedido(pedido);
-                    else
-                        System.out.println("Pedido não existente.");
-                    break;
-                case 4:
-                    pedido = localizarPedido(todosOsPedidos);
-                    if (pedido != null) {
-                        pedido.fecharPedido();
-                        System.out.println("Pedido encerrado: ");
-                        System.out.println(pedido.relatorio());
-                    } else
-                        System.out.println("Pedido não existente.");
-                    break;
-
+                case 1 -> abrirPedido(todosOsPedidos);
+                case 2 -> alterarPedido(todosOsPedidos);
+                case 3 -> relatorioPedido(todosOsPedidos);
+                case 4 -> encerrarPedido(todosOsPedidos);
             }
             pausa();
             opcao = exibirMenu();
