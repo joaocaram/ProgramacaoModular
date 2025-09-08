@@ -24,6 +24,7 @@ import java.time.LocalDate;
  * SOFTWARE.
  */
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 
 
 /** Classe Pedido: composição com classe Pizza. Um pedido pode conter diversas pizzas. Elas podem
@@ -36,15 +37,12 @@ public class Pedido {
 	//#region static/constantes
 	/** Para gerar o id incremental automático */
 	private static int ultimoPedido;
-	/** Para criar um vetor de pizzas de tamanho grande */
-	private static final int MAX_PIZZAS = 100;
 	//#endregion
 	
 	//#region atributos
 	private LocalDate data;
-	private Pizza[] pizzas;
+	private LinkedList<Pizza> pizzas;
 	private int idPedido;
-	private int quantPizzas;
 	private boolean aberto;
 	//#endregion
 
@@ -55,8 +53,7 @@ public class Pedido {
 	 */
 	public Pedido() {
 		idPedido = ++ultimoPedido;
-        pizzas = new Pizza[MAX_PIZZAS];
-        quantPizzas = 0;
+        pizzas = new LinkedList<>();
         aberto = true;
 		data = LocalDate.now();
 	}
@@ -68,7 +65,7 @@ public class Pedido {
 	 * @return TRUE se puder adicionar, FALSE caso contrário
 	 */
 	private boolean podeAdicionar() {
-		return aberto && quantPizzas < MAX_PIZZAS;
+		return aberto;
 	}
 
 	/**
@@ -79,10 +76,9 @@ public class Pedido {
 	 */
 	public int adicionar(Pizza pizza) {
 		if(podeAdicionar()){
-            pizzas[quantPizzas] = pizza;
-            quantPizzas++;
+            pizzas.add(pizza);
         }
-        return quantPizzas;
+        return pizzas.size();
 	}
 
 	/**
@@ -90,8 +86,8 @@ public class Pedido {
 	 * a operação é ignorada.
 	 */
 	public void fecharPedido() {
-		if(quantPizzas > 0 )
-            aberto = false;
+		if(pizzas.size() > 0)
+            	aberto = false;
 	}
 
 	/**
@@ -101,8 +97,8 @@ public class Pedido {
 	 */
 	public double precoAPagar() {
 		double precoFinal =0d;
-        for (int i=0; i<quantPizzas; i++) {
-            precoFinal += pizzas[i].valorFinal();
+        for (int i=0; i<pizzas.size(); i++) {
+            precoFinal += pizzas.get(i).valorFinal();
         }
         return precoFinal;
 	}
@@ -127,8 +123,8 @@ public class Pedido {
         relat.append(String.format("%02d - %s\n", idPedido, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
         relat.append("=============================\n");
         
-        for (int i=0; i<quantPizzas; i++) {
-            relat.append(String.format("%02d - %s\n", (i+1), pizzas[i].notaDeCompra()));            
+        for (int i=0; i<pizzas.size(); i++) {
+            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
         }
         relat.append(String.format("\nTOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
         relat.append("=============================");
