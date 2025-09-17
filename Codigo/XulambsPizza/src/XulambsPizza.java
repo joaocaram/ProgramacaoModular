@@ -59,6 +59,17 @@ public class XulambsPizza {
         return Integer.parseInt(teclado.nextLine());
     }
 
+    static void addBordaPizza(Pizza pizza){
+        System.out.println("\nEscolha sua borda: ");
+        EBorda[] bordas = EBorda.values();
+        for (int i = 0; i < bordas.length; i++) {
+            System.out.println((i+1)+ " - "+bordas[i].descricao());
+        }
+        System.out.print("Entre sua opção: ");
+        int opcao = Integer.parseInt(teclado.nextLine());
+        pizza.adicionarBorda(bordas[opcao-1]);
+    }
+    
     static void abrirPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
         Pedido novoPedido = new Pedido();
@@ -123,6 +134,7 @@ public class XulambsPizza {
     static Pizza comprarPizza() {
         System.out.println("Comprando uma nova pizza:");
         Pizza novaPizza = new Pizza();
+        addBordaPizza(novaPizza);
         escolherIngredientes(novaPizza);
         mostrarNota(novaPizza);
         return novaPizza;

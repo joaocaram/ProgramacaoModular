@@ -34,13 +34,17 @@
      private static final double PRECO_BASE = 29d;
      private static final double VALOR_ADICIONAL = 5d;
      private int quantidadeIngredientes;
+     private EBorda borda;
  
- 
+    private void init(int quantosAdicionais, EBorda borda){
+        adicionarIngredientes(quantosAdicionais);
+        this.borda = borda;
+    }
      /**
       * Construtor padrão. Cria uma pizza sem adicionais.
       */
      public Pizza() {
-         quantidadeIngredientes = 0;
+         init(0, EBorda.TRADICIONAL);
      }
  
      /**
@@ -48,9 +52,13 @@
       * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
       */
      public Pizza(int quantosAdicionais) {
-         adicionarIngredientes(quantosAdicionais);
+         init(quantosAdicionais, EBorda.TRADICIONAL);
      }
  
+     public Pizza(int quantosAdicionais, EBorda borda){
+        init(quantosAdicionais, borda);
+     }
+
      private double valorAdicionais(){
          return quantidadeIngredientes*VALOR_ADICIONAL;
      }
@@ -59,7 +67,7 @@
       * @return Double com o valor final da pizza.
       */
      public double valorFinal() {
-         return PRECO_BASE + valorAdicionais();
+         return PRECO_BASE + valorAdicionais() + borda.valor();
      }
  
      /**
@@ -74,7 +82,11 @@
          }
          return quantidadeIngredientes;
      }
- 
+
+     public double adicionarBorda(EBorda borda){
+        this.borda = borda;
+        return this.borda.valor();
+     }
      /**
       * Faz a verificação de limites para adicionar ingredientes na pizza. Retorna TRUE/FALSE conforme seja possível ou não adicionar
       * esta quantidade de ingredientes.
@@ -91,8 +103,9 @@
       */
      public String notaDeCompra() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
-         return String.format("%s (%s) com %d ingredientes (%s), no valor de %s", 
+         return String.format("%s (%s) com borda %s (%s) com %d ingredientes (%s), no valor de %s", 
                                      DESCRICAO, moeda.format(PRECO_BASE), 
+                                     borda.descricao(), moeda.format(borda.valor()),
                                      quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));
      }
  
