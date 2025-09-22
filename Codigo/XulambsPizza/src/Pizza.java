@@ -34,6 +34,7 @@
      private static final double PRECO_BASE = 29d;
      private static final double VALOR_ADICIONAL = 5d;
      private int quantidadeIngredientes;
+     private EBorda borda;
  
  
      /**
@@ -51,6 +52,11 @@
          adicionarIngredientes(quantosAdicionais);
      }
  
+    public Pizza(int quantosAdicionais, EBorda borda) {
+         adicionarIngredientes(quantosAdicionais);
+         this.borda = borda;
+     }
+ 
      private double valorAdicionais(){
          return quantidadeIngredientes*VALOR_ADICIONAL;
      }
@@ -59,7 +65,12 @@
       * @return Double com o valor final da pizza.
       */
      public double valorFinal() {
-         return PRECO_BASE + valorAdicionais();
+         return PRECO_BASE + valorAdicionais() + borda.valor();
+     }
+
+     public double addBorda(EBorda borda){
+        this.borda = borda;
+        return this.borda.valor();
      }
  
      /**
@@ -91,8 +102,9 @@
       */
      public String notaDeCompra() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
-         return String.format("%s (%s) com %d ingredientes (%s), no valor de %s", 
-                                     DESCRICAO, moeda.format(PRECO_BASE), 
+         return String.format("%s (%s) com borda %s (%S) e %d ingredientes (%s), no valor de %s", 
+                                     DESCRICAO, moeda.format(PRECO_BASE),
+                                     borda.descricao(), moeda.format(borda.valor()), 
                                      quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));
      }
  

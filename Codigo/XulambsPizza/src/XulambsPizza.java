@@ -123,6 +123,7 @@ public class XulambsPizza {
     static Pizza comprarPizza() {
         System.out.println("Comprando uma nova pizza:");
         Pizza novaPizza = new Pizza();
+        escolherBorda(novaPizza);
         escolherIngredientes(novaPizza);
         mostrarNota(novaPizza);
         return novaPizza;
@@ -132,6 +133,18 @@ public class XulambsPizza {
         System.out.print("Quantos adicionais você deseja? (máx. 8): ");
         int adicionais = Integer.parseInt(teclado.nextLine());
         pizza.adicionarIngredientes(adicionais);
+    }
+
+    public static void escolherBorda(Pizza pizza){
+        EBorda[] bordas = EBorda.values();
+        System.out.println("Escolha sua borda:");
+        for (int i = 0; i < bordas.length; i++) {
+            System.out.println((i+1)+" - "+bordas[i].descricao());
+        }
+        System.out.print("Sua escolha: ");
+        int opcao = Integer.parseInt(teclado.nextLine());
+        EBorda escolhida = bordas[opcao-1];
+        pizza.addBorda(escolhida);
     }
 
     static void mostrarNota(Pizza pizza) {
