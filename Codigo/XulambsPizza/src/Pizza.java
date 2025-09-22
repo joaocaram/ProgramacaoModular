@@ -36,12 +36,16 @@
      private int quantidadeIngredientes;
      private EBorda borda;
  
- 
+     private void init(int quantosAdicionais, EBorda borda) {
+         adicionarIngredientes(quantosAdicionais);
+         this.borda = borda;
+     }
+
      /**
       * Construtor padrão. Cria uma pizza sem adicionais.
       */
      public Pizza() {
-         quantidadeIngredientes = 0;
+         init(0, EBorda.TRADICIONAL);
      }
  
      /**
@@ -49,12 +53,11 @@
       * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
       */
      public Pizza(int quantosAdicionais) {
-         adicionarIngredientes(quantosAdicionais);
+         init(quantosAdicionais, EBorda.TRADICIONAL);
      }
  
-    public Pizza(int quantosAdicionais, EBorda borda) {
-         adicionarIngredientes(quantosAdicionais);
-         this.borda = borda;
+    public Pizza(int quantosAdicionais, EBorda borda){
+        init(quantosAdicionais, borda);
      }
  
      private double valorAdicionais(){
@@ -68,7 +71,7 @@
          return PRECO_BASE + valorAdicionais() + borda.valor();
      }
 
-     public double addBorda(EBorda borda){
+     public double adicionarBorda(EBorda borda){
         this.borda = borda;
         return this.borda.valor();
      }
@@ -102,7 +105,7 @@
       */
      public String notaDeCompra() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
-         return String.format("%s (%s) com borda %s (%S) e %d ingredientes (%s), no valor de %s", 
+         return String.format("%s (%s) com borda %s (%s) e %d ingredientes (%s), no valor de %s", 
                                      DESCRICAO, moeda.format(PRECO_BASE),
                                      borda.descricao(), moeda.format(borda.valor()), 
                                      quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));

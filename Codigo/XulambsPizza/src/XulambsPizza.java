@@ -135,7 +135,7 @@ public class XulambsPizza {
         pizza.adicionarIngredientes(adicionais);
     }
 
-    public static void escolherBorda(Pizza pizza){
+    static void escolherBorda(Pizza pizza){
         EBorda[] bordas = EBorda.values();
         System.out.println("Escolha sua borda:");
         for (int i = 0; i < bordas.length; i++) {
@@ -144,7 +144,7 @@ public class XulambsPizza {
         System.out.print("Sua escolha: ");
         int opcao = Integer.parseInt(teclado.nextLine());
         EBorda escolhida = bordas[opcao-1];
-        pizza.addBorda(escolhida);
+        pizza.adicionarBorda(escolhida);
     }
 
     static void mostrarNota(Pizza pizza) {
