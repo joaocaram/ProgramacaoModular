@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+
+  version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
+
+  <persistence-unit name="DadosXulambs" transaction-type="RESOURCE_LOCAL">
+	
+  <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+	<class>com.xulambs.XulambsPizza.Models.Pizza</class>
+  <class>com.xulambs.XulambsPizza.Models.Pedido</class>
+   
+    <properties>
+      <property name="jakarta.persistence.jdbc.driver"
+      	value="org.mariadb.jdbc.Driver" />
+
+      <property name="jakarta.persistence.jdbc.url"
+        value="jdbc:mariadb://localhost:3306/XulambsPizza" />
+
+      <property name="jakarta.persistence.jdbc.user"
+      	value="root" />
+
+      <property name="jakarta.persistence.jdbc.password"
+      	value="" />
+
+    </properties>
+
+  </persistence-unit>
+
+</persistence>
+
