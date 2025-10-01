@@ -43,7 +43,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.3\n=============");
+        System.out.println("XULAMBS PIZZA v0.4\n=============");
     }
 
     static int exibirMenu() {
@@ -53,6 +53,18 @@ public class XulambsPizza {
         System.out.println("2 - Alterar Pedido");
         System.out.println("3 - Relatório de Pedido");
         System.out.println("4 - Encerrar Pedido");
+        System.out.println("5 - Valor do último Pedido");
+        System.out.println("0 - Finalizar");
+        System.out.print("Digite sua escolha: ");
+
+        return Integer.parseInt(teclado.nextLine());
+    }
+
+    static int menuTipoPedido() {
+        cabecalho();
+
+        System.out.println("1 - Pedido Local");
+        System.out.println("2 - Pedido para Entrega");
         System.out.println("0 - Finalizar");
         System.out.print("Digite sua escolha: ");
 
@@ -72,12 +84,33 @@ public class XulambsPizza {
     
     static void abrirPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
-        Pedido novoPedido = new Pedido();
+        Pedido novoPedido = escolherTipoPedido();
         adicionarPizzas(novoPedido);
         mostrarPedido(novoPedido);
         todosOsPedidos.add(novoPedido);
     }
 
+    private static Pedido escolherTipoPedido() {
+        int opcao = menuTipoPedido();
+        switch (opcao) {
+            case 1:  return new Pedido();
+            case 2:  return criarPedidoEntrega();                
+        }
+        return null;
+    }
+
+    private static Pedido criarPedidoEntrega() {
+        System.out.print("Qual a distância?");
+        double dist = Double.parseDouble(teclado.nextLine());
+        return new PedidoEntrega(dist);
+    }
+
+    private static void valorDoUltimoPedido(List<Pedido> todosOsPedidos){
+        cabecalho();
+        Pedido ultimo = todosOsPedidos.getLast();
+        System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
+    }
+    
     static void relatorioPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
         Pedido pedido = localizarPedido(todosOsPedidos);
@@ -168,6 +201,7 @@ public class XulambsPizza {
                 case 2 -> alterarPedido(todosOsPedidos);
                 case 3 -> relatorioPedido(todosOsPedidos);
                 case 4 -> encerrarPedido(todosOsPedidos);
+                case 5 -> valorDoUltimoPedido(todosOsPedidos);
             }
             pausa();
             opcao = exibirMenu();

@@ -41,7 +41,7 @@ public class Pedido {
 	
 	//#region atributos
 	private LocalDate data;
-	private LinkedList<Pizza> pizzas;
+	protected LinkedList<Pizza> pizzas;
 	private int idPedido;
 	private boolean aberto;
 	//#endregion
@@ -64,7 +64,7 @@ public class Pedido {
 	 * está aberto e há espaço na memória.
 	 * @return TRUE se puder adicionar, FALSE caso contrário
 	 */
-	private boolean podeAdicionar() {
+	protected boolean podeAdicionar() {
 		return aberto;
 	}
 
@@ -107,6 +107,25 @@ public class Pedido {
         // }  
 	}
 
+	protected String detalhesPedido(){
+		StringBuilder relat = new StringBuilder();
+		relat.append(String.format("%02d - %s\n", idPedido, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+        relat.append("=============================\n");
+        
+        for (int i=0; i<pizzas.size(); i++) {
+            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
+        }
+		return relat.toString();
+	}
+
+	protected String rodapePedido(){
+		NumberFormat moeda = NumberFormat.getCurrencyInstance();
+		StringBuilder relat = new StringBuilder();
+		relat.append(String.format("TOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
+        relat.append("=============================");
+		return relat.toString();
+
+	}
 	/**
 	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
 	 * de cada pizza e o preço final a ser pago.
@@ -121,18 +140,7 @@ public class Pedido {
 	 * </pre>
 	 */
 	public String relatorio() {
-        NumberFormat moeda = NumberFormat.getCurrencyInstance();
-		
-		StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido ");
-        relat.append(String.format("%02d - %s\n", idPedido, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        relat.append("=============================\n");
-        
-        for (int i=0; i<pizzas.size(); i++) {
-            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
-        }
-        relat.append(String.format("\nTOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
-        relat.append("=============================");
-        return relat.toString();
+        return "XULAMBS PIZZA - Pedido Local " + detalhesPedido() + "\n" + rodapePedido();		
 	}
 
 }
