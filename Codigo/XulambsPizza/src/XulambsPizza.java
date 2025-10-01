@@ -43,7 +43,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.2\n=============");
+        System.out.println("XULAMBS PIZZA v0.3\n=============");
     }
 
     static int exibirMenu() {
