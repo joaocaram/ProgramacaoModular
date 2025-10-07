@@ -24,22 +24,16 @@
 
  /** Classe abstrata para representação de formas geomérticas */
 public abstract class FormaGeometrica {
-    private static int ultimoId=0;
     private String descricao;
-    private int id;
-
+    
     /**
      * Construtor protegido (só é usado pelas classes descendentes)
      * @param desc A descrição da forma geométrica. Não faz validação da descrição
      */
     protected FormaGeometrica(String desc){
-        this.descricao = desc;
-        this.id = ultimoId++;
+        descricao = desc;
     }
 
-    public void setId(int id){
-        this.id = id;
-    }
     /**
      * Retorna a área da forma geométrica.
      * @return Double com a área da forma geométrica instanciada
@@ -51,15 +45,6 @@ public abstract class FormaGeometrica {
      * @return Double com o perímetro da forma geométrica instanciada
      */
     public abstract double perimetro();
-
-
-    /**
-     * "Nome" da forma geométrica: sua descrição simples, sem as medidas
-     * @return String com o nome/tipo da forma
-     */
-    public String nome(){
-        return descricao;
-    }
 
     /**
      * Representação em string da forma: descrição e área.
@@ -81,12 +66,8 @@ public abstract class FormaGeometrica {
         return ( this.descricao.equals(outra.descricao) &&
                  this.area() == outra.area()
                 );
-     //  return this.id == outra.id;
     }
 
-    @Override
-    public int hashCode(){
-        return id;
-    }
+    
     
 }

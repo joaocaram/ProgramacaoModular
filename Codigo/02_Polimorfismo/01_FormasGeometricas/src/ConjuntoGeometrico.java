@@ -22,20 +22,24 @@
  * SOFTWARE.
  */
 
- /** Encapsula um conjunto de formas geométricas */
+import java.util.ArrayList;
+import java.util.List;
+
+/** Encapsula um conjunto de formas geométricas */
 public class ConjuntoGeometrico {
 
-	private FormaGeometrica[] formas;
-	int quantidade;
+	private List<FormaGeometrica> formas;
+	int capacidade;
 
     /**
      * Cria um conjunto vazio de formas. A capacidade mínima do conjunto é 2.
      * @param capacidade Capacidade do conjunto. Valores menores que 2 viram 2.
      */
 	public ConjuntoGeometrico(int capacidade) {
-		if(capacidade <2) capacidade = 2;
-		formas = new FormaGeometrica[capacidade];
-		quantidade = 0;
+		if(capacidade <2) 
+			capacidade = 2;
+		formas = new ArrayList<>(capacidade);
+		this.capacidade = capacidade;
 	}
 
     /**
@@ -43,23 +47,28 @@ public class ConjuntoGeometrico {
      * @return A forma com a maior área do conjunto, ou nulo se ele estiver vazio.
      */
 	public FormaGeometrica maiorArea() {
-		FormaGeometrica maior = formas[0];
-        for (int i = 1; i < quantidade; i++) {
-            if(formas[i].area() > maior.area())
-                maior = formas[i];
-        }
+		FormaGeometrica maior = null;
+		if(formas.size()>0){
+			maior = formas.get(0);
+			for (int i = 1; i < formas.size(); i++) {
+				if(formas.get(i).area() > maior.area())
+					maior = formas.get(i);
+			}
+		}
+		
 		return maior;
 	}
 
     /**
      * Caso tenha espaço, armazena uma forma no conjunto. Caso contrário, a operação é ignorada.
      * @param nova A forma a ser armazenada.
+	 * @return A quantidade de formas no conjunto atual
      */
-	public void addForma(FormaGeometrica nova) {
-		if(quantidade<formas.length){
-			formas[quantidade] = nova;
-			quantidade++;
+	public int addForma(FormaGeometrica nova) {
+		if(formas.size()<capacidade){
+			formas.add(nova);
 		}
+		return formas.size();
 		
 	}
 
@@ -71,10 +80,10 @@ public class ConjuntoGeometrico {
      */
 	@Override
 	public String toString() {
-		StringBuilder relat = new StringBuilder("CONJUNTO COM "+quantidade+" FORMAS GEOMÉTRICAS:\n");
+		StringBuilder relat = new StringBuilder("CONJUNTO COM "+formas.size()+" FORMAS GEOMÉTRICAS:");
 		for (FormaGeometrica forma : formas) {
 			if(forma!=null)
-            	relat.append(forma+"\n");
+            	relat.append("\n"+forma);
         }
 		return relat.toString();
 	}

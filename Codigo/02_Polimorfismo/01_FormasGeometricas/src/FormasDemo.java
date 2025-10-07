@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.Scanner;
 
 /** 
@@ -27,7 +28,24 @@ import java.util.Scanner;
 
 public class FormasDemo {
     static Scanner teclado = new Scanner(System.in);
+    static Random aleatorio = new Random(42);
 
+    /** Simula a limpeza de tela em terminal VT-100 */
+    static void limparTela() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    static int menu(){
+            limparTela();
+            System.out.println("1 - Mostrar conjunto");
+            System.out.println("2 - Maior forma");
+            System.out.println("3 - Criar novo conjunto manualmente");
+            System.out.println("4 - Criar novo conjunto aleatoriamente");
+            System.out.println("0 - Sair");
+            System.out.print("Opção: ");
+            return Integer.parseInt(teclado.nextLine());
+    }
     /**
      * Encapsula o processo de construção de um conjunto, fazendo leituras de teclado do usuário. 
      * As formas geométricas estão sendo criadas com tamanho fixo. 
@@ -37,7 +55,7 @@ public class FormasDemo {
      */
     public static ConjuntoGeometrico criaFormas(int tamanho){
         
-        ConjuntoGeometrico conjunto = new ConjuntoGeometrico(tamanho);
+        ConjuntoGeometrico conjunto = new ConjuntoGeometrico(tamanho+5);  // 5 a mais para caso de testes
 
         for (int i = 0; i < tamanho; i++) {
             System.out.println("Escolha a forma: ");
@@ -47,16 +65,47 @@ public class FormasDemo {
             System.out.print("4 - Triângulo Retângulo | ");
             int opcao = Integer.parseInt(teclado.nextLine());
             FormaGeometrica nova = null;
+            double dimensao1 = aleatorio.nextDouble(1, 9);
+            double dimensao2 = aleatorio.nextDouble(1, 9);
             switch(opcao){
-                case 1-> nova = new Quadrado(4);
-                case 2-> nova = new Circulo(4);
-                case 3-> nova = new Retangulo(4, 2);
-                case 4-> nova = new TrianguloRetangulo(4, 2);
+                case 1-> nova = new Quadrado(dimensao1);
+                case 2-> nova = new Circulo(dimensao1);
+                case 3-> nova = new Retangulo(dimensao1, dimensao2);
+                case 4-> nova = new TrianguloRetangulo(dimensao1, dimensao2);
             }
             conjunto.addForma(nova);
         }
         return conjunto;
     }
+
+    /**
+     * Encapsula o processo de construção de um conjunto, fazendo leituras de teclado do usuário. 
+     * As formas geométricas estão sendo criadas com tamanho fixo. 
+     * Sugestão: melhorar para que seja aleatório ou para ler do usuário.
+     * @param tamanho Tamanho do conjunto a ser criado.
+     * @return Um ConjuntoGeométrico com a quantidade de figuras especificadas em "tamanho"
+     */
+    public static ConjuntoGeometrico criaFormasAleatorias(int tamanho){
+        
+        ConjuntoGeometrico conjunto = new ConjuntoGeometrico(tamanho+5);  // 5 a mais para caso de testes
+
+        for (int i = 0; i < tamanho; i++) {
+            
+            int forma = aleatorio.nextInt(1,5);
+            FormaGeometrica nova = null;
+            double dimensao1 = aleatorio.nextDouble(1, 9);
+            double dimensao2 = aleatorio.nextDouble(1, 9);
+            switch(forma){
+                case 1-> nova = new Quadrado(dimensao1);
+                case 2-> nova = new Circulo(dimensao1);
+                case 3-> nova = new Retangulo(dimensao1, dimensao2);
+                case 4-> nova = new TrianguloRetangulo(dimensao1, dimensao2);
+            }
+            conjunto.addForma(nova);
+        }
+        return conjunto;
+    }
+
     public static void main(String[] args) {
         int tamanho;
         ConjuntoGeometrico meuConjuntoGeometrico;
@@ -64,16 +113,13 @@ public class FormasDemo {
 
         System.out.print("Qual o tamanho do conjunto a ser criado? ");
         tamanho = Integer.parseInt(teclado.nextLine());
-        meuConjuntoGeometrico = criaFormas(tamanho);
+        meuConjuntoGeometrico = criaFormasAleatorias(tamanho);
         
         while(opcao!=0){
-            System.out.println("1 - Mostrar conjunto");
-            System.out.println("2 - Maior forma");
-            System.out.println("3 - Criar novo conjunto");
-            System.out.println("0 - Sair");
-            System.out.print("Opção: ");
-            opcao = Integer.parseInt(teclado.nextLine());
+            
+            opcao = menu();
             System.out.println("\n\n\n\n\n---------------------------");
+            limparTela();
             switch(opcao){
                 case 1 ->{
                     System.out.println(meuConjuntoGeometrico);
@@ -90,10 +136,13 @@ public class FormasDemo {
                     tamanho = Integer.parseInt(teclado.nextLine());
                     meuConjuntoGeometrico = criaFormas(tamanho);
                 }
+                case 4 ->{
+                    System.out.print("Qual o tamanho do conjunto a ser criado? ");
+                    tamanho = Integer.parseInt(teclado.nextLine());
+                    meuConjuntoGeometrico = criaFormasAleatorias(tamanho);
+                }
             }
         }
-
-
         teclado.close();
     }
 }

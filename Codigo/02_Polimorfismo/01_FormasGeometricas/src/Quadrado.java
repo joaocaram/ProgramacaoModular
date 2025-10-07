@@ -48,7 +48,7 @@ public class Quadrado extends PoligonoReto{
      */
     @Override
     public double perimetro(){
-        return this.base*4;
+        return base*4;
     }
 
     /** String do quadrado: inclui informação do tamanho da base

@@ -40,7 +40,7 @@ public class Retangulo extends PoligonoReto{
      */
     @Override
     public double area(){
-        return this.base * this.altura;
+        return base * altura;
     }
 
     /**
@@ -49,7 +49,7 @@ public class Retangulo extends PoligonoReto{
      */
     @Override
     public double perimetro(){
-        return this.base*2 + 2*this.altura;
+        return 2*base + 2*altura;
     }
 
     /** String do retângulo: inclui informação do tamanho da base e da altura
