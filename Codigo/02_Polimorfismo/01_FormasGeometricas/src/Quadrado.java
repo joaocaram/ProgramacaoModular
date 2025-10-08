@@ -56,6 +56,6 @@ public class Quadrado extends PoligonoReto{
      */
     @Override
     public String toString(){
-        return super.toString() + String.format(" | Base: %05.2f", base);
+        return super.toString() + String.format(" | Lado: %05.2f", base);
     }
 }

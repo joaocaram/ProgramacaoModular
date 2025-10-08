@@ -34,6 +34,10 @@ public abstract class FormaGeometrica {
         descricao = desc;
     }
 
+    public boolean temAreaMaiorQue(FormaGeometrica outra){
+        return this.area() > outra.area();
+    }
+
     /**
      * Retorna a área da forma geométrica.
      * @return Double com a área da forma geométrica instanciada
@@ -52,7 +56,8 @@ public abstract class FormaGeometrica {
      */
     @Override
     public String toString(){
-        return String.format("%20s | Área: %05.2f | Perímetro: %05.2f", descricao, area(), perimetro());
+        return String.format("%20s | Área: %05.2f | Perímetro: %05.2f", 
+                             descricao, area(), perimetro());
     }
 
     /**
@@ -67,7 +72,5 @@ public abstract class FormaGeometrica {
                  this.area() == outra.area()
                 );
     }
-
-    
-    
+ 
 }

@@ -51,11 +51,10 @@ public class ConjuntoGeometrico {
 		if(formas.size()>0){
 			maior = formas.get(0);
 			for (int i = 1; i < formas.size(); i++) {
-				if(formas.get(i).area() > maior.area())
+				if(formas.get(i).temAreaMaiorQue(maior))
 					maior = formas.get(i);
 			}
 		}
-		
 		return maior;
 	}
 
@@ -69,7 +68,6 @@ public class ConjuntoGeometrico {
 			formas.add(nova);
 		}
 		return formas.size();
-		
 	}
 
 	
@@ -82,8 +80,7 @@ public class ConjuntoGeometrico {
 	public String toString() {
 		StringBuilder relat = new StringBuilder("CONJUNTO COM "+formas.size()+" FORMAS GEOMÉTRICAS:");
 		for (FormaGeometrica forma : formas) {
-			if(forma!=null)
-            	relat.append("\n"+forma);
+           	relat.append("\n"+forma);
         }
 		return relat.toString();
 	}

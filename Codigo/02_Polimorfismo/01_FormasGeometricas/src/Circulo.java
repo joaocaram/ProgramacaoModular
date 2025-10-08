@@ -1,7 +1,7 @@
 /** 
  * MIT License
  *
- * Copyright(c) 2023 João Caram <caram@pucminas.br>
+ * Copyright(c) 2023-25 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-
 public class Circulo extends FormaGeometrica{
     private double raio;
     
@@ -37,7 +36,6 @@ public class Circulo extends FormaGeometrica{
             this.raio = 1d;
     }
 
-   
     /**
      * Calcula e retorna a área do círculo
      * @return Área do círculo (double)
