@@ -69,8 +69,7 @@ public abstract class FormaGeometrica {
     public boolean equals(Object obj){
         FormaGeometrica outra = (FormaGeometrica)obj;
         return ( this.descricao.equals(outra.descricao) &&
-                 this.area() == outra.area()
-                );
+                 this.area() == outra.area() );
     }
  
 }

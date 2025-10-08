@@ -23,7 +23,7 @@
  */
 
  /** Classe para representar a forma Retângulo */
-public final class Retangulo extends PoligonoReto{
+public class Retangulo extends PoligonoReto{
     
     /**
      * Construtor: recebe base e altura. A classe-mãe valida ambos valores para o mínimo de 1
@@ -56,7 +56,7 @@ public final class Retangulo extends PoligonoReto{
      * @return String contendo descrição, área, perímetro, base e altura do retângulo
      */
     @Override
-    public  String toString(){
+    public final String toString(){
         return super.toString() + String.format(" | Base: %05.2f | Altura: %05.2f", base, altura);
     }
 }
