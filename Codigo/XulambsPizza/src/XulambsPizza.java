@@ -1,4 +1,3 @@
-import java.io.Console;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
