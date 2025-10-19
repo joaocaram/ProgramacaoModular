@@ -93,7 +93,7 @@ public class XulambsPizza {
     private static Pedido escolherTipoPedido() {
         int opcao = menuTipoPedido();
         switch (opcao) {
-            case 1:  return new Pedido();
+            case 1:  return new PedidoLocal();
             case 2:  return criarPedidoEntrega();                
         }
         return null;
@@ -128,7 +128,7 @@ public class XulambsPizza {
         id = Integer.parseInt(teclado.nextLine());
 
         for (Pedido ped : pedidos) {
-            if (ped.relatorio().contains("Pedido " + String.format("%02d", id)))
+            if (ped.toString().contains("Pedido " + String.format("%02d", id)))
                 return ped;
         }
         return null;
@@ -159,7 +159,7 @@ public class XulambsPizza {
         if (pedido != null) {
             pedido.fecharPedido();
             System.out.println("Pedido encerrado: ");
-            System.out.println(pedido.relatorio());
+            System.out.println(pedido.toString());
         } else
             System.out.println("Pedido não existente.");
     }
@@ -186,7 +186,7 @@ public class XulambsPizza {
 
     static void mostrarPedido(Pedido pedido) {
         System.out.println("Relatório do Pedido: ");
-        System.out.println(pedido.relatorio());
+        System.out.println(pedido.toString());
 
     }
 

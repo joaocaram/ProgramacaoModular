@@ -32,7 +32,7 @@ import java.util.LinkedList;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public class Pedido {
+public abstract class Pedido {
 
 	//#region static/constantes
 	/** Para gerar o id incremental automático */
@@ -67,7 +67,14 @@ public class Pedido {
 	protected boolean podeAdicionar() {
 		return aberto;
 	}
-
+	protected double valorItens(){
+		double precoFinal =0d;
+		for (Pizza pizza : pizzas) {		//forEach
+			precoFinal += pizza.valorFinal();
+		}
+		return precoFinal;
+    
+	}
 	/**
 	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
 	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
@@ -95,13 +102,9 @@ public class Pedido {
 	 * pizzas contidas no pedido)
 	 * @return Double com o valor a ser pago pelo pedido (> 0)
 	 */
-	public double precoAPagar() {
-		double precoFinal =0d;
-		for (Pizza pizza : pizzas) {		//forEach
-			precoFinal += pizza.valorFinal();
-		}
-		return precoFinal;
-        //For tradicional
+	public abstract double precoAPagar();
+	 {
+	    //For tradicional
 		// for (int i=0; i<pizzas.size(); i++) {
         //     precoFinal += pizzas.get(i).valorFinal();
         // }  
@@ -126,21 +129,6 @@ public class Pedido {
 		return relat.toString();
 
 	}
-	/**
-	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
-	 * de cada pizza e o preço final a ser pago.
-	 * @return String com os detalhes especificados:. 
-	 * <br/><pre>
-	 * PEDIDO - NÚMERO - DD/MM/AAAA
-	 * 01 - DESCRICAO DA PIZZA
-	 * 02 - DESCRICAO DA PIZZA
-	 * 03 - DESCRICAO DA PIZZA
-	 * 
-	 * TOTAL A PAGAR: R$ VALOR
-	 * </pre>
-	 */
-	public String relatorio() {
-        return "XULAMBS PIZZA - Pedido Local " + detalhesPedido() + "\n" + rodapePedido();		
-	}
+	
 
 }

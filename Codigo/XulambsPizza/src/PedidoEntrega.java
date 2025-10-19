@@ -33,11 +33,11 @@ public class PedidoEntrega extends Pedido{
 
     @Override
     public double precoAPagar(){
-        return super.precoAPagar() + valorTaxa();
+        return valorItens() + valorTaxa();
     }
 
     @Override
-    public String relatorio(){
+    public String toString(){
         NumberFormat moeda = NumberFormat.getCurrencyInstance();
         StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Entrega ");
         relat.append(detalhesPedido());
