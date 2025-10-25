@@ -89,12 +89,14 @@ public abstract class Pedido {
 	}
 
 	/**
-	 * Fecha um pedido, desde que ele contenha pelo menos 1 pizza. Caso esteja vazio,
-	 * a operação é ignorada.
+	 * Fecha um pedido, desde que ele contenha pelo menos 1 pizza. 
+	 * Caso esteja vazio, será lançada exceção de estado ilegal.
+	 * @exception IllegalStateException Caso o pedido não tenha nenhuma pizza ainda.
 	 */
 	public void fecharPedido() {
-		if(pizzas.size() > 0)
-            	aberto = false;
+		if(pizzas.size()==0)
+			throw new IllegalStateException("Pedido vazio não pode ser fechado");
+		aberto = false;
 	}
 
 	/**

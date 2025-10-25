@@ -10,9 +10,10 @@ public class PedidoEntrega extends Pedido{
 
     public PedidoEntrega(double distancia){
         super();
-        distanciaEntrega = 0.1;
-        if(distancia > 0.1)
-            distanciaEntrega = distancia;
+        if(distancia < 0.1)
+            throw new DistanciaInvalidaException(distancia);
+        
+        distanciaEntrega = distancia;
     }
 
     private double valorTaxa(){

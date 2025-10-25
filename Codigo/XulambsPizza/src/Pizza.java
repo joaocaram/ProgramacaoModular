@@ -77,10 +77,13 @@
       * @return Quantos ingredientes a pizza tem após a execução
       */
      public int adicionarIngredientes(int quantos) {
-         if(podeAdicionar(quantos)){
-             quantidadeIngredientes += quantos;
-         }
-         return quantidadeIngredientes;
+        if(quantos < 0)
+            throw new IllegalArgumentException("Quantidade não pode ser negativa.");
+         if(!podeAdicionar(quantos))
+            throw new IllegalStateException("Máximo de ingredientes atingido.");
+        
+        quantidadeIngredientes += quantos;
+        return quantidadeIngredientes;
      }
 
      public double adicionarBorda(EBorda borda){
@@ -94,7 +97,7 @@
       * @return TRUE/FALSE conforme seja possível ou não adicionar esta quantidade de ingredientes.
       */
      private boolean podeAdicionar(int quantos) {
-         return (quantos>0 && quantos+quantidadeIngredientes<=MAX_INGREDIENTES);
+         return (quantos>=0 && quantos+quantidadeIngredientes<=MAX_INGREDIENTES);
      }
  
      /**

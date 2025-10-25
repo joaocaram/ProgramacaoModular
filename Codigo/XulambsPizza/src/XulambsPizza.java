@@ -45,29 +45,35 @@ public class XulambsPizza {
         System.out.println("XULAMBS PIZZA v0.5\n=============");
     }
 
+    static int lerInteiro(String mensagem){
+        int opcao;
+        System.out.print(mensagem+": ");
+        try {
+            opcao = Integer.parseInt(teclado.nextLine());   
+        } catch (NumberFormatException e) {
+            System.err.println("Opção inválida.");
+            opcao = -1;
+        }
+         return opcao;  
+    }
+
     static int exibirMenu() {
         cabecalho();
-
         System.out.println("1 - Abrir Pedido");
         System.out.println("2 - Alterar Pedido");
         System.out.println("3 - Relatório de Pedido");
         System.out.println("4 - Encerrar Pedido");
         System.out.println("5 - Valor do último Pedido");
         System.out.println("0 - Finalizar");
-        System.out.print("Digite sua escolha: ");
-
-        return Integer.parseInt(teclado.nextLine());
+        return lerInteiro("Digite sua escolha");
     }
 
     static int menuTipoPedido() {
         cabecalho();
-
         System.out.println("1 - Pedido Local");
         System.out.println("2 - Pedido para Entrega");
         System.out.println("0 - Finalizar");
-        System.out.print("Digite sua escolha: ");
-
-        return Integer.parseInt(teclado.nextLine());
+        return lerInteiro("Digite sua escolha");
     }
 
     static void addBordaPizza(Pizza pizza){
@@ -76,8 +82,7 @@ public class XulambsPizza {
         for (int i = 0; i < bordas.length; i++) {
             System.out.println((i+1)+ " - "+bordas[i].descricao());
         }
-        System.out.print("Entre sua opção: ");
-        int opcao = Integer.parseInt(teclado.nextLine());
+        int opcao = lerInteiro("Entre sua opção");
         pizza.adicionarBorda(bordas[opcao-1]);
     }
     
@@ -123,8 +128,7 @@ public class XulambsPizza {
         cabecalho();
         int id;
         System.out.println("Localizando um pedido.");
-        System.out.print("ID do pedido: ");
-        id = Integer.parseInt(teclado.nextLine());
+        id = lerInteiro("ID do pedido");
 
         for (Pedido ped : pedidos) {
             if (ped.toString().contains("Pedido " + String.format("%02d", id)))
@@ -155,12 +159,16 @@ public class XulambsPizza {
 
     static void encerrarPedido(List<Pedido> todosOsPedidos) {
         Pedido pedido = localizarPedido(todosOsPedidos);
-        if (pedido != null) {
+        try {
             pedido.fecharPedido();
             System.out.println("Pedido encerrado: ");
             System.out.println(pedido.toString());
-        } else
-            System.out.println("Pedido não existente.");
+        } catch (IllegalStateException excecao) {
+            System.out.println(excecao.getMessage());
+        }catch (NullPointerException nulo){
+            System.out.println("Pedido não existe.");
+            encerrarPedido(todosOsPedidos);
+        }
     }
 
     static Pizza comprarPizza() {
@@ -173,9 +181,15 @@ public class XulambsPizza {
     }
 
     static void escolherIngredientes(Pizza pizza) {
-        System.out.print("Quantos adicionais você deseja? (máx. 8): ");
-        int adicionais = Integer.parseInt(teclado.nextLine());
-        pizza.adicionarIngredientes(adicionais);
+        int adicionais = lerInteiro("Quantidade de adicionais (máx 8)");
+        try {
+            pizza.adicionarIngredientes(adicionais);    
+        } catch (IllegalArgumentException e) {
+            // TODO: handle exception
+        } catch (IllegalStateException ise){
+           // TODO: handle exception     
+        }
+        
     }
 
     static void mostrarNota(Pizza pizza) {
