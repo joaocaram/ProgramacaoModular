@@ -27,7 +27,7 @@
  /** Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
    * A pizza deve emitir uma nota de compra com os seus detalhes.
    */
- public class Pizza {
+ public class Pizza implements IProduto{
  
      private static final int MAX_INGREDIENTES = 8;
      private static final String DESCRICAO = "Pizza";
@@ -66,6 +66,7 @@
       * Retorna o valor final da pizza, incluindo seus adicionais.
       * @return Double com o valor final da pizza.
       */
+      @Override
      public double valorFinal() {
          return PRECO_BASE + valorAdicionais() + borda.valor();
      }

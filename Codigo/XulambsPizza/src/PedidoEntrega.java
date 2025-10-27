@@ -28,7 +28,7 @@ public class PedidoEntrega extends Pedido{
     @Override
     protected boolean podeAdicionar(){
         return super.podeAdicionar()
-               && (pizzas.size() < MAX_PIZZAS);
+               && (itens.size() < MAX_PIZZAS);
     }
 
     @Override

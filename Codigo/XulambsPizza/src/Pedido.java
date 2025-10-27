@@ -41,7 +41,7 @@ public abstract class Pedido {
 	
 	//#region atributos
 	private LocalDate data;
-	protected LinkedList<Pizza> pizzas;
+	protected LinkedList<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
 	//#endregion
@@ -53,7 +53,7 @@ public abstract class Pedido {
 	 */
 	public Pedido() {
 		idPedido = ++ultimoPedido;
-        pizzas = new LinkedList<>();
+        itens = new LinkedList<>();
         aberto = true;
 		data = LocalDate.now();
 	}
@@ -69,8 +69,8 @@ public abstract class Pedido {
 	}
 	protected double valorItens(){
 		double precoFinal =0d;
-		for (Pizza pizza : pizzas) {		//forEach
-			precoFinal += pizza.valorFinal();
+		for (IProduto trem : itens) {		//forEach
+			precoFinal += trem.valorFinal();
 		}
 		return precoFinal;
     
@@ -81,11 +81,11 @@ public abstract class Pedido {
 	 * @param pizza Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
 	 */
-	public int adicionar(Pizza pizza) {
+	public int adicionar(IProduto pizza) {
 		if(podeAdicionar()){
-            pizzas.add(pizza);
+            itens.add(pizza);
         }
-        return pizzas.size();
+        return itens.size();
 	}
 
 	/**
@@ -94,7 +94,7 @@ public abstract class Pedido {
 	 * @exception IllegalStateException Caso o pedido não tenha nenhuma pizza ainda.
 	 */
 	public void fecharPedido() {
-		if(pizzas.size()==0)
+		if(itens.size()==0)
 			throw new IllegalStateException("Pedido vazio não pode ser fechado");
 		aberto = false;
 	}
@@ -117,8 +117,8 @@ public abstract class Pedido {
 		relat.append(String.format("%02d - %s\n", idPedido, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
         relat.append("=============================\n");
         
-        for (int i=0; i<pizzas.size(); i++) {
-            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
+        for (int i=0; i<itens.size(); i++) {
+            relat.append(String.format("%02d - %s\n", (i+1), itens.get(i).toString()));            
         }
 		return relat.toString();
 	}
