@@ -11,7 +11,7 @@ public class PedidoLocal extends Pedido{
 
     @Override
     public double precoAPagar(){
-        return valorServico() + valorItens();
+        return valorServico() + valorItens() - desconto;
     }
 
     /**

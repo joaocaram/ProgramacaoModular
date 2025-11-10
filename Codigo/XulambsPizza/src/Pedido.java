@@ -43,6 +43,7 @@ public abstract class Pedido {
 	private LocalDate data;
 	protected LinkedList<IProduto> itens;
 	private int idPedido;
+	protected double desconto;
 	private boolean aberto;
 	//#endregion
 
@@ -67,6 +68,8 @@ public abstract class Pedido {
 	protected boolean podeAdicionar() {
 		return aberto;
 	}
+
+
 	protected double valorItens(){
 		double precoFinal =0d;
 		for (IProduto trem : itens) {		//forEach
@@ -75,6 +78,16 @@ public abstract class Pedido {
 		return precoFinal;
     
 	}
+
+	public double aplicarDesconto(double valorDesconto){
+		if(desconto!=0)
+			throw new IllegalStateException("Desconto já aplicado");
+		if(valorDesconto < 0 )
+			throw new IllegalArgumentException("Desconto deve ser positivo");
+		desconto = valorDesconto;
+		return desconto;
+	}
+
 	/**
 	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
 	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
@@ -82,9 +95,10 @@ public abstract class Pedido {
 	 * @return A quantidade de pizzas do pedido após a execução.
 	 */
 	public int adicionar(IProduto prod) {
-		if(podeAdicionar()){
-            itens.add(prod);
+		if(!podeAdicionar()){
+            throw new IllegalStateException("Pedido já está fechado ou lotado.");
         }
+		itens.add(prod);
         return itens.size();
 	}
 
@@ -105,12 +119,7 @@ public abstract class Pedido {
 	 * @return Double com o valor a ser pago pelo pedido (> 0)
 	 */
 	public abstract double precoAPagar();
-	 {
-	    //For tradicional
-		// for (int i=0; i<pizzas.size(); i++) {
-        //     precoFinal += pizzas.get(i).valorFinal();
-        // }  
-	}
+	
 
 	protected String detalhesPedido(){
 		StringBuilder relat = new StringBuilder();
@@ -126,6 +135,7 @@ public abstract class Pedido {
 	protected String rodapePedido(){
 		NumberFormat moeda = NumberFormat.getCurrencyInstance();
 		StringBuilder relat = new StringBuilder();
+		relat.append(String.format("DESCONTO DO CLIENTE: %s\n", moeda.format(desconto)));
 		relat.append(String.format("TOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
         relat.append("=============================");
 		return relat.toString();
