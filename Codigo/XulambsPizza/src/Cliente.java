@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 /** 
  * MIT License
@@ -28,22 +29,24 @@ public class Cliente{
     private static int ultimoID = 0;
     private int id;
     private String nome;
-    private Queue<Pedido> pedidos;
+    private List<Pedido> pedidos;
     private IFidelidade categoria;
 
     public Cliente(String nome){
         this.nome = nome;
         id = ++ultimoID;
         pedidos = new LinkedList<>();
-        categoria = new XulambsJunior(pedidos);
+        categoria = new XulambsJunior();
     }
 
     public void verificarCategoria(){
-        categoria = categoria.atualizarCategoria();
+        categoria = IFidelidade.atualizarCategoria(pedidos);
     }
 
-    public void registrarPedido(Pedido novo){
+    public double registrarPedido(Pedido novo){
+        categoria.descontoPedido(novo);
         pedidos.add(novo);
+        return novo.precoAPagar();
     }
 
     public String resumoPedidos(){
@@ -57,20 +60,14 @@ public class Cliente{
     public double totalEmPedidos(){
         double valor = 0d;
         for (Pedido pedido : pedidos) {
-            valor += pedido.precoFinal();
+            valor += pedido.precoAPagar();
         }
         return valor;
     }
 
-    public double valorAPagar(Pedido pedido){
-        double precoAPagar = pedido.precoFinal();
-		precoAPagar -= categoria.desconto(pedido);
-		return precoAPagar;
-    }
-
     @Override
     public String toString(){
-        return String.format("Cliente nº %d: %s\nTotal em pedidos: R$ %.2f", id, nome, totalEmPedidos());
+        return String.format("Cliente nº %d: %s (%s)\nTotal gasto em %d pedidos: R$ %.2f", id, nome, categoria, pedidos.size(), totalEmPedidos());
     }
 
     @Override
