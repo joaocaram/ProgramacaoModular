@@ -1,6 +1,14 @@
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
+
 
 /**
  * MIT License
@@ -29,7 +37,10 @@ import java.util.Scanner;
 
 public class XulambsPizza {
     static Scanner teclado;
+    static Map<Integer, Cliente> clientes;
+    static List<Pedido> todosOsPedidos;
 
+    //#region utilidades
     static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -42,7 +53,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.5\n=============");
+        System.out.println("XULAMBS PIZZA v0.7\n=============");
     }
 
     static int lerInteiro(String mensagem){
@@ -56,7 +67,93 @@ public class XulambsPizza {
         }
          return opcao;  
     }
+    //#endregion
 
+    //#region gerador aleatório
+    static void gerarClientes() {
+        Cliente novo = new Cliente("Anônimo");
+        clientes.put(novo.hashCode(), novo);
+        try {
+            Path caminho = Path.of("medalhistas.txt");
+            List<String> nomes = Files.readAllLines(caminho, Charset.forName("UTF-8"));
+            for (String nome : nomes) {
+                novo = new Cliente(nome);
+                clientes.put(novo.hashCode(), novo);
+            }
+        } catch (IOException exception) {
+            System.out.println("Problema na leitura do arquivo. Sistema iniciado somente com cliente anônimo.");
+            pausa();
+        }
+    }
+
+    static void gerarPedidos() {
+        Random aleat = new Random(42);
+        int quantos = clientes.size() * 16;
+        // pedidos = new Pedido[quantos*2];
+        Pedido pedido;
+        IProduto comida = null;
+        for (int i = 0; i < quantos; i++) {
+            int tipo = aleat.nextInt(10_000) % 3;
+            if (tipo <= 1)
+                pedido = new PedidoLocal();
+            else
+                pedido = new PedidoEntrega(aleat.nextInt(10) + 1);
+
+            int quantComidas = aleat.nextInt(1000);
+            if (quantComidas > 950)
+                quantComidas = 4;
+            else if (quantComidas > 750)
+                quantComidas = 3;
+            else if (quantComidas > 500)
+                quantComidas = 2;
+            else
+                quantComidas = 1;
+
+            for (int j = 0; j < quantComidas; j++) {
+                tipo = aleat.nextInt(30_000) % 5;
+                switch (tipo) {
+                    case 0:
+                    case 3:
+                    case 4:
+                            int quantAdic = aleat.nextInt(6);
+                            int borda = aleat.nextInt(EBorda.values().length);
+                            comida = new Pizza(quantAdic);    
+                            ((Pizza)comida).adicionarBorda(EBorda.values()[borda]);
+                        break;
+                    case 1:
+                            int bebida = aleat.nextInt(EBebida.values().length);
+                            comida = EBebida.values()[bebida];
+                        break;
+                    case 2:
+                            int sobre = aleat.nextInt(ESobremesa.values().length);
+                            comida = ESobremesa.values()[sobre];
+                        break;
+                }
+                try {
+                    pedido.adicionar(comida);
+                } catch (IllegalStateException e) {
+                    System.err.println("Comida inválida e pedido sem comida");
+                }
+            }
+            Cliente quem = clientes.get(aleat.nextInt(clientes.size())+1);
+            if (quem == null)
+                quem = clientes.get(1);
+            pedido.fecharPedido();
+            quem.registrarPedido(pedido);
+            todosOsPedidos.add(pedido);
+            
+        }
+    }
+
+    static void config() {
+        gerarClientes();
+        gerarPedidos();
+    }
+
+    //#endregion
+    
+    
+    //#region menus
     static int exibirMenu() {
         cabecalho();
         System.out.println("1 - Abrir Pedido");
@@ -64,6 +161,10 @@ public class XulambsPizza {
         System.out.println("3 - Relatório de Pedido");
         System.out.println("4 - Encerrar Pedido");
         System.out.println("5 - Valor do último Pedido");
+        System.out.println("============================");
+        System.out.println("6 - Atualizar Fidelidades");
+        System.out.println("5 - Relatório de Cliente");
+
         System.out.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha");
     }
@@ -76,6 +177,17 @@ public class XulambsPizza {
         return lerInteiro("Digite sua escolha");
     }
 
+    static int menuAdicionarNoPedido() {
+        cabecalho();
+        System.out.println("1 - Pizzas");
+        System.out.println("2 - Bebidas");
+        System.out.println("3 - Sobremesas");
+        System.out.println("0 - Sair");
+        return lerInteiro("Digite sua escolha");
+}
+    //#endregion
+
+    //#region escolha enumeradores
     static void addBordaPizza(Pizza pizza){
         System.out.println("\nEscolha sua borda: ");
         EBorda[] bordas = EBorda.values();
@@ -85,77 +197,8 @@ public class XulambsPizza {
         int opcao = lerInteiro("Entre sua opção");
         pizza.adicionarBorda(bordas[opcao-1]);
     }
-    
-    static void abrirPedido(List<Pedido> todosOsPedidos) {
-        cabecalho();
-        Pedido novoPedido = escolherTipoPedido();
-        adicionarProdutos(novoPedido);
-        mostrarPedido(novoPedido);
-        todosOsPedidos.add(novoPedido);
-    }
 
-    private static Pedido escolherTipoPedido() {
-        int opcao = menuTipoPedido();
-        switch (opcao) {
-            case 1:  return new PedidoLocal();
-            case 2:  return criarPedidoEntrega();                
-        }
-        return null;
-    }
-
-    private static Pedido criarPedidoEntrega() {
-        System.out.print("Qual a distância?");
-        double dist = Double.parseDouble(teclado.nextLine());
-        return new PedidoEntrega(dist);
-    }
-
-    private static void valorDoUltimoPedido(List<Pedido> todosOsPedidos){
-        cabecalho();
-        Pedido ultimo = todosOsPedidos.getLast();
-        System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
-    }
-    
-    static void relatorioPedido(List<Pedido> todosOsPedidos) {
-        cabecalho();
-        Pedido pedido = localizarPedido(todosOsPedidos);
-        if (pedido != null)
-            mostrarPedido(pedido);
-        else
-            System.out.println("Pedido não existente.");
-    }
-
-    static Pedido localizarPedido(List<Pedido> pedidos) {
-        cabecalho();
-        int id;
-        System.out.println("Localizando um pedido.");
-        id = lerInteiro("ID do pedido");
-
-        for (Pedido ped : pedidos) {
-            if (ped.toString().contains("Pedido " + String.format("%02d", id)))
-                return ped;
-        }
-        return null;
-    }
-
-    static void alterarPedido(List<Pedido> pedidos){
-        Pedido pedido = localizarPedido(pedidos);
-        if (pedido != null) {
-            adicionarProdutos(pedido);
-            mostrarPedido(pedido);
-        } else
-            System.out.println("Pedido não existente.");
-    }
-
-    static int menuAdicionarNoPedido() {
-        cabecalho();
-        System.out.println("1 - Pizzas");
-        System.out.println("2 - Bebidas");
-        System.out.println("3 - Sobremesas");
-        System.out.println("0 - Sair");
-        return lerInteiro("Digite sua escolha");
-}
-
-static EBebida comprarBebida(){
+    static EBebida comprarBebida(){
         System.out.println("\nEscolha sua bebida: ");
         EBebida[] bebidas = EBebida.values();
         for (int i = 0; i < bebidas.length; i++) {
@@ -173,6 +216,96 @@ static EBebida comprarBebida(){
         }
         int opcao = lerInteiro("Entre sua opção");
         return (sobremesas[opcao-1]);
+    }
+    //#endregion
+    
+
+    static void abrirPedido() {
+        cabecalho();
+        Pedido novoPedido = escolherTipoPedido();
+        adicionarProdutos(novoPedido);
+        mostrarPedido(novoPedido);
+        pausa();
+        Cliente quem = localizarCliente();
+        quem.registrarPedido(novoPedido);
+        todosOsPedidos.add(novoPedido);
+        System.out.println("\nPedido registrado para "+quem);
+    }
+
+    private static Pedido escolherTipoPedido() {
+        int opcao = menuTipoPedido();
+        switch (opcao) {
+            case 1:  return new PedidoLocal();
+            case 2:  return criarPedidoEntrega();                
+        }
+        return null;
+    }
+
+    private static Pedido criarPedidoEntrega() {
+        System.out.print("Qual a distância?");
+        double dist = Double.parseDouble(teclado.nextLine());
+        return new PedidoEntrega(dist);
+    }
+
+    private static void valorDoUltimoPedido(){
+        cabecalho();
+        Pedido ultimo = todosOsPedidos.getLast();
+        System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
+    }
+    
+    static void relatorioPedido() {
+        cabecalho();
+        Pedido pedido = localizarPedido();
+        if (pedido != null)
+            mostrarPedido(pedido);
+        else
+            System.out.println("Pedido não existente.");
+    }
+
+    static void relatorioCliente() {
+        cabecalho();
+        Cliente clie = localizarCliente();
+        if (clie != null){
+            System.out.println(clie);
+            System.out.print("Deseja ver o relatório completo (S/N)? ");
+            String completo = teclado.nextLine().toUpperCase();
+            if(completo.equals("S")){
+                limparTela();
+                System.out.println(clie.resumoPedidos());
+            }
+        }
+        else
+            System.out.println("Pedido não existente.");
+    }
+
+    static Pedido localizarPedido() {
+        cabecalho();
+        int id;
+        System.out.println("Localizando um pedido.");
+        id = lerInteiro("ID do pedido");
+
+        for (Pedido ped : todosOsPedidos) {
+            if (ped.hashCode() == id)
+                return ped;
+        }
+        return null;
+    }
+
+    static Cliente localizarCliente() {
+        cabecalho();
+        int id;
+        System.out.println("Localizando um cliente.");
+        id = lerInteiro("ID do cliente");
+        return clientes.get(id);
+    }
+
+    static void alterarPedido(){
+        Pedido pedido = localizarPedido();
+        if (pedido != null) {
+            adicionarProdutos(pedido);
+            mostrarPedido(pedido);
+        } else
+            System.out.println("Pedido não existente.");
     }
 
     private static IProduto escolherProduto(){
@@ -196,8 +329,8 @@ static EBebida comprarBebida(){
         } while (escolha.toLowerCase().equals("s"));
     }
 
-    static void encerrarPedido(List<Pedido> todosOsPedidos) {
-        Pedido pedido = localizarPedido(todosOsPedidos);
+    static void encerrarPedido() {
+        Pedido pedido = localizarPedido();
         try {
             pedido.fecharPedido();
             System.out.println("Pedido encerrado: ");
@@ -206,7 +339,7 @@ static EBebida comprarBebida(){
             System.out.println(excecao.getMessage());
         }catch (NullPointerException nulo){
             System.out.println("Pedido não existe.");
-            encerrarPedido(todosOsPedidos);
+            encerrarPedido();
         }
     }
 
@@ -231,6 +364,14 @@ static EBebida comprarBebida(){
         
     }
 
+    static void atualizarFidelidades() {
+        cabecalho();
+        System.out.println("Atualizando fidelidades...");
+        for (Cliente cli : clientes.values()) {
+                cli.verificarCategoria();
+        }
+    }
+
     static void mostrarNota(Pizza pizza) {
         System.out.println("Você acabou de comprar: ");
         System.out.println(pizza.toString());
@@ -244,16 +385,20 @@ static EBebida comprarBebida(){
 
     public static void main(String[] args) throws Exception {
         teclado = new Scanner(System.in);
-        List<Pedido> todosOsPedidos = new LinkedList<>();
+        todosOsPedidos = new LinkedList<>();
+        clientes = new HashMap<>(80);
+        config();
         int opcao;
         opcao = exibirMenu();
         do {
             switch (opcao) {
-                case 1 -> abrirPedido(todosOsPedidos);
-                case 2 -> alterarPedido(todosOsPedidos);
-                case 3 -> relatorioPedido(todosOsPedidos);
-                case 4 -> encerrarPedido(todosOsPedidos);
-                case 5 -> valorDoUltimoPedido(todosOsPedidos);
+                case 1 -> abrirPedido();
+                case 2 -> alterarPedido();
+                case 3 -> relatorioPedido();
+                case 4 -> encerrarPedido();
+                case 5 -> valorDoUltimoPedido();
+                case 6 -> atualizarFidelidades();
+                case 7 -> relatorioCliente();
             }
             pausa();
             opcao = exibirMenu();
