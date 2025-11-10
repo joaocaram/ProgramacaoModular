@@ -50,9 +50,9 @@ public class PizzaTest {
     @Test
     public void notaDeCompraContemDescricaoEPrecoDetalhado(){
         pizza.adicionarIngredientes(3);
-        assertTrue(pizza.notaDeCompra().contains("29,00"));
-        assertTrue(pizza.notaDeCompra().contains("3 ingredientes"));
-        assertTrue(pizza.notaDeCompra().contains("44,00"));
+        assertTrue(pizza.toString().contains("29,00"));
+        assertTrue(pizza.toString().contains("3 ingredientes"));
+        assertTrue(pizza.toString().contains("44,00"));
     }
 
 

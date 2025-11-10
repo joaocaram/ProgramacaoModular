@@ -105,7 +105,8 @@
       * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
       * @return String no formato "<DESCRICAO>, no valor de <VALOR>"
       */
-     public String notaDeCompra() {
+      @Override
+     public String toString() {
          NumberFormat moeda = NumberFormat.getCurrencyInstance();
          return String.format("%s (%s) com borda %s (%s) com %d ingredientes (%s), no valor de %s", 
                                      DESCRICAO, moeda.format(PRECO_BASE), 

@@ -1,15 +1,16 @@
 import java.text.NumberFormat;
 
-public enum ESobremesa implements IProduto{
+public enum EBebida implements IProduto{
 
-    BRIGADEIRO_DE_COLHER(8),
-    PUDIM(10),
-    DOCE_DE_LEITE(9);
+    ÁGUA_COM_GAS(4),
+    CHÁ_COM_GAS(6),
+    SUCO(9),
+    TAÇA_DE_VINHO(15);
 
     private String nome;
     private double valor;
 
-    ESobremesa(double preco){
+    EBebida(double preco){
         nome = this.name().toLowerCase().replace("_", " ");
         valor = preco;
     }

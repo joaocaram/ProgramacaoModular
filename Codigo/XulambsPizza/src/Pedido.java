@@ -78,12 +78,12 @@ public abstract class Pedido {
 	/**
 	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
 	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
-	 * @param pizza Pizza a ser adicionada
+	 * @param prod Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
 	 */
-	public int adicionar(IProduto pizza) {
+	public int adicionar(IProduto prod) {
 		if(podeAdicionar()){
-            itens.add(pizza);
+            itens.add(prod);
         }
         return itens.size();
 	}

@@ -89,7 +89,7 @@ public class XulambsPizza {
     static void abrirPedido(List<Pedido> todosOsPedidos) {
         cabecalho();
         Pedido novoPedido = escolherTipoPedido();
-        adicionarPizzas(novoPedido);
+        adicionarProdutos(novoPedido);
         mostrarPedido(novoPedido);
         todosOsPedidos.add(novoPedido);
     }
@@ -140,19 +140,58 @@ public class XulambsPizza {
     static void alterarPedido(List<Pedido> pedidos){
         Pedido pedido = localizarPedido(pedidos);
         if (pedido != null) {
-            adicionarPizzas(pedido);
+            adicionarProdutos(pedido);
             mostrarPedido(pedido);
         } else
             System.out.println("Pedido não existente.");
     }
 
-    private static void adicionarPizzas(Pedido procurado) {
+    static int menuAdicionarNoPedido() {
+        cabecalho();
+        System.out.println("1 - Pizzas");
+        System.out.println("2 - Bebidas");
+        System.out.println("3 - Sobremesas");
+        System.out.println("0 - Sair");
+        return lerInteiro("Digite sua escolha");
+}
+
+static EBebida comprarBebida(){
+        System.out.println("\nEscolha sua bebida: ");
+        EBebida[] bebidas = EBebida.values();
+        for (int i = 0; i < bebidas.length; i++) {
+            System.out.println((i+1)+ " - "+bebidas[i]);
+        }
+        int opcao = lerInteiro("Entre sua opção");
+        return bebidas[opcao-1];
+    }
+
+    static ESobremesa comprarSobremesa(){
+        System.out.println("\nEscolha sua sobremesa: ");
+        ESobremesa[] sobremesas = ESobremesa.values();
+        for (int i = 0; i < sobremesas.length; i++) {
+            System.out.println((i+1)+ " - "+sobremesas[i]);
+        }
+        int opcao = lerInteiro("Entre sua opção");
+        return (sobremesas[opcao-1]);
+    }
+
+    private static IProduto escolherProduto(){
+        int opcao = menuAdicionarNoPedido();
+        IProduto produto = null;
+        switch (opcao) {
+            case 1 -> produto = comprarPizza();
+            case 2 -> produto = comprarBebida();
+            case 3 -> produto = comprarSobremesa();
+        }
+        return produto;
+    }
+    private static void adicionarProdutos(Pedido procurado) {
         String escolha = "n";
         do {
             mostrarPedido(procurado);
-            Pizza novaPizza = comprarPizza();
-            procurado.adicionar(novaPizza);
-            System.out.print("\nDeseja outra pizza? (s/n) ");
+            IProduto novoProduto = escolherProduto();
+            procurado.adicionar(novoProduto);
+            System.out.print("\nDeseja algo mais? (s/n) ");
             escolha = teclado.nextLine();
         } while (escolha.toLowerCase().equals("s"));
     }
@@ -194,7 +233,7 @@ public class XulambsPizza {
 
     static void mostrarNota(Pizza pizza) {
         System.out.println("Você acabou de comprar: ");
-        System.out.println(pizza.notaDeCompra());
+        System.out.println(pizza.toString());
     }
 
     static void mostrarPedido(Pedido pedido) {
