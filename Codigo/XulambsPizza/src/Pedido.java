@@ -80,7 +80,7 @@ public abstract class Pedido {
 	}
 
 	public double aplicarDesconto(double valorDesconto){
-		if(desconto!=0)
+		if(desconto != 0)
 			throw new IllegalStateException("Desconto já aplicado");
 		if(valorDesconto < 0 )
 			throw new IllegalArgumentException("Desconto deve ser positivo");

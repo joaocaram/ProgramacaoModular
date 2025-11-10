@@ -151,8 +151,7 @@ public class XulambsPizza {
     }
 
     //#endregion
-    
-    
+      
     //#region menus
     static int exibirMenu() {
         cabecalho();
@@ -163,7 +162,7 @@ public class XulambsPizza {
         System.out.println("5 - Valor do último Pedido");
         System.out.println("============================");
         System.out.println("6 - Atualizar Fidelidades");
-        System.out.println("5 - Relatório de Cliente");
+        System.out.println("7 - Relatório de Cliente");
 
         System.out.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha");
@@ -318,6 +317,7 @@ public class XulambsPizza {
         }
         return produto;
     }
+   
     private static void adicionarProdutos(Pedido procurado) {
         String escolha = "n";
         do {

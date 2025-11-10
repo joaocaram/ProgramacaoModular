@@ -26,7 +26,7 @@ import java.util.List;
 public interface IFidelidade {
    
     public static IFidelidade atualizarCategoria(List<Pedido> pedidos){
-     IFidelidade categoria = new XulambsJunior();
+        IFidelidade categoria = new XulambsJunior();
         int quantos = pedidos.size();
         double valorMedio = 0d;
         for (Pedido pedido : pedidos) {
@@ -38,8 +38,8 @@ public interface IFidelidade {
         else if( quantos>=XulambsPleno.MIN_PEDIDOS && valorMedio>=XulambsPleno.MIN_MEDIA)
                 categoria = new XulambsPleno();
         return categoria;
-        
     }
+    
     public double descontoPedido (Pedido pedido);
    
 }
