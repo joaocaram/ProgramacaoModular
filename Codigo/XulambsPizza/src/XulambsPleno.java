@@ -10,10 +10,8 @@ public class XulambsPleno implements IFidelidade{
         return valor;
     }
 
-    
     @Override
     public String toString(){
         return "Cliente Xulambs Pleno";
-    }
-    
+    }   
 }

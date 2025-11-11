@@ -1,6 +1,5 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 /** 
  * MIT License
  *
@@ -50,7 +49,7 @@ public class Cliente{
     }
 
     public String resumoPedidos(){
-        StringBuilder relatorio = new StringBuilder(this.toString()+"\n");
+        StringBuilder relatorio = new StringBuilder(toString()+"\n");
         for (Pedido pedido : pedidos) {
             relatorio.append(pedido+"\n");
         }
@@ -73,7 +72,5 @@ public class Cliente{
     @Override
     public int hashCode(){
         return id;
-    }
-
-    
+    }   
 }

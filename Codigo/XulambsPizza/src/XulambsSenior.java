@@ -16,8 +16,7 @@ public class XulambsSenior implements IFidelidade {
         pedido.aplicarDesconto(desconto);
         return desconto;
     }
-
-    
+   
     @Override
     public String toString(){
         return "Cliente Xulambs Senior";
