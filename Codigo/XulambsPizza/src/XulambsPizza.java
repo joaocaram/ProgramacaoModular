@@ -141,10 +141,10 @@ public class XulambsPizza {
             pedido.fecharPedido();
             quem.registrarPedido(pedido);
             todosOsPedidos.add(pedido);
-            
         }
     }
 
+    
     static void config() {
         gerarClientes();
         gerarPedidos();
