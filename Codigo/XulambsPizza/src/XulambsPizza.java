@@ -57,7 +57,7 @@ public class XulambsPizza {
 
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.7\n=============");
+        System.out.println("XULAMBS PIZZA v0.8\n=============");
     }
 
     static int lerInteiro(String mensagem){
@@ -159,17 +159,24 @@ public class XulambsPizza {
     //#region menus
     static int exibirMenu() {
         cabecalho();
+        System.out.println("======= V E N D A S ======");
         System.out.println("1 - Abrir Pedido");
         System.out.println("2 - Alterar Pedido");
         System.out.println("3 - Relatório de Pedido");
         System.out.println("4 - Encerrar Pedido");
         System.out.println("5 - Valor do último Pedido");
-        System.out.println("============================");
+        System.out.println("======= C L I E N T E S ======");
         System.out.println("6 - Atualizar Fidelidades");
         System.out.println("7 - Relatório de Cliente");
-        System.out.println("8 - Relatório resumido dos Clientes");
-        System.out.println("9 - Relatório resumido dos Pedidos");
-        System.out.println("10 - Relatório ordenado dos clientes");
+        System.out.println("8 - Relatório resumido dos clientes");
+        System.out.println("9 - Relatório ordenado dos clientes (padrão)");
+        System.out.println("10 - Relatório ordenado dos clientes (escolha)");
+        System.out.println("11 - Total gasto pelos clientes");
+        System.out.println("======= P E D I D O S ======");
+        System.out.println("12 - Relatório resumido dos Pedidos");
+        System.out.println("13 - Relatório ordenado dos pedidos (padrão)");
+        System.out.println("14 - Relatório ordenado dos pedidos (escolha)");
+        System.out.println("15 - Valor médio dos pedidos");
 
         System.out.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha");
@@ -284,6 +291,7 @@ public class XulambsPizza {
             System.out.println("Pedido não existente.");
     }
 
+    
     static Pedido localizarPedido() {
         cabecalho();
         int id;
@@ -368,9 +376,7 @@ public class XulambsPizza {
 
     static void atualizarFidelidades() {
          cabecalho();
-        System.out.println("Atualizando fidelidades...");
-        Consumer<Cliente> cons = c -> c.verificarCategoria();
-        clientes.process(cons);
+        
     }
 
     static void mostrarNota(Pizza pizza) {
@@ -384,22 +390,7 @@ public class XulambsPizza {
 
     }
 
-    static void totalGastoPorClientes(){
-        cabecalho();
-        System.out.println("TOTAL GASTO POR CLIENTES:");
-        Function<Cliente, Double> func = c -> c.totalEmPedidos();
-        System.out.println(clientes.total(func));
-    }
-
-    static void relatorioFiltradoPorGasto(){
-        cabecalho();
-        System.out.println("CLIENTES COM GASTO MÍNIMO:");
-        System.out.print("Valor para filtro: ");
-        double valor = Double.parseDouble(teclado.nextLine());
-        Predicate<Cliente> pred = c -> c.totalEmPedidos() > valor;
-        System.out.println(clientes.filteredReport(pred));
-    }
-
+    
     public static void main(String[] args) throws Exception {
         teclado = new Scanner(System.in);
         todosOsPedidos = new BaseDados<>(1000);
@@ -408,6 +399,7 @@ public class XulambsPizza {
         int opcao;
         opcao = exibirMenu();
         do {
+            
             switch (opcao) {
                 case 1 -> abrirPedido();
                 case 2 -> alterarPedido();
@@ -417,10 +409,14 @@ public class XulambsPizza {
                 case 6 -> atualizarFidelidades();
                 case 7 -> relatorioCliente();
                 case 8 -> relatorioResumido(clientes);
-                case 9 -> relatorioResumido(todosOsPedidos);
-                case 10 -> relatorioOrdenado(clientes);
-                case 12 -> relatorioFiltradoPorGasto();
-             //   case 11 -> relatorioOrdenado(todosOsPedidos);
+          //      case 9 -> relatorioOrdenado(clientes, Cliente::compareTo);
+          //      case 10 -> relatorioEscolhidoCliente();
+          //      case 11 -> totalGastoPorClientes();
+                case 12 -> relatorioResumido(todosOsPedidos);
+          //      case 13 -> relatorioOrdenado(todosOsPedidos, Pedido::compareTo);
+          //      case 14 -> relatorioEscolhidoPedido();
+          //      case 15 -> valorMedioDosPedidos();
+             
             }
             pausa();
             opcao = exibirMenu();
@@ -432,24 +428,9 @@ public class XulambsPizza {
 
     private static void relatorioResumido(BaseDados<?> base) {
         cabecalho();
-        System.out.println(base.sortedReport());
+        System.out.println(base.simpleReport());
     }
 
-    private static void relatorioOrdenado(BaseDados<Cliente> base) {
-        cabecalho();
-        // Comparator<Cliente> comp = new Comparator<Cliente>() {
-        //     @Override
-        //     public int compare(Cliente o1, Cliente o2) {
-        //         return o1.getNome().compareTo(o2.getNome());
-        //     }
-        // };
-        // Comparator<Cliente> comp = 
-        //      (c1,c2) -> (c1.getNome().compareTo(c2.getNome()));
-
-        System.out.println(base.sortedReport(
-            (c1,c2) -> 
-                c1.getNome().compareTo(c2.getNome()))
-        );    
-    }
+    
 
 }

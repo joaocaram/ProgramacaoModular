@@ -51,40 +51,6 @@ public class BaseDados<T extends Comparable<T>> {
         return sb.toString();
     }
 
-    public String sortedReport(Comparator<T> comparador){
-        List<T> lista = new ArrayList<>(dados.values());
-        Collections.sort(lista, comparador);
-
-        StringBuilder sb = new StringBuilder("Relatório ordenado de "+size()+ " dados:\n");
-        for (T dado : lista) {
-            sb.append(dado+"\n\n");
-        }
-        return sb.toString();
-    }
-
-    public String filteredReport(Predicate<T> condicao){
-        List<T> lista = new ArrayList<>(dados.values());
-        
-        StringBuilder sb = new StringBuilder("Relatório filtrado de "+size()+ " dados:\n");
-        for (T dado : lista) {
-            if(condicao.test(dado))
-                sb.append(dado+"\n\n");
-        }
-        return sb.toString();
-    }
-
-    public void process(Consumer<T> action){
-        for (T elemento : dados.values()) {
-            action.accept(elemento);
-        }
-    }
-
-    public double total(Function<T, Double> function){
-        double d = 0;
-        for (T elemento : dados.values()) {
-            d += function.apply(elemento);
-        }
-        return d;
-    }
+    
 
 }
