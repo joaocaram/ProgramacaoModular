@@ -376,7 +376,9 @@ public class XulambsPizza {
 
     static void atualizarFidelidades() {
          cabecalho();
-        
+         Consumer<Cliente> fid =
+                    cli -> cli.verificarCategoria();
+        clientes.processData(fid);
     }
 
     static void mostrarNota(Pizza pizza) {
@@ -409,11 +411,11 @@ public class XulambsPizza {
                 case 6 -> atualizarFidelidades();
                 case 7 -> relatorioCliente();
                 case 8 -> relatorioResumido(clientes);
-          //      case 9 -> relatorioOrdenado(clientes, Cliente::compareTo);
-          //      case 10 -> relatorioEscolhidoCliente();
+                case 9 -> relatorioOrdenado(clientes, Cliente::compareTo);
+                case 10 -> relatorioEscolhidoCliente();
           //      case 11 -> totalGastoPorClientes();
                 case 12 -> relatorioResumido(todosOsPedidos);
-          //      case 13 -> relatorioOrdenado(todosOsPedidos, Pedido::compareTo);
+                case 13 -> relatorioOrdenado(todosOsPedidos, Pedido::compareTo);
           //      case 14 -> relatorioEscolhidoPedido();
           //      case 15 -> valorMedioDosPedidos();
              
@@ -426,9 +428,37 @@ public class XulambsPizza {
         System.out.println("FLW T+ VLW ABS.");
     }
 
+    private static void relatorioEscolhidoCliente() {
+        Comparator<Cliente> compNome = 
+                (c1,c2) -> c1.getNome().compareTo(c2.getNome());
+        Comparator<Cliente> compValor = 
+                (cli1,cli2) -> cli1.totalEmPedidos() > cli2.totalEmPedidos() ? 1 : -1; 
+        Comparator<Cliente> compId = 
+                (cli1,cli2) -> cli1.hashCode() - cli2.hashCode(); 
+        cabecalho();
+        System.out.println("Escolha seu relatório:");
+        System.out.println("1 - Nome:");
+        System.out.println("2 - Gasto:");
+        System.out.println("3 - ID:");
+        int opcao = lerInteiro("Sua escolha");
+        switch (opcao) {
+            case 1 -> relatorioOrdenado(clientes, compNome);
+            case 2 -> relatorioOrdenado(clientes, compValor);
+            case 3 -> relatorioOrdenado(clientes, compId);
+        }
+    }
+
     private static void relatorioResumido(BaseDados<?> base) {
         cabecalho();
         System.out.println(base.simpleReport());
+    }
+
+    private static <T> void relatorioOrdenado(BaseDados<T> base,
+                                              Comparator<T> comparador) {
+        cabecalho();
+        System.out.println(
+            base.sortedReport(comparador)
+        );
     }
 
     

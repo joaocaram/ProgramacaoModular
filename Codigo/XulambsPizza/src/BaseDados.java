@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class BaseDados<T extends Comparable<T>> {
+public class BaseDados<T> {
     // R E F A T O R A Ç Ã O
     private Map<Integer, T> dados;
 
@@ -19,6 +19,7 @@ public class BaseDados<T extends Comparable<T>> {
             throw new IllegalArgumentException();
         dados = new HashMap<>(size);
     }
+
     public int put(T novo){
         dados.put(novo.hashCode(), novo);
         return dados.size();
@@ -40,9 +41,9 @@ public class BaseDados<T extends Comparable<T>> {
         return sb.toString();
     }
 
-    public String sortedReport(){
+    public String sortedReport(Comparator<T> comparador){
         List<T> lista = new ArrayList<>(dados.values());
-        Collections.sort(lista);
+        Collections.sort(lista, comparador);
 
         StringBuilder sb = new StringBuilder("Relatório ordenado de "+size()+ " dados:\n");
         for (T dado : lista) {
@@ -51,6 +52,10 @@ public class BaseDados<T extends Comparable<T>> {
         return sb.toString();
     }
 
-    
+    public void processData(Consumer<T> action){
+        for (T elemento : dados.values()) {
+            action.accept(elemento);            
+        }
+    }
 
 }
