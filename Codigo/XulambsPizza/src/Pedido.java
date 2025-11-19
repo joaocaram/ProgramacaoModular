@@ -32,7 +32,7 @@ import java.util.LinkedList;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public abstract class Pedido {
+public abstract class Pedido implements Comparable<Pedido>{
 
 	//#region static/constantes
 	/** Para gerar o id incremental automático */
@@ -142,5 +142,14 @@ public abstract class Pedido {
 
 	}
 	
+	@Override
+	public int hashCode(){
+		return idPedido;
+	}
+
+	@Override
+	public int compareTo(Pedido outro){
+		return this.idPedido - outro.idPedido;
+	}
 
 }

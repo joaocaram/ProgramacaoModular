@@ -2,12 +2,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /**
@@ -37,8 +41,8 @@ import java.util.Scanner;
 
 public class XulambsPizza {
     static Scanner teclado;
-    static Map<Integer, Cliente> clientes;
-    static List<Pedido> todosOsPedidos;
+    static BaseDados<Cliente> clientes;
+    static BaseDados<Pedido> todosOsPedidos;
 
     //#region utilidades
     static void limparTela() {
@@ -72,13 +76,13 @@ public class XulambsPizza {
     //#region gerador aleatório
     static void gerarClientes() {
         Cliente novo = new Cliente("Anônimo");
-        clientes.put(novo.hashCode(), novo);
+        clientes.put(novo);
         try {
             Path caminho = Path.of("medalhistas.txt");
             List<String> nomes = Files.readAllLines(caminho, Charset.forName("UTF-8"));
             for (String nome : nomes) {
                 novo = new Cliente(nome);
-                clientes.put(novo.hashCode(), novo);
+                clientes.put(novo);
             }
         } catch (IOException exception) {
             System.out.println("Problema na leitura do arquivo. Sistema iniciado somente com cliente anônimo.");
@@ -140,7 +144,7 @@ public class XulambsPizza {
                 quem = clientes.get(1);
             pedido.fecharPedido();
             quem.registrarPedido(pedido);
-            todosOsPedidos.add(pedido);
+            todosOsPedidos.put(pedido);
         }
     }
 
@@ -163,6 +167,9 @@ public class XulambsPizza {
         System.out.println("============================");
         System.out.println("6 - Atualizar Fidelidades");
         System.out.println("7 - Relatório de Cliente");
+        System.out.println("8 - Relatório resumido dos Clientes");
+        System.out.println("9 - Relatório resumido dos Pedidos");
+        System.out.println("10 - Relatório ordenado dos clientes");
 
         System.out.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha");
@@ -227,7 +234,7 @@ public class XulambsPizza {
         pausa();
         Cliente quem = localizarCliente();
         quem.registrarPedido(novoPedido);
-        todosOsPedidos.add(novoPedido);
+        todosOsPedidos.put(novoPedido);
         System.out.println("\nPedido registrado para "+quem);
     }
 
@@ -248,8 +255,8 @@ public class XulambsPizza {
 
     private static void valorDoUltimoPedido(){
         cabecalho();
-        Pedido ultimo = todosOsPedidos.getLast();
-        System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
+        // Pedido ultimo = todosOsPedidos.getLast();
+        // System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
     }
     
     static void relatorioPedido() {
@@ -282,12 +289,7 @@ public class XulambsPizza {
         int id;
         System.out.println("Localizando um pedido.");
         id = lerInteiro("ID do pedido");
-
-        for (Pedido ped : todosOsPedidos) {
-            if (ped.hashCode() == id)
-                return ped;
-        }
-        return null;
+        return todosOsPedidos.get(id);
     }
 
     static Cliente localizarCliente() {
@@ -365,11 +367,10 @@ public class XulambsPizza {
     }
 
     static void atualizarFidelidades() {
-        cabecalho();
+         cabecalho();
         System.out.println("Atualizando fidelidades...");
-        for (Cliente cli : clientes.values()) {
-                cli.verificarCategoria();
-        }
+        Consumer<Cliente> cons = c -> c.verificarCategoria();
+        clientes.process(cons);
     }
 
     static void mostrarNota(Pizza pizza) {
@@ -383,10 +384,26 @@ public class XulambsPizza {
 
     }
 
+    static void totalGastoPorClientes(){
+        cabecalho();
+        System.out.println("TOTAL GASTO POR CLIENTES:");
+        Function<Cliente, Double> func = c -> c.totalEmPedidos();
+        System.out.println(clientes.total(func));
+    }
+
+    static void relatorioFiltradoPorGasto(){
+        cabecalho();
+        System.out.println("CLIENTES COM GASTO MÍNIMO:");
+        System.out.print("Valor para filtro: ");
+        double valor = Double.parseDouble(teclado.nextLine());
+        Predicate<Cliente> pred = c -> c.totalEmPedidos() > valor;
+        System.out.println(clientes.filteredReport(pred));
+    }
+
     public static void main(String[] args) throws Exception {
         teclado = new Scanner(System.in);
-        todosOsPedidos = new LinkedList<>();
-        clientes = new HashMap<>(80);
+        todosOsPedidos = new BaseDados<>(1000);
+        clientes = new BaseDados<>(80);
         config();
         int opcao;
         opcao = exibirMenu();
@@ -399,6 +416,11 @@ public class XulambsPizza {
                 case 5 -> valorDoUltimoPedido();
                 case 6 -> atualizarFidelidades();
                 case 7 -> relatorioCliente();
+                case 8 -> relatorioResumido(clientes);
+                case 9 -> relatorioResumido(todosOsPedidos);
+                case 10 -> relatorioOrdenado(clientes);
+                case 12 -> relatorioFiltradoPorGasto();
+             //   case 11 -> relatorioOrdenado(todosOsPedidos);
             }
             pausa();
             opcao = exibirMenu();
@@ -406,6 +428,28 @@ public class XulambsPizza {
 
         teclado.close();
         System.out.println("FLW T+ VLW ABS.");
+    }
+
+    private static void relatorioResumido(BaseDados<?> base) {
+        cabecalho();
+        System.out.println(base.sortedReport());
+    }
+
+    private static void relatorioOrdenado(BaseDados<Cliente> base) {
+        cabecalho();
+        // Comparator<Cliente> comp = new Comparator<Cliente>() {
+        //     @Override
+        //     public int compare(Cliente o1, Cliente o2) {
+        //         return o1.getNome().compareTo(o2.getNome());
+        //     }
+        // };
+        // Comparator<Cliente> comp = 
+        //      (c1,c2) -> (c1.getNome().compareTo(c2.getNome()));
+
+        System.out.println(base.sortedReport(
+            (c1,c2) -> 
+                c1.getNome().compareTo(c2.getNome()))
+        );    
     }
 
 }

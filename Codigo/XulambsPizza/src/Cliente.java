@@ -24,7 +24,7 @@ import java.util.List;
  * SOFTWARE.
  */
 
-public class Cliente{
+public class Cliente implements Comparable<Cliente>{
     private static int ultimoID = 0;
     private int id;
     private String nome;
@@ -72,5 +72,21 @@ public class Cliente{
     @Override
     public int hashCode(){
         return id;
-    }   
+    }
+
+    public String getNome(){
+        return nome;
+    }
+
+    @Override
+    public int compareTo(Cliente o) {
+        int resultado = 0;
+        if(totalEmPedidos() > o.totalEmPedidos())
+            resultado = 1;
+        else if(totalEmPedidos() < o.totalEmPedidos())
+                resultado = -1;
+        return resultado;
+    }
+    
+    
 }
