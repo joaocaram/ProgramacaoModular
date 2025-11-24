@@ -2,6 +2,8 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
@@ -108,9 +110,7 @@ public class FormasCollectionStream {
             }
             colecao.add(nova);
         }
-
         return colecao;
-
     }
 
     public static Collection<FormaGeometrica> criarNovoConjunto(Collection<FormaGeometrica> colecao) {
@@ -120,12 +120,19 @@ public class FormasCollectionStream {
 
     }
 
+    static void criarColecoes(Collection<FormaGeometrica> lista,
+                                Collection<FormaGeometrica> conjunto){
+
+        lista = criarNovoConjunto(lista);
+        conjunto.addAll(lista);
+    }
+
     public static void main(String[] args) {
         Comparator<FormaGeometrica> compArea = (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
         Comparator<FormaGeometrica> compDesc = (f1, f2) -> f1.toString().compareTo(f2.toString());
 
         LinkedList<FormaGeometrica> listaFormas = new LinkedList<>();
-        TreeMap<Double, FormaGeometrica> arvore = new TreeMap<>();
+        HashSet<FormaGeometrica> conjunto = new HashSet<>();
         HashMap<Integer, FormaGeometrica> hashFiguras = new HashMap<>();
         int opcao;
 
@@ -136,17 +143,10 @@ public class FormasCollectionStream {
             limparTela();
             System.out.println();
             switch (opcao) {
-                case 1 -> {
-                   
+                case 1 -> criarColecoes(listaFormas, conjunto);
+                case 2 -> adicionarFormasFixas(listaFormas, conjunto);
 
-                }
-                case 2 -> {
-                    
-                }
-
-                case 3 -> {
-                    
-                }
+                case 3 -> mostrarColecoes(listaFormas, conjunto);
                 case 4 -> {
                     
                 }
@@ -193,5 +193,29 @@ public class FormasCollectionStream {
         }
 
         teclado.close();
+    }
+
+    private static void adicionarFormasFixas(LinkedList<FormaGeometrica> listaFormas,
+            HashSet<FormaGeometrica> conjunto) {
+                Quadrado quadradinho = new Quadrado(2);
+                listaFormas.add(quadradinho);
+                listaFormas.add(quadradinho);
+                conjunto.add(quadradinho);
+                conjunto.add(quadradinho);
+        
+    }
+
+    private static void mostrarColecoes(LinkedList<FormaGeometrica> listaFormas, HashSet<FormaGeometrica> conjunto) {
+        limparTela();
+        System.out.println("LISTA");
+        for (FormaGeometrica formaGeometrica : listaFormas) {
+            System.out.println(formaGeometrica);
+        }    
+        pausa();
+        limparTela();
+        System.out.println("CONJUNTO");
+        for (FormaGeometrica formaGeometrica : conjunto) {
+            System.out.println(formaGeometrica);
+        }
     }
 }
