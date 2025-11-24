@@ -413,11 +413,11 @@ public class XulambsPizza {
                 case 8 -> relatorioResumido(clientes);
                 case 9 -> relatorioOrdenado(clientes, Cliente::compareTo);
                 case 10 -> relatorioEscolhidoCliente();
-          //      case 11 -> totalGastoPorClientes();
+                case 11 -> totalGastoPorClientes();
                 case 12 -> relatorioResumido(todosOsPedidos);
                 case 13 -> relatorioOrdenado(todosOsPedidos, Pedido::compareTo);
-          //      case 14 -> relatorioEscolhidoPedido();
-          //      case 15 -> valorMedioDosPedidos();
+                case 14 -> filtroPorGastoCliente();
+                case 15 -> valorMedioDosPedidos();
              
             }
             pausa();
@@ -426,6 +426,35 @@ public class XulambsPizza {
 
         teclado.close();
         System.out.println("FLW T+ VLW ABS.");
+    }
+
+    private static void filtroPorGastoCliente() {
+        cabecalho();
+        System.out.println("Clientes com gasto mínimo");
+        System.out.print("Valor do filtro: R$ ");
+        double valor = Double.parseDouble(teclado.nextLine());
+        Predicate<Cliente> filtro = 
+                    cli -> cli.totalEmPedidos() >= valor;
+        System.out.println(clientes.filteredReport(filtro));
+        
+    }
+
+    private static void totalGastoPorClientes() {
+        cabecalho();
+        System.out.print("TOTAL GASTO POR CLIENTES DA PIZZARIA: "); 
+        Function<Cliente, Double> func = 
+                    cli -> cli.totalEmPedidos();
+        double total = clientes.total(func);
+        System.out.printf("R$ %.2f\n", total);
+    }
+
+     private static void valorMedioDosPedidos() {
+        cabecalho();
+        System.out.print("VALOR MÉDIO POR PEDIDO DA PIZZARIA: "); 
+        Function<Pedido, Double> func = 
+                    (ped) -> ped.precoAPagar();
+        double total = todosOsPedidos.total(func);
+        System.out.printf("R$ %.2f\n", total/todosOsPedidos.size());
     }
 
     private static void relatorioEscolhidoCliente() {

@@ -58,4 +58,21 @@ public class BaseDados<T> {
         }
     }
 
+    public double total(Function<T, Double> funcao){
+        double valor = 0d;
+         for (T elemento : dados.values()) {
+            valor += funcao.apply(elemento);            
+        }
+        return valor;
+    }
+
+    public String filteredReport(Predicate<T> condicao){
+        StringBuilder lista = new StringBuilder("Dados filtrados: \n");
+         for (T elemento : dados.values()) {
+            if(condicao.test(elemento))
+                lista.append("\n"+elemento+"\n");     
+        }
+        return lista.toString();
+    }
+
 }
