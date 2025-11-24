@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 
- /** Classe abstrata para representação de formas geomérticas */
+import java.util.Objects;
+
+/** Classe abstrata para representação de formas geomérticas */
 public abstract class FormaGeometrica {
     private static int ultimoId=0;
     private String descricao;
@@ -86,7 +88,7 @@ public abstract class FormaGeometrica {
 
     @Override
     public int hashCode(){
-        return id;
+        return Objects.hash(descricao, area());
     }
     
 }
