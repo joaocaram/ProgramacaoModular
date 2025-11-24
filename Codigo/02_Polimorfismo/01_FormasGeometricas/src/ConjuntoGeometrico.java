@@ -22,10 +22,12 @@
  * SOFTWARE.
  */
 
- /** Encapsula um conjunto de formas geométricas */
+import java.util.ArrayList;
+
+/** Encapsula um conjunto de formas geométricas */
 public class ConjuntoGeometrico {
 
-	private FormaGeometrica[] formas;
+	private ArrayList<FormaGeometrica> formas; //tamanho pré definido: arraylist
 	int quantidade;
 
     /**
@@ -34,8 +36,8 @@ public class ConjuntoGeometrico {
      */
 	public ConjuntoGeometrico(int capacidade) {
 		if(capacidade <2) capacidade = 2;
-		formas = new FormaGeometrica[capacidade];
-		quantidade = 0;
+		formas = new ArrayList<>(capacidade);
+		quantidade = capacidade;
 	}
 
     /**
@@ -43,11 +45,15 @@ public class ConjuntoGeometrico {
      * @return A forma com a maior área do conjunto, ou nulo se ele estiver vazio.
      */
 	public FormaGeometrica maiorArea() {
-		FormaGeometrica maior = formas[0];
-        for (int i = 1; i < quantidade; i++) {
-            if(formas[i].area() > maior.area())
-                maior = formas[i];
-        }
+		FormaGeometrica maior = null;	
+		if(formas.size()>0){
+			maior = formas.get(0);
+        	for (int i = 1; i < quantidade; i++) {
+            	if(formas.get(i).area() > maior.area())
+                	maior = formas.get(i);
+        
+			}
+		}
 		return maior;
 	}
 
@@ -56,11 +62,9 @@ public class ConjuntoGeometrico {
      * @param nova A forma a ser armazenada.
      */
 	public void addForma(FormaGeometrica nova) {
-		if(quantidade<formas.length){
-			formas[quantidade] = nova;
-			quantidade++;
+		if(formas.size()<quantidade){
+			formas.addLast(nova);
 		}
-		
 	}
 
 	
@@ -73,7 +77,6 @@ public class ConjuntoGeometrico {
 	public String toString() {
 		StringBuilder relat = new StringBuilder("CONJUNTO COM "+quantidade+" FORMAS GEOMÉTRICAS:\n");
 		for (FormaGeometrica forma : formas) {
-			if(forma!=null)
             	relat.append(forma+"\n");
         }
 		return relat.toString();
