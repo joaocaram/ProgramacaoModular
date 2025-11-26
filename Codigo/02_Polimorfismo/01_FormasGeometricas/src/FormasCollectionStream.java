@@ -41,6 +41,10 @@ import java.util.TreeMap;
 public class FormasCollectionStream {
     static Scanner teclado = new Scanner(System.in, Charset.forName("UTF-8"));
 
+    static LinkedList<FormaGeometrica> listaFormas = new LinkedList<>();
+    static HashSet<FormaGeometrica> conjunto = new HashSet<>();
+    static HashMap<Integer, FormaGeometrica> hashFiguras = new HashMap<>();
+        
     static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -125,15 +129,15 @@ public class FormasCollectionStream {
 
         lista = criarNovoConjunto(lista);
         conjunto.addAll(lista);
+        for(FormaGeometrica forma : lista){
+            hashFiguras.put(forma.hashCode(), forma);
+        }
     }
 
     public static void main(String[] args) {
         Comparator<FormaGeometrica> compArea = (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
         Comparator<FormaGeometrica> compDesc = (f1, f2) -> f1.toString().compareTo(f2.toString());
 
-        LinkedList<FormaGeometrica> listaFormas = new LinkedList<>();
-        HashSet<FormaGeometrica> conjunto = new HashSet<>();
-        HashMap<Integer, FormaGeometrica> hashFiguras = new HashMap<>();
         int opcao;
 
 
@@ -148,6 +152,17 @@ public class FormasCollectionStream {
 
                 case 3 -> mostrarColecoes(listaFormas, conjunto);
                 case 4 -> {
+                    Quadrado quad2 = new Quadrado(2);
+                    int posicao = listaFormas.indexOf(quad2);
+                    if(posicao != -1){
+                        System.out.println(listaFormas.get(posicao));
+                    }
+                    boolean existe = conjunto.contains(quad2);
+                    System.out.println("Conjunto: "+existe);
+                    FormaGeometrica forma = hashFiguras.get(quad2.hashCode());
+                    if(forma != null){
+                        System.out.println(forma);
+                    }
                     
                 }
                 case 5 -> {
@@ -164,16 +179,36 @@ public class FormasCollectionStream {
                     
                 }
                 case 9 ->{
+                    Comparator<FormaGeometrica> compAreaAula = 
+                                (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
+                    FormaGeometrica forma = listaFormas.stream()
+                                             .max(compAreaAula)
+                                             .orElseThrow(() ->new IllegalStateException());
+                    System.out.println("Maior pela área:\n"+forma);
                     
                 }           
                 case 10 ->{
-                   
+                   Comparator<FormaGeometrica> compAreaAula = 
+                                (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
+                    FormaGeometrica forma = listaFormas.stream()
+                                             .max(compAreaAula)
+                                             .orElseThrow(() ->new IllegalStateException());
+                    System.out.println("Maior pela área:\n"+forma);
+                    
                 }      
                 case 11 -> {
-                    
+                    double soma = listaFormas.stream()
+                                             .mapToDouble(f->f.area())
+                                             .sum();
+                    System.out.printf("Soma das áreas: %.2f\n", soma);
                 }
                 case 12 -> {
-                    
+                    double media = listaFormas.stream()
+                                             .mapToDouble(f->f.perimetro())
+                                             .average()
+                                             .orElse(0d);
+                    System.out.printf("Média dos perímetros: %.2f\n", media);
+               
                 }
 
                 case 13 -> {
@@ -202,7 +237,7 @@ public class FormasCollectionStream {
                 listaFormas.add(quadradinho);
                 conjunto.add(quadradinho);
                 conjunto.add(quadradinho);
-        
+                hashFiguras.put(quadradinho.hashCode(), quadradinho);
     }
 
     private static void mostrarColecoes(LinkedList<FormaGeometrica> listaFormas, HashSet<FormaGeometrica> conjunto) {
@@ -215,6 +250,12 @@ public class FormasCollectionStream {
         limparTela();
         System.out.println("CONJUNTO");
         for (FormaGeometrica formaGeometrica : conjunto) {
+            System.out.println(formaGeometrica);
+        }
+        pausa();
+        limparTela();
+        System.out.println("MAPA");
+        for (FormaGeometrica formaGeometrica : hashFiguras.values()) {
             System.out.println(formaGeometrica);
         }
     }
