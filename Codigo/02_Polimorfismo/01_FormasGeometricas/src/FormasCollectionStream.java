@@ -74,7 +74,7 @@ public class FormasCollectionStream {
         System.out.println(linha);
         System.out.println("TOTALIZADORES");
         System.out.println("9 - Maior forma em área");
-        System.out.println("10 - Menor forma em perímetro");
+        System.out.println("10 - Menor forma pela descrição");
         System.out.println("11 - Soma das áreas");
         System.out.println("12 - Soma e média dos perímetros");
         System.out.println("13 - Média dos perímetros de um tipo");        
@@ -139,17 +139,15 @@ public class FormasCollectionStream {
         Comparator<FormaGeometrica> compDesc = (f1, f2) -> f1.toString().compareTo(f2.toString());
 
         int opcao;
-
-
+        criarColecoes(listaFormas, conjunto);
         opcao = menuPrincipal();
-
+        
         while (opcao != 0) {
             limparTela();
             System.out.println();
             switch (opcao) {
                 case 1 -> criarColecoes(listaFormas, conjunto);
                 case 2 -> adicionarFormasFixas(listaFormas, conjunto);
-
                 case 3 -> mostrarColecoes(listaFormas, conjunto);
                 case 4 -> {
                     Quadrado quad2 = new Quadrado(2);
@@ -179,21 +177,18 @@ public class FormasCollectionStream {
                     
                 }
                 case 9 ->{
-                    Comparator<FormaGeometrica> compAreaAula = 
-                                (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
                     FormaGeometrica forma = listaFormas.stream()
-                                             .max(compAreaAula)
-                                             .orElseThrow(() ->new IllegalStateException());
+                                             .max(compArea)
+                                             .orElseThrow(() ->new IllegalStateException("Coleção vazia"));
                     System.out.println("Maior pela área:\n"+forma);
                     
                 }           
                 case 10 ->{
-                   Comparator<FormaGeometrica> compAreaAula = 
-                                (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
+                   
                     FormaGeometrica forma = listaFormas.stream()
-                                             .max(compAreaAula)
+                                             .min(compDesc)
                                              .orElseThrow(() ->new IllegalStateException());
-                    System.out.println("Maior pela área:\n"+forma);
+                    System.out.println("Menor em ordem 'alfabética':\n"+forma);
                     
                 }      
                 case 11 -> {
