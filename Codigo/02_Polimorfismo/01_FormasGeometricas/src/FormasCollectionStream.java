@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 
 /** 
@@ -135,8 +137,10 @@ public class FormasCollectionStream {
     }
 
     public static void main(String[] args) {
-        Comparator<FormaGeometrica> compArea = (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
-        Comparator<FormaGeometrica> compDesc = (f1, f2) -> f1.toString().compareTo(f2.toString());
+        Comparator<FormaGeometrica> compArea = 
+                (f1, f2) -> f1.area() > f2.area() ? 1 : -1;
+        Comparator<FormaGeometrica> compDesc = 
+                (f1, f2) -> f1.toString().compareTo(f2.toString());
 
         int opcao;
         criarColecoes(listaFormas, conjunto);
@@ -164,17 +168,57 @@ public class FormasCollectionStream {
                     
                 }
                 case 5 -> {
-                               
+                    System.out.print("Digite a área mínima para filtrar: ");
+                    double minimo = Double.parseDouble(teclado.nextLine());
+                    Predicate<FormaGeometrica> areaMinima = 
+                            (forma -> forma.area() >= minimo);
+                    Stream<FormaGeometrica> filtro = listaFormas.stream()
+                                                                .filter(areaMinima);  
+                    for (FormaGeometrica forma : filtro.toList()) {
+                        System.out.println(forma);
+                    }         
                 }
                 case 6 -> {
-                    
+                     System.out.print("Digite a área mínima para filtrar: ");
+                    double minimo = Double.parseDouble(teclado.nextLine());
+                    Predicate<FormaGeometrica> areaMinima = 
+                            (forma -> forma.area() >= minimo);
+                    long cont = listaFormas.stream()
+                                            .filter(areaMinima)
+                                            .count();
+
+                    System.out.println(cont+ " formas atendem ao filtro");
                 }
                 case 7 -> {
-                    
-                               
+                    System.out.print("Digite a área mínima para filtrar: ");
+                    double minimo = Double.parseDouble(teclado.nextLine());
+                    System.out.print("Qual tipo te interessa? ");
+                    String tipo = teclado.nextLine().toLowerCase();
+                    Predicate<FormaGeometrica> areaMinima = 
+                            (forma -> forma.area() >= minimo);
+                    System.out.println(
+                            listaFormas.stream()
+                                  .filter(areaMinima)
+                                  .filter(f->f.nome().toLowerCase().equals(tipo))
+                                  .map(f -> f.toString())
+                                  .reduce((s1, s2) -> s1.concat("\n").concat(s2))
+                                  .orElse("Sem formas para este filtro")
+                    );
+                                                   
                 }
                 case 8 -> {
-                    
+                    System.out.print("Digite a área mínima para filtrar: ");
+                    double minimo = Double.parseDouble(teclado.nextLine());
+                    Predicate<FormaGeometrica> areaMinima = 
+                            (forma -> forma.area() >= minimo);
+                    Stream<String> filtro = listaFormas.stream()
+                                                                .filter(areaMinima)
+                                                                .map(f->f.nome())
+                                                                .distinct();
+
+                    for (String forma : filtro.toList()) {
+                        System.out.println(forma);
+                    } 
                 }
                 case 9 ->{
                     FormaGeometrica forma = listaFormas.stream()
@@ -184,7 +228,6 @@ public class FormasCollectionStream {
                     
                 }           
                 case 10 ->{
-                   
                     FormaGeometrica forma = listaFormas.stream()
                                              .min(compDesc)
                                              .orElseThrow(() ->new IllegalStateException());
@@ -201,20 +244,35 @@ public class FormasCollectionStream {
                     double media = listaFormas.stream()
                                              .mapToDouble(f->f.perimetro())
                                              .average()
-                                             .orElse(0d);
+                                             .orElseGet(()->new Quadrado(2).area());
                     System.out.printf("Média dos perímetros: %.2f\n", media);
                
                 }
 
                 case 13 -> {
-                    
+                    System.out.print("Qual tipo te interessa? ");
+                    String tipo = teclado.nextLine().toLowerCase();
+                    System.out.printf("Soma dos perímetros dos %s: %.2f\n ", 
+                            tipo,
+                            listaFormas.stream()
+                                       .filter(f -> f.nome().toLowerCase().equals(tipo))  
+                                       .mapToDouble(f -> f.perimetro())
+                                       .average()
+                                       .orElse(0d)
+                            );
                 }
 
                 case 14 -> {
                     
                 }
                 case 15 -> {
-                    
+                    System.out.println(
+                        listaFormas.stream()
+                                   .sorted(compArea)
+                                   .map(f->f.toString())
+                                   .reduce((s1, s2) -> s1.concat("\n").concat(s2))
+                                   .orElse("Conjunto vazio")
+                    );
                 }
                 default -> opcao = 1;
             }
