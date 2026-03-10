@@ -1,8 +1,7 @@
-import java.util.Scanner;
 /** 
  * MIT License
  *
- * Copyright(c) 2022-24 João Caram <caram@pucminas.br>
+ * Copyright(c) 2022-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +23,6 @@ import java.util.Scanner;
  */
 
 public class App {
-    static Scanner teclado;
 
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -32,56 +30,50 @@ public class App {
     }
 
     static void pausa() {
-        System.out.println("Tecle Enter para continuar.");
-        teclado.nextLine();
+        IO.println("\nTecle Enter para continuar.");
+        IO.readln();
     }
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA\n=============");
+        IO.println("XULAMBS PIZZA v0.1\n=============");
     }
 
     static int exibirMenu() {
         cabecalho();
-        System.out.println("1 - Comprar pizza");
-        System.out.println("0 - Finalizar");
-        System.out.print("Digite sua escolha: ");
-        return Integer.parseInt(teclado.nextLine());
+        IO.println("1 - Comprar pizza");
+        IO.println("0 - Finalizar");
+        return Integer.parseInt(IO.readln("Digite sua escolha: "));
     }
 
     static void comprarPizza() {
         cabecalho();
-        System.out.println("Comprando uma nova pizza:");
+        IO.println("Comprando uma nova pizza:");
         Pizza novaPizza = new Pizza();
         escolherIngredientes(novaPizza);
         mostrarNota(novaPizza);
     }
 
     static void escolherIngredientes(Pizza pizza) {
-        System.out.print("Quantos adicionais você deseja? (máx. 8): ");
-        int adicionais = Integer.parseInt(teclado.nextLine());
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
         pizza.adicionarIngredientes(adicionais);
     }
 
     static void mostrarNota(Pizza pizza) {
-        System.out.println("Você acabou de comprar: ");
-        System.out.println(pizza.notaDeCompra());
+        IO.println("Você acabou de comprar: \n ");
+        IO.println(pizza.cupomDeVenda());
 
     }
 
     public static void main(String[] args) throws Exception {
-        teclado = new Scanner(System.in);
         int opcao = -1;
         do {
             opcao = exibirMenu();
             switch (opcao) {
-                case 1:
-                    comprarPizza();
-                    break;
+                case 1 -> comprarPizza();    
             }
             pausa();
-        } while (opcao != 0);
-        teclado.close();
-        System.out.println("FLW T+ VLW ABS.");
+        } while (opcao != 0);        
+        IO.println("FLW T+ VLW ABS.");
     }
 
 }
