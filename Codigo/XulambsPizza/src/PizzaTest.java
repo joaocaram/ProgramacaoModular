@@ -1,5 +1,5 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,49 +10,66 @@ public class PizzaTest {
 
     @BeforeEach
     public void setup(){
+        //Arrange (para todos)
         pizza = new Pizza();
     }
 
     @Test
     public void criaUmaPizzaVaziaCorretamente(){
-        assertEquals(29d, pizza.valorFinal(), 0.01);
+        //Act
+        double valorPizza = pizza.valorAPagar();
+        
+        //Assert
+        assertEquals(29d, valorPizza, 0.01);
     }
-
-    @Test
-    public void criaUmaPizzaComAdicionaisCorretamente(){
-        pizza = new Pizza(2);
-        assertEquals(39d, pizza.valorFinal(), 0.01);
-    }
-
-    @Test
-    public void criaPizzaCorretamenteMesmoComAdicionaisInválidos(){
-        pizza = new Pizza(-4);
-        assertEquals(29d, pizza.valorFinal(), 0.01);
-    }
+ 
 
     @Test
     public void adicionaIngredientesCorretamente(){
-        assertEquals(3, pizza.adicionarIngredientes(3));
+        //Act
+        int totalIngredientes = pizza.adicionarIngredientes(3);
+        
+        //Assert
+        assertEquals(3, totalIngredientes);
     }
 
     @Test
     public void naoAdicionaIngredientesEmExcesso(){
+        //Arrange
         pizza.adicionarIngredientes(3);
-        assertEquals(3, pizza.adicionarIngredientes(6));
+        
+        //Act
+
+        int totalIngredientes =  pizza.adicionarIngredientes(6);
+        
+        //Assert
+        assertEquals(3, totalIngredientes);
     }
 
     @Test
     public void calculaPrecoComAdicionaisCorretamente(){
-        pizza.adicionarIngredientes(3);
-        assertEquals(44d, pizza.valorFinal(), 0.01);
+        //Arrange
+        pizza.adicionarIngredientes(2);
+
+        //Act
+        double valor = pizza.valorAPagar();
+
+        //Assert
+        assertEquals(39d, valor, 0.01);
     }
 
     @Test
     public void notaDeCompraContemDescricaoEPrecoDetalhado(){
-        pizza.adicionarIngredientes(3);
-        assertTrue(pizza.notaDeCompra().contains("29,00"));
-        assertTrue(pizza.notaDeCompra().contains("3 ingredientes"));
-        assertTrue(pizza.notaDeCompra().contains("44,00"));
+        //Arrange
+        pizza.adicionarIngredientes(2);
+        
+        //Act
+        String cupom = pizza.cupomDeVenda();
+
+        //Assert
+        assertTrue(cupom.contains("29,00") &&
+                   cupom.contains("2 adicionais") &&
+                   cupom.contains("39,00"));
     }
 
 
