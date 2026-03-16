@@ -39,7 +39,6 @@ public class PizzaTest {
         pizza.adicionarIngredientes(3);
         
         //Act
-
         int totalIngredientes =  pizza.adicionarIngredientes(6);
         
         //Assert

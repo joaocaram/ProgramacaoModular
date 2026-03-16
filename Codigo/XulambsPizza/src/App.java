@@ -48,14 +48,9 @@ public class App {
     static void comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
-        Pizza novaPizza = new Pizza();
-        escolherIngredientes(novaPizza);
-        mostrarNota(novaPizza);
-    }
-
-    static void escolherIngredientes(Pizza pizza) {
         int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
-        pizza.adicionarIngredientes(adicionais);
+        Pizza novaPizza = new Pizza(adicionais);
+        mostrarNota(novaPizza);
     }
 
     static void mostrarNota(Pizza pizza) {

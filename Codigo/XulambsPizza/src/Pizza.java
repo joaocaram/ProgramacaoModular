@@ -37,15 +37,28 @@ public class Pizza {
     private double valorPorAdicional;
     private int quantidadeIngredientes;
 
+    void setUp(int adicionais){
+        maxIngredientes = 8;
+        precoBase = 29d;
+        valorPorAdicional = 5d;
+        adicionarIngredientes(adicionais);
+    }
+
     /**
      * Construtor padrão. Cria uma pizza sem adicionais.
      */
     public Pizza() {
-        maxIngredientes = 8;
-        descricao = "Pizza sem adicionais.";
-        precoBase = 29d;
-        valorPorAdicional = 5d;
-        quantidadeIngredientes = 0;
+        setUp(0);
+    }
+
+    /**
+     * Cria uma pizza já com ingredientes adicionais.
+     * Caso o valor seja inválido (<1 ou >8), a pizza será criada
+     * sem adicionais.
+     * @param adicionais Inteiro com a quantidade de adicionais da pizza.
+     */
+    public Pizza(int adicionais) {
+        setUp(adicionais);
     }
 
     /**
@@ -60,8 +73,8 @@ public class Pizza {
     /**
      * Tenta adicionar ingredientes na pizza. Caso a adição seja inválida
      * (ultrapassando limites ou com valores negativos), mantém
-     * a quantidade atual de ingredientes. Retorna a quantidade de ingredientes após
-     * a execução do método.
+     * a quantidade atual de ingredientes. Atualiza a descrição.
+     * Retorna a quantidade de ingredientes após a execução do método.
      * 
      * @param quantos Quantos ingredientes a serem adicionados (>0)
      * @return Quantos ingredientes a pizza tem após a execução
