@@ -36,10 +36,12 @@ public class App {
     static void cabecalho() {
         limparTela();
         IO.println("XULAMBS PIZZA v0.1\n=============");
+        IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
     static int exibirMenu() {
         cabecalho();
+        
         IO.println("1 - Comprar pizza");
         IO.println("0 - Finalizar");
         return Integer.parseInt(IO.readln("Digite sua escolha: "));

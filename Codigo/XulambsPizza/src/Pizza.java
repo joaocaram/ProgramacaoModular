@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import javax.swing.undo.StateEdit;
 
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
@@ -31,17 +32,18 @@
  */
 public class Pizza {
 
-    private int maxIngredientes;
+    private static final int MAX_INGREDIENTES = 8;
+    private static final double PRECO_BASE = 29D;
+    private static final double VALOR_ADICIONAL = 5d;
+    
+    private static int quantidadeVendida=0;
+    
     private String descricao;
-    private double precoBase;
-    private double valorPorAdicional;
     private int quantidadeIngredientes;
 
-    void setUp(int adicionais){
-        maxIngredientes = 8;
-        precoBase = 29d;
-        valorPorAdicional = 5d;
+    private void setUp(int adicionais){
         adicionarIngredientes(adicionais);
+        quantidadeVendida++;
     }
 
     /**
@@ -67,7 +69,15 @@ public class Pizza {
      * @return Double com o valor final da pizza.
      */
     public double valorAPagar() {
-        return precoBase + quantidadeIngredientes * valorPorAdicional;
+        return PRECO_BASE + valorAdicionais();
+    }
+
+    private double valorAdicionais(){
+        return quantidadeIngredientes * VALOR_ADICIONAL;
+    }
+    private boolean podeAdicionar(int quantos){
+        int novosIngredientes = quantidadeIngredientes + quantos;
+        return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
     }
 
     /**
@@ -76,18 +86,19 @@ public class Pizza {
      * a quantidade atual de ingredientes. Atualiza a descrição.
      * Retorna a quantidade de ingredientes após a execução do método.
      * 
-     * @param quantos Quantos ingredientes a serem adicionados (>0)
+     * @param quantidade Quantos ingredientes a serem adicionados (>0)
      * @return Quantos ingredientes a pizza tem após a execução
      */
-    public int adicionarIngredientes(int quantos) {
-        int novosIngredientes = quantidadeIngredientes + quantos;
-        if (quantos > 0 && novosIngredientes <= maxIngredientes) {
-            quantidadeIngredientes = novosIngredientes;
-            descricao = "Pizza com " + quantidadeIngredientes + " adicionais.";
+    public int adicionarIngredientes(int quantidade) {     
+        if (podeAdicionar(quantidade)) {
+            quantidadeIngredientes += quantidade;
+            atualizarDescricao();
         }
         return quantidadeIngredientes;
     }
-
+    private void atualizarDescricao(){
+            descricao = "Pizza com " + quantidadeIngredientes + " adicionais.";
+    }
     /**
      * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
      * 
@@ -95,9 +106,12 @@ public class Pizza {
      */
     public String cupomDeVenda() {
         double valor = valorAPagar();
-        double adicionais = quantidadeIngredientes * valorPorAdicional;
+        double adicionais = valorAdicionais();
         return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
-                descricao, precoBase, adicionais, valor);
+                descricao, PRECO_BASE, adicionais, valor);
     }
 
+    public static int pizzasVendidas(){
+        return quantidadeVendida;
+    }
 }
