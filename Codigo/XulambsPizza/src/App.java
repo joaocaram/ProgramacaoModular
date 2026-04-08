@@ -1,4 +1,5 @@
-
+import java.util.LinkedList;
+import java.util.List;
 
 /** 
  * MIT License
@@ -26,6 +27,8 @@
 
 public class App {
 
+    static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
+
     static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -45,6 +48,9 @@ public class App {
         cabecalho();
         
         IO.println("1 - Abrir Pedido");
+        IO.println("2 - Alterar Pedido");
+        IO.println("3 - Fechar Pedido");
+        IO.println("4 - Relatório de Pedido");
         IO.println("0 - Finalizar");
         return Integer.parseInt(IO.readln("Digite sua escolha: "));
     }
@@ -58,6 +64,7 @@ public class App {
             novo.adicionar(novaPizza);
             outraPizza = IO.readln("Mais pizza(s/n)? ");
         }while(outraPizza.toLowerCase().equals("s"));
+        pedidos.add(novo);
         IO.println(novo.relatorio());
     }
     static Pizza comprarPizza() {
@@ -76,6 +83,7 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
+        pedidos = new LinkedList<>();
         int opcao = -1;
         do {
             opcao = exibirMenu();
