@@ -53,6 +53,15 @@ public class Pedido {
         idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
 	}
 
+	/**
+	 * Retorna o número do pedido (getter) para efeitos de localização/comparação em outros contextos.
+	 * Pode ser melhorado no futuro
+	 * @return id do pedido (inteiro positivo)
+	 */
+	public int getNumero(){
+		return idPedido;
+	}
+
     /**
 	 * Verifica se uma pizza pode ser adicionada ao pedido, ou seja, se o pedido
 	 * está aberto.
