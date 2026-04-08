@@ -1,3 +1,5 @@
+import javax.lang.model.util.SimpleAnnotationValueVisitorPreview;
+
 /** 
  * MIT License
  *
@@ -35,24 +37,36 @@ public class App {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.1\n=============");
+        IO.println("XULAMBS PIZZA v0.2\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
     static int exibirMenu() {
         cabecalho();
         
-        IO.println("1 - Comprar pizza");
+        IO.println("1 - Abrir Pedido");
         IO.println("0 - Finalizar");
         return Integer.parseInt(IO.readln("Digite sua escolha: "));
     }
 
-    static void comprarPizza() {
+    static void abrirPedido(){
+        cabecalho();
+        Pedido novo = new Pedido();
+        String outraPizza;
+        do{
+            Pizza novaPizza = comprarPizza();
+            novo.adicionar(novaPizza);
+            outraPizza = IO.readln("Mais pizza(s/n)? ");
+        }while(outraPizza.toLowerCase().equals("s"));
+        IO.println(novo.relatorio());
+    }
+    static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
         int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
         Pizza novaPizza = new Pizza(adicionais);
         mostrarNota(novaPizza);
+        return novaPizza;
     }
 
     static void mostrarNota(Pizza pizza) {
@@ -66,7 +80,7 @@ public class App {
         do {
             opcao = exibirMenu();
             switch (opcao) {
-                case 1 -> comprarPizza();    
+                case 1 -> abrirPedido();    
             }
             pausa();
         } while (opcao != 0);        
