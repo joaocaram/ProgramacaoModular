@@ -81,6 +81,19 @@ public class App {
         IO.println(resposta);
     }
 
+    static void fecharPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Fechar um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = localizarPedido(numPedido);
+        if(pedido != null ){
+            pedido.fecharPedido();
+            resposta = pedido.relatorio();
+        }
+        IO.println(resposta);
+    }
+
     static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
