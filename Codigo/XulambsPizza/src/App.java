@@ -68,6 +68,16 @@ public class App {
         IO.println(novo.relatorio());
     }
 
+    static Pedido localizarPedido(int numero){
+        Pedido localizado = null;
+        for (int i = 0; localizado == null && i<pedidos.size(); i++) {
+            Pedido candidato = pedidos.get(i);
+            if(candidato.getNumero() == numero)
+                localizado = candidato;
+        }
+        return localizado;
+    }
+    
     static void alterarPedido(){
         cabecalho();
         String resposta = "Pedido não encontrado";
@@ -89,6 +99,18 @@ public class App {
         Pedido pedido = localizarPedido(numPedido);
         if(pedido != null ){
             pedido.fecharPedido();
+            resposta = pedido.relatorio();
+        }
+        IO.println(resposta);
+    }
+
+    static void relatorioPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Relatório de um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = localizarPedido(numPedido);
+        if(pedido != null ){
             resposta = pedido.relatorio();
         }
         IO.println(resposta);
