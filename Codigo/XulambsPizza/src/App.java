@@ -67,6 +67,20 @@ public class App {
         pedidos.add(novo);
         IO.println(novo.relatorio());
     }
+
+    static void alterarPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Incluir itens em um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = localizarPedido(numPedido);
+        if(pedido != null ){
+            pedido.adicionar(comprarPizza());
+            resposta = pedido.relatorio();
+        }
+        IO.println(resposta);
+    }
+
     static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
@@ -89,6 +103,9 @@ public class App {
             opcao = exibirMenu();
             switch (opcao) {
                 case 1 -> abrirPedido();    
+                case 2 -> alterarPedido();    
+                case 3 -> fecharPedido();    
+                case 4 -> relatorioPedido();    
             }
             pausa();
         } while (opcao != 0);        
