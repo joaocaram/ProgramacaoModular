@@ -2,6 +2,7 @@ package com.xulambs.pizzaria.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 /** 
@@ -45,7 +46,7 @@ public class Pizza {
     private static int quantidadeVendida=0;
     
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPizza;
 
     private String descricao;
@@ -85,11 +86,15 @@ public class Pizza {
     private double valorAdicionais(){
         return quantidadeIngredientes * VALOR_ADICIONAL;
     }
+
     private boolean podeAdicionar(int quantos){
         int novosIngredientes = quantidadeIngredientes + quantos;
         return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
     }
 
+    public int setIngredientes(int quantidade){
+        return adicionarIngredientes(quantidade);
+    }
     /**
      * Tenta adicionar ingredientes na pizza. Caso a adição seja inválida
      * (ultrapassando limites ou com valores negativos), mantém

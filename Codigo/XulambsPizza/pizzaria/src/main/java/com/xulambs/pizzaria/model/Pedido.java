@@ -42,8 +42,6 @@ import jakarta.persistence.OneToMany;
  */
 @Entity
 public class Pedido {
-    private static Random sorteio = new Random(42);
-	private static int ultimoPedido;
 	private LocalDate data;
 	
 	@OneToMany
@@ -59,13 +57,10 @@ public class Pedido {
 	 * do último identificador armazenado.
 	 */
 
-	public Pedido() {
-        ultimoPedido += sorteio.nextInt(1, 6);
-        
+	public Pedido() {          
 		aberto = true;
         pizzas = new LinkedList<>();
         data = LocalDate.now();
-        idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
 	}
 
 	/**
