@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.xulambs.pizzaria.dto.PedidoDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -138,6 +140,10 @@ public class Pedido {
         relat += String.format("TOTAL DO PEDIDO: R$ %.2f",
                          precoAPagar());
         return relat;
+	}
+
+	public PedidoDTO dto(){
+		return new PedidoDTO(idPedido, data, precoAPagar());
 	}
 
 }

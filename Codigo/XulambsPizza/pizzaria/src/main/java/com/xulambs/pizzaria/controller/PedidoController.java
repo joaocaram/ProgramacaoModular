@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.xulambs.pizzaria.dto.PedidoDTO;
 import com.xulambs.pizzaria.model.Pedido;
 import com.xulambs.pizzaria.model.Pizza;
 
@@ -44,7 +45,8 @@ public class PedidoController {
     }
 
     @PutMapping("/incluirPizza/{idPedido}")
-    public Pedido incluirPizza(@PathVariable int idPedido, @RequestBody Pizza pizza){
+    public PedidoDTO incluirPizza(@PathVariable int idPedido, 
+                                @RequestBody Pizza pizza){
         Pedido ped = localizarPedido(idPedido);
         ped.adicionar(pizza);
        
@@ -54,7 +56,7 @@ public class PedidoController {
         manager.merge(ped);
         manager.getTransaction().commit();
         
-        return ped;
+        return ped.dto();
     }
 
 
