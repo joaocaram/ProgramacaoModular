@@ -40,8 +40,10 @@ public class Pizza {
     
     private String descricao;
     private int quantidadeIngredientes;
+    private EBorda borda;
 
     private void setUp(int adicionais){
+        borda = EBorda.TRADICIONAL;
         adicionarIngredientes(adicionais);
         quantidadeVendida++;
     }
@@ -69,7 +71,12 @@ public class Pizza {
      * @return Double com o valor final da pizza.
      */
     public double valorAPagar() {
-        return PRECO_BASE + valorAdicionais();
+        return borda.valorBorda() + PRECO_BASE + valorAdicionais();
+    }
+
+    public void adicionarBorda(EBorda borda){
+        this.borda = borda;
+        atualizarDescricao();
     }
 
     private double valorAdicionais(){
@@ -97,7 +104,9 @@ public class Pizza {
         return quantidadeIngredientes;
     }
     private void atualizarDescricao(){
-            descricao = "Pizza com " + quantidadeIngredientes + " adicionais.";
+            descricao = String.format("Pizza com borda %s e %d adicionais", 
+                                    borda.toString().toLowerCase(), quantidadeIngredientes);
+            
     }
     /**
      * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
@@ -107,8 +116,8 @@ public class Pizza {
     public String cupomDeVenda() {
         double valor = valorAPagar();
         double adicionais = valorAdicionais();
-        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
-                descricao, PRECO_BASE, adicionais, valor);
+        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
+                descricao, PRECO_BASE, adicionais, borda.valorBorda(),valor);
     }
 
     public static int pizzasVendidas(){
