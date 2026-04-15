@@ -29,6 +29,7 @@ public class App {
 
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
 
+    //#region utilidades
     static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -40,10 +41,12 @@ public class App {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.2\n=============");
+        IO.println("XULAMBS PIZZA v0.3\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
+    //#endregion
 
+    //#region menus
     static int exibirMenu() {
         cabecalho();
         
@@ -55,6 +58,9 @@ public class App {
         return Integer.parseInt(IO.readln("Digite sua escolha: "));
     }
 
+    //#endregion
+
+    //#region pedido
     static void abrirPedido(){
         cabecalho();
         Pedido novo = new Pedido();
@@ -115,7 +121,9 @@ public class App {
         }
         IO.println(resposta);
     }
+    //#endregion
 
+    //#region pizza
     static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
@@ -148,7 +156,9 @@ public class App {
         IO.println(pizza.cupomDeVenda());
 
     }
+    //#endregion
 
+    //#region app
     public static void main(String[] args) throws Exception {
         pedidos = new LinkedList<>();
         int opcao = -1;
@@ -164,5 +174,5 @@ public class App {
         } while (opcao != 0);        
         IO.println("FLW T+ VLW ABS.");
     }
-
+    //#endregion
 }
