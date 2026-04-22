@@ -35,7 +35,7 @@ public class Pedido {
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
-	private LinkedList<Pizza> pizzas;
+	protected LinkedList<Pizza> pizzas;
 	private int idPedido;
 	private boolean aberto;
 
@@ -67,7 +67,7 @@ public class Pedido {
 	 * está aberto.
 	 * @return TRUE se puder adicionar, FALSE caso contrário
 	 */
-	private boolean podeAdicionar() {
+	protected boolean podeAdicionar() {
 		return aberto;
 	}
 
