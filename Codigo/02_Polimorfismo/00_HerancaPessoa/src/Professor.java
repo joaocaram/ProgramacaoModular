@@ -13,7 +13,7 @@ public class Professor extends Pessoa {
     }
 
     @Override
-    public String dadosPessoa(){
-        return super.dadosPessoa() + " Salário bruto: R$ "+salarioBruto();
+    public String relatorio(){
+        return super.relatorio() + " Salário bruto: R$ "+salarioBruto();
     }
 }

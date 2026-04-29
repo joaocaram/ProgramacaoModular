@@ -16,7 +16,7 @@ public class Aluno extends Pessoa{
     }
     
     @Override
-    public String dadosPessoa(){
-        return super.dadosPessoa() + " Mensalidade: R$ "+valorMensalidade();
+    public String relatorio(){
+        return super.relatorio() + " Mensalidade: R$ "+valorMensalidade();
     }
 }

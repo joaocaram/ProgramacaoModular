@@ -25,9 +25,7 @@ public class Pessoa {
 
     public int idade() {
         LocalDate hoje = LocalDate.now();
-
         Period intervalo = dataNasc.until(hoje);
-        
         return intervalo.getYears();
     }
 
@@ -35,7 +33,7 @@ public class Pessoa {
         // fingindo que estou usando um serviço bacanudo para enviar emails
     }
 
-    public String dadosPessoa(){
+    public String relatorio(){
         return nome+", idade: "+idade()+" anos.";
     }
 }

@@ -16,7 +16,7 @@ public class Administrativo extends Pessoa{
     }
 
     @Override
-    public String dadosPessoa(){
-        return super.dadosPessoa()+" Funcionário administrativo com salário de R$ " +salarioBruto();
+    public String relatorio(){
+        return super.relatorio()+" Funcionário administrativo com salário de R$ " +salarioBruto();
     }
 }
