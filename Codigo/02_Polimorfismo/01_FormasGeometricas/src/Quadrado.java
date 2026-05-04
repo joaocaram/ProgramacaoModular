@@ -23,7 +23,7 @@
  */
 
  /** Classe para representação de um Quadrado */
-public class Quadrado extends PoligonoReto{
+public final class Quadrado extends PoligonoReto{
  
     /**
      * Construtor: recebe um lado que será propagado para base e altura. A classe-mãe valida o lado como pelo menos 1.

@@ -24,7 +24,9 @@
 
  /** Classe abstrata para representação de formas geomérticas */
 public abstract class FormaGeometrica {
+    private static int ultimaForma = 0;
     private String descricao;
+    private int ordinal;
     
     /**
      * Construtor protegido (só é usado pelas classes descendentes)
@@ -32,6 +34,7 @@ public abstract class FormaGeometrica {
      */
     protected FormaGeometrica(String desc){
         descricao = desc;
+        ordinal = ++ultimaForma;
     }
 
     public boolean temAreaMaiorQue(FormaGeometrica outra){
@@ -58,6 +61,15 @@ public abstract class FormaGeometrica {
     public String toString(){
         return String.format("%20s | Área: %05.2f | Perímetro: %05.2f", 
                              descricao, area(), perimetro());
+    }
+
+    /**
+     * Representação em string da forma: descrição e área.
+     * @return String com a descrição e a área da forma instanciada.
+     */
+    @Override
+    public int hashCode(){
+        return ordinal;
     }
 
     /**

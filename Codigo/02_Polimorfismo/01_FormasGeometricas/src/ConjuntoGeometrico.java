@@ -29,7 +29,7 @@ import java.util.List;
 public class ConjuntoGeometrico {
 
 	private List<FormaGeometrica> formas;
-	int capacidade;
+	private int capacidade;
 
     /**
      * Cria um conjunto vazio de formas. A capacidade mínima do conjunto é 2.
@@ -51,8 +51,9 @@ public class ConjuntoGeometrico {
 		if(formas.size()>0){
 			maior = formas.get(0);
 			for (int i = 1; i < formas.size(); i++) {
-				if(formas.get(i).temAreaMaiorQue(maior))
-					maior = formas.get(i);
+				FormaGeometrica candidata = formas.get(i);
+				if(candidata.temAreaMaiorQue(maior))
+					maior = candidata;
 			}
 		}
 		return maior;
@@ -64,10 +65,12 @@ public class ConjuntoGeometrico {
 	 * @return A quantidade de formas no conjunto atual
      */
 	public int addForma(FormaGeometrica nova) {
-		if(formas.size()<capacidade){
+		int tamanho = formas.size();
+		if( tamanho < capacidade){
 			formas.add(nova);
+			tamanho++;
 		}
-		return formas.size();
+		return tamanho;
 	}
 
 	
