@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -71,7 +72,7 @@ public class FormasDemo {
                 case 1-> nova = new Quadrado(dimensao1);
                 case 2-> nova = new Circulo(dimensao1);
                 case 3-> nova = new Retangulo(dimensao1, dimensao2);
-                case 5-> nova = new Retangulo36();
+                case 5-> nova = new Retangulo12();
                 case 4-> nova = new TrianguloRetangulo(dimensao1, dimensao2);
             }
             conjunto.addForma(nova);
