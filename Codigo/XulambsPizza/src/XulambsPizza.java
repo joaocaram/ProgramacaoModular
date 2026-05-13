@@ -42,11 +42,18 @@ public class XulambsPizza {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.4\n=============");
+        IO.println("XULAMBS PIZZA v0.5\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
-    
+    static int lerInteiro(String mensagem){
+        try{
+            return Integer.parseInt(IO.readln(mensagem));
+        }catch(NumberFormatException nfe ){
+            IO.println("Opção inválida. Digite um número válido.");
+            return -1;
+        }
+    }
     //#endregion
 
     //#region menus
@@ -57,7 +64,7 @@ public class XulambsPizza {
         IO.println("3 - Fechar Pedido");
         IO.println("4 - Relatório de Pedido");
         IO.println("0 - Finalizar");
-        return Integer.parseInt(IO.readln("Digite sua escolha: "));
+        return lerInteiro("Digite sua escolha: ");
     
     }
 
@@ -69,7 +76,7 @@ public class XulambsPizza {
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
             String outraPizza;
-           
+            try {
                 do{
                     Pizza novaPizza = comprarPizza();
                     novo.adicionar(novaPizza);
@@ -77,7 +84,9 @@ public class XulambsPizza {
                 }while(outraPizza.toLowerCase().equals("s"));
                 pedidos.add(novo);
                 imprimir(novo, "Pedido não foi criado corretamente");        
-           
+            } catch (IllegalStateException ex) {
+                IO.println(ex.getMessage());
+            }
         }
     }
         
@@ -87,7 +96,7 @@ public class XulambsPizza {
         IO.println("Escolha o tipo de pedido:");
         IO.println("1 - Pedido local");
         IO.println("2 - Pedido para entrega");
-        int tipo = Integer.parseInt(IO.readln(("Digite sua opção: ")));
+        int tipo = lerInteiro("Digite sua opção: ");
         return switch(tipo){
             case 1 ->  new PedidoLocal();
             case 2 -> criarPedidoEntrega();
@@ -98,7 +107,12 @@ public class XulambsPizza {
     static Pedido criarPedidoEntrega(){
         double dist = Double.parseDouble(
                     IO.readln("Pedido para entrega. Distância: "));
-        return new PedidoEntrega(dist);    
+        try {
+            return new PedidoEntrega(dist);    
+        } catch (IllegalArgumentException e) {
+            IO.println(e.getMessage());
+            return null;
+        }
         
     }
 
@@ -119,7 +133,15 @@ public class XulambsPizza {
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
+            try {
                 pedido.adicionar(comprarPizza());    
+            } catch (PedidoFechadoException ex) {
+                IO.println(ex.getMessage());
+                return;
+            }catch (IllegalArgumentException ex) {
+                IO.println(ex.getMessage());
+                alterarPedido();
+            }
         }
         imprimir(pedido, resposta);
     }
@@ -131,7 +153,12 @@ public class XulambsPizza {
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
-            pedido.fecharPedido();    
+            try {
+                pedido.fecharPedido();    
+            } catch (IllegalStateException ex) {
+                IO.print(ex.getMessage());
+                return;
+            }
         }
         imprimir(pedido, resposta);
     }
@@ -147,10 +174,13 @@ public class XulambsPizza {
     //#endregion
 
     static void imprimir(Object objeto, String padrao){
-        if(objeto!=null)
-            IO.print(objeto);
+        if(objeto!=null){
+            cabecalho();
+            IO.println(objeto);
+        }
+            
         else
-            IO.print(padrao);
+            IO.println(padrao);
     }
     //#region pizza
     static Pizza comprarPizza() {
