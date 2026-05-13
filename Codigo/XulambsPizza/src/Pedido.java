@@ -1,9 +1,11 @@
-import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.Random;
+
 /** 
  * MIT License
  *
- * Copyright(c) 2024 João Caram <caram@pucminas.br>
+ * Copyright(c) 2024-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,59 +25,53 @@ import java.time.LocalDate;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-
 
 /** Classe Pedido: composição com classe Pizza. Um pedido pode conter diversas pizzas. Elas podem
  * ser adicionadas desde que o pedido esteja aberto. Um pedido tem um identificador único e armazena
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public abstract class Pedido {
-
-	//#region static/constantes
-	/** Para gerar o id incremental automático */
+public class Pedido {
+    private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
-	//#endregion
-	
-	//#region atributos
 	private LocalDate data;
-	protected LinkedList<Pizza> pizzas;
+	private LinkedList<Pizza> pizzas;
 	private int idPedido;
 	private boolean aberto;
-	//#endregion
 
-	//#region construtores
-	/**
+    /**
 	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
 	 * do último identificador armazenado.
 	 */
+
 	public Pedido() {
-		idPedido = ++ultimoPedido;
+        ultimoPedido += sorteio.nextInt(1, 6);
+        
+		aberto = true;
         pizzas = new LinkedList<>();
-        aberto = true;
-		data = LocalDate.now();
+        data = LocalDate.now();
+        idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
 	}
-	//#endregion
 
 	/**
+	 * Retorna o número do pedido (getter) para efeitos de localização/comparação em outros contextos.
+	 * Pode ser melhorado no futuro
+	 * @return id do pedido (inteiro positivo)
+	 */
+	public int getNumero(){
+		return idPedido;
+	}
+
+    /**
 	 * Verifica se uma pizza pode ser adicionada ao pedido, ou seja, se o pedido
-	 * está aberto e há espaço na memória.
+	 * está aberto.
 	 * @return TRUE se puder adicionar, FALSE caso contrário
 	 */
-	protected boolean podeAdicionar() {
+	private boolean podeAdicionar() {
 		return aberto;
 	}
-	protected double valorItens(){
-		double precoFinal =0d;
-		for (Pizza pizza : pizzas) {		//forEach
-			precoFinal += pizza.valorFinal();
-		}
-		return precoFinal;
-    
-	}
-	/**
+
+    /**
 	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
 	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
 	 * @param pizza Pizza a ser adicionada
@@ -83,52 +79,55 @@ public abstract class Pedido {
 	 */
 	public int adicionar(Pizza pizza) {
 		if(podeAdicionar()){
-            pizzas.add(pizza);
+            pizzas.addLast(pizza);
         }
         return pizzas.size();
 	}
 
-	/**
+    /**
 	 * Fecha um pedido, desde que ele contenha pelo menos 1 pizza. Caso esteja vazio,
 	 * a operação é ignorada.
+     * @return Boolean com o estado do pedido (FALSE para fechado, TRUE para aberto) 
 	 */
-	public void fecharPedido() {
-		if(pizzas.size() > 0)
-            	aberto = false;
+	public boolean fecharPedido() {
+		if(pizzas.size() > 0 )
+            aberto = false;
+        return aberto;
 	}
 
-	/**
+    /**
 	 * Calcula o preço a ser pago pelo pedido (no momento, a soma dos preços de todas as
 	 * pizzas contidas no pedido)
 	 * @return Double com o valor a ser pago pelo pedido (> 0)
 	 */
-	public abstract double precoAPagar();
-	 {
-	    //For tradicional
-		// for (int i=0; i<pizzas.size(); i++) {
-        //     precoFinal += pizzas.get(i).valorFinal();
-        // }  
-	}
-
-	protected String detalhesPedido(){
-		StringBuilder relat = new StringBuilder();
-		relat.append(String.format("%02d - %s\n", idPedido, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        relat.append("=============================\n");
-        
-        for (int i=0; i<pizzas.size(); i++) {
-            relat.append(String.format("%02d - %s\n", (i+1), pizzas.get(i).notaDeCompra()));            
+	public double precoAPagar() {
+		double preco = 0d;
+        for (Pizza pizza : pizzas) {
+            preco += pizza.valorAPagar();
         }
-		return relat.toString();
+
+        // for (int i = 0; i < pizzas.size(); i++) {
+        //     Pizza pizza = pizzas.get(i);
+        //     preco += pizza.valorAPagar();        
+        // }
+        return preco;
 	}
 
-	protected String rodapePedido(){
-		NumberFormat moeda = NumberFormat.getCurrencyInstance();
-		StringBuilder relat = new StringBuilder();
-		relat.append(String.format("TOTAL A PAGAR: %s\n", moeda.format(precoAPagar())));
-        relat.append("=============================");
-		return relat.toString();
-
+    /**
+	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
+	 * de cada pizza e o preço final a ser pago.
+	 * @return String com os detalhes especificados.
+     */
+	public String relatorio() {
+		String relat = String.format("Pedido nº %d - %s\n",
+                            idPedido, data.toString());
+        for (int i = 0; i < pizzas.size(); i++) {
+            relat += String.format("%02d: %s\n", 
+                            (i+1), pizzas.get(i).cupomDeVenda());
+        }
+        relat += String.format("TOTAL DO PEDIDO: R$ %.2f",
+                         precoAPagar());
+        return relat;
 	}
-	
 
 }

@@ -1,20 +1,22 @@
 public enum EBorda {
-    TRADICIONAL("Tradicional", 0d),
-    REQUEIJAO("Requeijao", 7d),
-    CHEDDAR("Cheddar", 10d),
-    CHOCOLATE("Chocolate", 8d);
+    TRADICIONAL(0),
+    AZEITONA(5),
+    CHEDDAR(10),
+    CHOCOLATE(8),
+    DOCE_DE_LEITE(8),
+    REQUEIJÃO(7);
 
-    private String descricao;
-    private double valor;
+    double valor;
 
-    EBorda(String descricao, double valor){
-        this.descricao = descricao;
-        this.valor = valor;
+    EBorda(double preco){
+        valor = preco;
     }
-    public String descricao(){
-        return descricao;
-    }
-    public double valor(){
+
+    public double valorBorda(){
         return valor;
+    }
+
+    public String toString(){
+        return this.name().toLowerCase().replace("_", " ");
     }
 }
