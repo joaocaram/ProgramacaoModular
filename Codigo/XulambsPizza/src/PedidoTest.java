@@ -19,7 +19,7 @@ public class PedidoTest {
 
     @BeforeEach
     public void setUp(){
-        pedido = new PedidoLocal();
+        pedido = new Pedido();
     }
 
     @Test

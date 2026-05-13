@@ -39,7 +39,7 @@ public class PedidoEntrega extends Pedido{
     public String toString(){
         NumberFormat moeda = NumberFormat.getCurrencyInstance();
         StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Entrega ");
-        relat.append(detalhesPedido());
+        relat.append(cabecalhoPedido());
         relat.append(String.format("\nTAXA DE ENTREGA: %s", moeda.format(valorTaxa())));
         relat.append("\n"+rodapePedido());
         return relat.toString();
