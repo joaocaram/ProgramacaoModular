@@ -114,7 +114,8 @@ public class Pizza {
      * 
      * @return String no formato "<DESCRICAO>, no valor de <VALOR>"
      */
-    public String cupomDeVenda() {
+    @Override
+    public String toString() {
         double valor = valorAPagar();
         double adicionais = valorAdicionais();
         return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \nVALOR A PAGAR: R$ %.2f",

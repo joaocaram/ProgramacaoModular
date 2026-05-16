@@ -1,47 +1,40 @@
-import java.text.NumberFormat;
-
-public class PedidoEntrega extends Pedido{
-
+public class PedidoEntrega extends Pedido {
     private static final int MAX_PIZZAS = 8;
-    private static final double[] TAXAS =      {0, 5, 8};
-    private static final double[] DISTANCIAS = {4, 8, Double.MAX_VALUE};
-    
+    private static final double[] TAXAS = {0,5,8};
+    private static final double[] DISTANCIAS = {4,8,Double.MAX_VALUE};
     private double distanciaEntrega;
 
     public PedidoEntrega(double distancia){
+        if(distancia <= 0)
+            throw new IllegalArgumentException("Distância deve ser pelo menos 0.1");
         super();
-        distanciaEntrega = 0.1;
-        if(distancia > 0.1)
-            distanciaEntrega = distancia;
+        distanciaEntrega = distancia;
     }
 
     private double valorTaxa(){
-        double taxa = 0d;
         int pos = 0;
-		while(distanciaEntrega > DISTANCIAS[pos])
-			pos++;
-		taxa = TAXAS[pos];
-        return taxa;
+        while (distanciaEntrega > DISTANCIAS[pos]) {
+            pos++;
+        }
+        return TAXAS[pos];
     }
 
     @Override
     protected boolean podeAdicionar(){
-        return super.podeAdicionar()
-               && (pizzas.size() < MAX_PIZZAS);
+        return (pizzas.size() < MAX_PIZZAS && super.podeAdicionar());
     }
 
     @Override
     public double precoAPagar(){
-        return precoAPagar() + valorTaxa();
+        return valorItens() + valorTaxa();
     }
 
     @Override
-    public String toString(){
-        NumberFormat moeda = NumberFormat.getCurrencyInstance();
-        StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Entrega ");
-        relat.append(cabecalhoPedido());
-        relat.append(String.format("\nTAXA DE ENTREGA: %s", moeda.format(valorTaxa())));
-        relat.append("\n"+rodapePedido());
-        return relat.toString();
-    }
+    public String toString() {
+		String relat = cabecalhoPedido();
+        relat += String.format("TAXA DE ENTREGA: R$ %.2f\n",
+                         valorTaxa());
+        relat += rodapePedido();
+        return relat;
+	}
 }

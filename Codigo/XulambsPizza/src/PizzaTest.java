@@ -63,7 +63,7 @@ public class PizzaTest {
         pizza.adicionarIngredientes(2);
         
         //Act
-        String cupom = pizza.cupomDeVenda();
+        String cupom = pizza.toString();
 
         //Assert
         assertTrue(cupom.contains("29,00") &&

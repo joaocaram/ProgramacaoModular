@@ -32,7 +32,7 @@ import java.util.Random;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public class Pedido {
+public abstract class Pedido {
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
@@ -54,12 +54,20 @@ public class Pedido {
         idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
 	}
 
+	protected double valorItens(){
+		double preco = 0d;
+        for (Pizza pizza : pizzas) {
+            preco += pizza.valorAPagar();
+        }
+		return preco;
+	}
 	/**
 	 * Retorna o número do pedido (getter) para efeitos de localização/comparação em outros contextos.
 	 * Pode ser melhorado no futuro
 	 * @return id do pedido (inteiro positivo)
 	 */
-	public int getNumero(){
+	@Override
+	public int hashCode(){
 		return idPedido;
 	}
 
@@ -73,16 +81,18 @@ public class Pedido {
 	}
 
     /**
-	 * Adiciona uma pizza ao pedido, se for possível. Caso não seja, a operação é
-	 * ignorada. Retorna a quantidade de pizzas do pedido após a execução.
+	 * Adiciona uma pizza ao pedido, se for possível (ou seja, pedido aberto). 
+	 * Retorna a quantidade de pizzas do pedido após a execução.
+	 * Em caso de pedido fechado ou outra condição que impeça a adição,
+	 * lança uma exceção de IllegalStateException. 
 	 * @param pizza Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
+	 * @throws IllegalStateException no caso do pedido estar fechado e não poder receber outras pizzas.
 	 */
 	public int adicionar(Pizza pizza) {
-		if(podeAdicionar()){
-            pizzas.addLast(pizza);
-        }
-        return pizzas.size();
+		if(podeAdicionar())
+			pizzas.addLast(pizza);
+		return pizzas.size();
 	}
 
     /**
@@ -91,9 +101,11 @@ public class Pedido {
      * @return Boolean com o estado do pedido (FALSE para fechado, TRUE para aberto) 
 	 */
 	public boolean fecharPedido() {
-		if(pizzas.size() > 0 )
+		if(pizzas.size() > 0 ){
             aberto = false;
-        return aberto;
+			
+		}
+		return aberto;
 	}
 
     /**
@@ -101,18 +113,7 @@ public class Pedido {
 	 * pizzas contidas no pedido)
 	 * @return Double com o valor a ser pago pelo pedido (> 0)
 	 */
-	public double precoAPagar() {
-		double preco = 0d;
-        for (Pizza pizza : pizzas) {
-            preco += pizza.valorAPagar();
-        }
-
-        // for (int i = 0; i < pizzas.size(); i++) {
-        //     Pizza pizza = pizzas.get(i);
-        //     preco += pizza.valorAPagar();        
-        // }
-        return preco;
-	}
+	public abstract double precoAPagar();
 
 	protected String cabecalhoPedido(){
 		DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/YYYY");
@@ -133,21 +134,4 @@ public class Pedido {
                          precoAPagar());
 
 	}
-    /**
-	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
-	 * de cada pizza e o preço final a ser pago.
-	 * @return String com os detalhes especificados.
-     */
-	public String relatorio() {
-		String relat = String.format("Pedido nº %d - %s\n",
-                            idPedido, data.toString());
-        for (int i = 0; i < pizzas.size(); i++) {
-            relat += String.format("%02d: %s\n", 
-                            (i+1), pizzas.get(i).cupomDeVenda());
-        }
-        relat += String.format("TOTAL DO PEDIDO: R$ %.2f",
-                         precoAPagar());
-        return relat;
-	}
-
 }

@@ -89,7 +89,7 @@ public class XulambsPizza {
         IO.println("2 - Pedido para entrega");
         int tipo = Integer.parseInt(IO.readln(("Digite sua opção: ")));
         return switch(tipo){
-            case 1 ->  new Pedido();
+            case 1 ->  new PedidoLocal();
             case 2 -> criarPedidoEntrega();
             default -> null;
         };
