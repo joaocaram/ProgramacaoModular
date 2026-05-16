@@ -71,5 +71,14 @@ public class PizzaTest {
                    cupom.contains("39,00"));
     }
 
+    @Test
+    public void adicionaBordaCorretamente(){
+        //Act
+        double valor = pizza.adicionarBorda(EBorda.CHOCOLATE);
+
+        //Assert
+        assertEquals(EBorda.CHOCOLATE.valorBorda(), valor, 0.01);
+    }
+
 
 }

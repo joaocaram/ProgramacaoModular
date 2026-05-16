@@ -74,9 +74,10 @@ public class Pizza {
         return borda.valorBorda() + PRECO_BASE + valorAdicionais();
     }
 
-    public void adicionarBorda(EBorda borda){
+    public double adicionarBorda(EBorda borda){
         this.borda = borda;
         atualizarDescricao();
+        return borda.valorBorda();
     }
 
     private double valorAdicionais(){

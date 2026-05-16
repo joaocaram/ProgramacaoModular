@@ -1,5 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /** 
  * MIT License
@@ -25,7 +26,7 @@ import java.util.List;
  * SOFTWARE.
  */
 
-public class App {
+public class XulambsPizza {
 
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
 
@@ -41,21 +42,23 @@ public class App {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.3\n=============");
+        IO.println("XULAMBS PIZZA v0.4\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
+
+    
     //#endregion
 
     //#region menus
     static int exibirMenu() {
         cabecalho();
-        
         IO.println("1 - Abrir Pedido");
         IO.println("2 - Alterar Pedido");
         IO.println("3 - Fechar Pedido");
         IO.println("4 - Relatório de Pedido");
         IO.println("0 - Finalizar");
         return Integer.parseInt(IO.readln("Digite sua escolha: "));
+    
     }
 
     //#endregion
@@ -63,22 +66,47 @@ public class App {
     //#region pedido
     static void abrirPedido(){
         cabecalho();
-        Pedido novo = new Pedido();
-        String outraPizza;
-        do{
-            Pizza novaPizza = comprarPizza();
-            novo.adicionar(novaPizza);
-            outraPizza = IO.readln("Mais pizza(s/n)? ");
-        }while(outraPizza.toLowerCase().equals("s"));
-        pedidos.add(novo);
-        IO.println(novo.relatorio());
+        Pedido novo = escolherTipoPedido();
+        if(novo!=null){
+            String outraPizza;
+           
+                do{
+                    Pizza novaPizza = comprarPizza();
+                    novo.adicionar(novaPizza);
+                    outraPizza = IO.readln("Mais pizza(s/n)? ");
+                }while(outraPizza.toLowerCase().equals("s"));
+                pedidos.add(novo);
+                imprimir(novo, "Pedido não foi criado corretamente");        
+           
+        }
+    }
+        
+
+    static Pedido escolherTipoPedido(){
+        cabecalho();
+        IO.println("Escolha o tipo de pedido:");
+        IO.println("1 - Pedido local");
+        IO.println("2 - Pedido para entrega");
+        int tipo = Integer.parseInt(IO.readln(("Digite sua opção: ")));
+        return switch(tipo){
+            case 1 ->  new Pedido();
+            case 2 -> criarPedidoEntrega();
+            default -> null;
+        };
     }
 
-    static Pedido localizarPedido(int numero){
-        Pedido localizado = null;
+    static Pedido criarPedidoEntrega(){
+        double dist = Double.parseDouble(
+                    IO.readln("Pedido para entrega. Distância: "));
+        return new PedidoEntrega(dist);    
+        
+    }
+
+    static Object localizar(int numero){
+        Object localizado = null;
         for (int i = 0; localizado == null && i<pedidos.size(); i++) {
-            Pedido candidato = pedidos.get(i);
-            if(candidato.getNumero() == numero)
+            Object candidato = pedidos.get(i);
+            if(candidato.hashCode() == numero)
                 localizado = candidato;
         }
         return localizado;
@@ -89,12 +117,11 @@ public class App {
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = localizarPedido(numPedido);
+        Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
-            pedido.adicionar(comprarPizza());
-            resposta = pedido.relatorio();
+                pedido.adicionar(comprarPizza());    
         }
-        IO.println(resposta);
+        imprimir(pedido, resposta);
     }
 
     static void fecharPedido(){
@@ -102,12 +129,11 @@ public class App {
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = localizarPedido(numPedido);
+        Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
-            pedido.fecharPedido();
-            resposta = pedido.relatorio();
+            pedido.fecharPedido();    
         }
-        IO.println(resposta);
+        imprimir(pedido, resposta);
     }
 
     static void relatorioPedido(){
@@ -115,25 +141,25 @@ public class App {
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = localizarPedido(numPedido);
-        if(pedido != null ){
-            resposta = pedido.relatorio();
-        }
-        IO.println(resposta);
+        Pedido pedido = (Pedido)localizar(numPedido);
+        imprimir(pedido, resposta);
     }
     //#endregion
 
+    static void imprimir(Object objeto, String padrao){
+        if(objeto!=null)
+            IO.print(objeto);
+        else
+            IO.print(padrao);
+    }
     //#region pizza
     static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
-       
         int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
         Pizza novaPizza = new Pizza(adicionais);
-       
         novaPizza.adicionarBorda(escolherBorda());
-       
-        mostrarNota(novaPizza);
+        imprimir(novaPizza, "Pizza não pode ser criada");
        
         return novaPizza;
     }
@@ -151,11 +177,7 @@ public class App {
         return bordas[opcao-1];
     }
 
-    static void mostrarNota(Pizza pizza) {
-        IO.println("Você acabou de comprar: \n ");
-        IO.println(pizza.cupomDeVenda());
-
-    }
+    
     //#endregion
 
     //#region app

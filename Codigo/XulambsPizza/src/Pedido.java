@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -35,7 +36,7 @@ public class Pedido {
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
-	private LinkedList<Pizza> pizzas;
+	protected LinkedList<Pizza> pizzas;
 	private int idPedido;
 	private boolean aberto;
 
@@ -67,7 +68,7 @@ public class Pedido {
 	 * está aberto.
 	 * @return TRUE se puder adicionar, FALSE caso contrário
 	 */
-	private boolean podeAdicionar() {
+	protected boolean podeAdicionar() {
 		return aberto;
 	}
 
@@ -113,6 +114,25 @@ public class Pedido {
         return preco;
 	}
 
+	protected String cabecalhoPedido(){
+		DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+		String dataFormatada = formatoData.format(data);
+		String estado = aberto ? "aberto": "fechado";
+		StringBuilder relat = new StringBuilder();
+		relat.append(String.format("Pedido nº %d - %s - %s\n",
+                            idPedido, dataFormatada, estado));
+        for (int i = 0; i < pizzas.size(); i++) {
+            relat.append(String.format("%02d: %s\n", 
+                            (i+1), pizzas.get(i).toString()));
+        }
+		return relat.toString();
+	}
+
+	protected String rodapePedido(){
+		return String.format("TOTAL DO PEDIDO: R$ %.2f",
+                         precoAPagar());
+
+	}
     /**
 	 * Cria um relatório para o pedido, contendo seu número, sua data (DD/MM/AAAA), detalhamento
 	 * de cada pizza e o preço final a ser pago.
