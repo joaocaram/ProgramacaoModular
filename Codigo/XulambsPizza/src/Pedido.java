@@ -90,8 +90,12 @@ public abstract class Pedido {
 	 * @throws IllegalStateException no caso do pedido estar fechado e não poder receber outras pizzas.
 	 */
 	public int adicionar(Pizza pizza) {
-		if(podeAdicionar())
-			pizzas.addLast(pizza);
+		if(pizza == null)
+			throw new IllegalArgumentException("Pizza não foi criada");
+		if(!podeAdicionar())
+			throw new PedidoFechadoException(idPedido);
+	
+		pizzas.addLast(pizza);
 		return pizzas.size();
 	}
 
@@ -103,9 +107,11 @@ public abstract class Pedido {
 	public boolean fecharPedido() {
 		if(pizzas.size() > 0 ){
             aberto = false;
-			
+			return aberto;
 		}
-		return aberto;
+		else
+			throw new IllegalStateException("Pedido sem itens não pode ser fechado.");
+        
 	}
 
     /**

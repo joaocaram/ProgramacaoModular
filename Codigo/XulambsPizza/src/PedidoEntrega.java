@@ -4,6 +4,11 @@ public class PedidoEntrega extends Pedido {
     private static final double[] DISTANCIAS = {4,8,Double.MAX_VALUE};
     private double distanciaEntrega;
 
+    /**
+     * Pedido para entrega. Recebe uma distância entre 0.1 e 20 (km)
+     * @param distancia Distância da entrega
+     * @throws IllegalArgumentException para casos de distância inválida
+     */
     public PedidoEntrega(double distancia){
         if(distancia <= 0)
             throw new IllegalArgumentException("Distância deve ser pelo menos 0.1");
