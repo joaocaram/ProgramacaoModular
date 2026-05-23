@@ -3,8 +3,9 @@ import java.text.NumberFormat;
 public enum ESobremesa implements IProduto{
 
     BRIGADEIRO_DE_COLHER(8),
-    PUDIM(10),
-    DOCE_DE_LEITE(9);
+    DOCE_DE_LEITE(9),
+    PUDIM(10);
+    
 
     private String nome;
     private double valor;

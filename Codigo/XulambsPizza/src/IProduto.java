@@ -1,3 +1,3 @@
-public interface IProduto {
-    public double valorAPagar();
+public interface IProduto{
+    public double valorAPagar();  
 }
