@@ -1,3 +1,3 @@
 public interface IProduto {
-    public double valorFinal();
+    public double valorAPagar();
 }

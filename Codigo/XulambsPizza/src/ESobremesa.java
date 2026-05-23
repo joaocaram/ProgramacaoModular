@@ -15,7 +15,7 @@ public enum ESobremesa implements IProduto{
     }
     
     @Override
-    public double valorFinal() {
+    public double valorAPagar() {
        return valor;
     }
 

@@ -42,7 +42,7 @@ public class XulambsPizza {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.5\n=============");
+        IO.println("XULAMBS PIZZA v0.6\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -68,6 +68,15 @@ public class XulambsPizza {
     
     }
 
+    static int menuProdutos() {
+        cabecalho();
+        IO.println("1 - Pizzas");
+        IO.println("2 - Bebidas");
+        IO.println("3 - Sobremesas");
+        return lerInteiro("Digite sua escolha: ");
+    
+    }
+
     //#endregion
 
     //#region pedido
@@ -75,13 +84,13 @@ public class XulambsPizza {
         cabecalho();
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
-            String outraPizza;
+            String maisItens;
             try {
                 do{
-                    Pizza novaPizza = comprarPizza();
-                    novo.adicionar(novaPizza);
-                    outraPizza = IO.readln("Mais pizza(s/n)? ");
-                }while(outraPizza.toLowerCase().equals("s"));
+                    IProduto item = comprarProduto();
+                    novo.adicionar(item);
+                    maisItens = IO.readln("Algo mais(s/n)? ");
+                }while(maisItens.toLowerCase().equals("s"));
                 pedidos.add(novo);
                 imprimir(novo, "Pedido não foi criado corretamente");        
             } catch (IllegalStateException ex) {
@@ -90,6 +99,16 @@ public class XulambsPizza {
         }
     }
         
+
+    private static IProduto comprarProduto() {
+        int tipo = menuProdutos();
+        return switch(tipo){
+            case 1-> comprarPizza();
+            case 2-> comprarBebida();
+            case 3-> comprarSobremesa();
+            default -> null;
+        };
+    }
 
     static Pedido escolherTipoPedido(){
         cabecalho();
@@ -205,6 +224,26 @@ public class XulambsPizza {
         int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
         EBorda[] bordas =  EBorda.values();
         return bordas[opcao-1];
+    }
+
+    private static ESobremesa comprarSobremesa(){
+        return (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+    }
+
+    private static EBebida comprarBebida(){
+        return (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+    }
+
+    private static Enum escolherEnum(Enum[] valores, String msg) {
+        IO.println(msg);
+        int i = 1;
+        for(Enum valor : valores){
+            IO.println(String.format("%d - %s", 
+                                    i, valor.toString()));
+            i++;
+        }    
+        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
+        return valores[opcao-1];
     }
 
     
