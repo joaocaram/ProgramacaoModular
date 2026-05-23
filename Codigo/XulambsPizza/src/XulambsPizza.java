@@ -1,11 +1,11 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Optional;
 
-/**
+/** 
  * MIT License
  *
- * Copyright(c) 2022-24 João Caram <caram@pucminas.br>
+ * Copyright(c) 2022-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,8 +14,7 @@ import java.util.Scanner;
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all
+ * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -28,239 +27,204 @@ import java.util.Scanner;
  */
 
 public class XulambsPizza {
-    static Scanner teclado;
 
+    static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
+
+    //#region utilidades
     static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
     static void pausa() {
-        System.out.println("Tecle Enter para continuar.");
-        teclado.nextLine();
+        IO.println("\nTecle Enter para continuar.");
+        IO.readln();
     }
-
     static void cabecalho() {
         limparTela();
-        System.out.println("XULAMBS PIZZA v0.5\n=============");
+        IO.println("XULAMBS PIZZA v0.5\n=============");
+        IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
     static int lerInteiro(String mensagem){
-        int opcao;
-        System.out.print(mensagem+": ");
-        try {
-            opcao = Integer.parseInt(teclado.nextLine());   
-        } catch (NumberFormatException e) {
-            System.err.println("Opção inválida.");
-            opcao = -1;
+        try{
+            return Integer.parseInt(IO.readln(mensagem));
+        }catch(NumberFormatException nfe ){
+            IO.println("Opção inválida. Digite um número válido.");
+            return -1;
         }
-         return opcao;  
     }
+    //#endregion
 
+    //#region menus
     static int exibirMenu() {
         cabecalho();
-        System.out.println("1 - Abrir Pedido");
-        System.out.println("2 - Alterar Pedido");
-        System.out.println("3 - Relatório de Pedido");
-        System.out.println("4 - Encerrar Pedido");
-        System.out.println("5 - Valor do último Pedido");
-        System.out.println("0 - Finalizar");
-        return lerInteiro("Digite sua escolha");
-    }
-
-    static int menuTipoPedido() {
-        cabecalho();
-        System.out.println("1 - Pedido Local");
-        System.out.println("2 - Pedido para Entrega");
-        System.out.println("0 - Finalizar");
-        return lerInteiro("Digite sua escolha");
-    }
-
-    static void addBordaPizza(Pizza pizza){
-        System.out.println("\nEscolha sua borda: ");
-        EBorda[] bordas = EBorda.values();
-        for (int i = 0; i < bordas.length; i++) {
-            System.out.println((i+1)+ " - "+bordas[i].descricao());
-        }
-        int opcao = lerInteiro("Entre sua opção");
-        pizza.adicionarBorda(bordas[opcao-1]);
-    }
+        IO.println("1 - Abrir Pedido");
+        IO.println("2 - Alterar Pedido");
+        IO.println("3 - Fechar Pedido");
+        IO.println("4 - Relatório de Pedido");
+        IO.println("0 - Finalizar");
+        return lerInteiro("Digite sua escolha: ");
     
-    static void abrirPedido(List<Pedido> todosOsPedidos) {
+    }
+
+    //#endregion
+
+    //#region pedido
+    static void abrirPedido(){
         cabecalho();
-        Pedido novoPedido = escolherTipoPedido();
-        adicionarProdutos(novoPedido);
-        mostrarPedido(novoPedido);
-        todosOsPedidos.add(novoPedido);
-    }
-
-    private static Pedido escolherTipoPedido() {
-        int opcao = menuTipoPedido();
-        switch (opcao) {
-            case 1:  return new PedidoLocal();
-            case 2:  return criarPedidoEntrega();                
+        Pedido novo = escolherTipoPedido();
+        if(novo!=null){
+            String outraPizza;
+            try {
+                do{
+                    Pizza novaPizza = comprarPizza();
+                    novo.adicionar(novaPizza);
+                    outraPizza = IO.readln("Mais pizza(s/n)? ");
+                }while(outraPizza.toLowerCase().equals("s"));
+                pedidos.add(novo);
+                imprimir(novo, "Pedido não foi criado corretamente");        
+            } catch (IllegalStateException ex) {
+                IO.println(ex.getMessage());
+            }
         }
-        return null;
     }
+        
 
-    private static Pedido criarPedidoEntrega() {
-        System.out.print("Qual a distância?");
-        double dist = Double.parseDouble(teclado.nextLine());
-        return new PedidoEntrega(dist);
-    }
-
-    private static void valorDoUltimoPedido(List<Pedido> todosOsPedidos){
+    static Pedido escolherTipoPedido(){
         cabecalho();
-        Pedido ultimo = todosOsPedidos.getLast();
-        System.out.println("Último pedido: R$ "+ultimo.precoAPagar());
-    }
-    
-    static void relatorioPedido(List<Pedido> todosOsPedidos) {
-        cabecalho();
-        Pedido pedido = localizarPedido(todosOsPedidos);
-        if (pedido != null)
-            mostrarPedido(pedido);
-        else
-            System.out.println("Pedido não existente.");
+        IO.println("Escolha o tipo de pedido:");
+        IO.println("1 - Pedido local");
+        IO.println("2 - Pedido para entrega");
+        int tipo = lerInteiro("Digite sua opção: ");
+        return switch(tipo){
+            case 1 ->  new PedidoLocal();
+            case 2 -> criarPedidoEntrega();
+            default -> null;
+        };
     }
 
-    static Pedido localizarPedido(List<Pedido> pedidos) {
-        cabecalho();
-        int id;
-        System.out.println("Localizando um pedido.");
-        id = lerInteiro("ID do pedido");
-
-        for (Pedido ped : pedidos) {
-            if (ped.toString().contains("Pedido " + String.format("%02d", id)))
-                return ped;
-        }
-        return null;
-    }
-
-    static void alterarPedido(List<Pedido> pedidos){
-        Pedido pedido = localizarPedido(pedidos);
-        if (pedido != null) {
-            adicionarProdutos(pedido);
-            mostrarPedido(pedido);
-        } else
-            System.out.println("Pedido não existente.");
-    }
-
-    static int menuAdicionarNoPedido() {
-        cabecalho();
-        System.out.println("1 - Pizzas");
-        System.out.println("2 - Bebidas");
-        System.out.println("3 - Sobremesas");
-        System.out.println("0 - Sair");
-        return lerInteiro("Digite sua escolha");
-}
-
-static EBebida comprarBebida(){
-        System.out.println("\nEscolha sua bebida: ");
-        EBebida[] bebidas = EBebida.values();
-        for (int i = 0; i < bebidas.length; i++) {
-            System.out.println((i+1)+ " - "+bebidas[i]);
-        }
-        int opcao = lerInteiro("Entre sua opção");
-        return bebidas[opcao-1];
-    }
-
-    static ESobremesa comprarSobremesa(){
-        System.out.println("\nEscolha sua sobremesa: ");
-        ESobremesa[] sobremesas = ESobremesa.values();
-        for (int i = 0; i < sobremesas.length; i++) {
-            System.out.println((i+1)+ " - "+sobremesas[i]);
-        }
-        int opcao = lerInteiro("Entre sua opção");
-        return (sobremesas[opcao-1]);
-    }
-
-    private static IProduto escolherProduto(){
-        int opcao = menuAdicionarNoPedido();
-        IProduto produto = null;
-        switch (opcao) {
-            case 1 -> produto = comprarPizza();
-            case 2 -> produto = comprarBebida();
-            case 3 -> produto = comprarSobremesa();
-        }
-        return produto;
-    }
-    private static void adicionarProdutos(Pedido procurado) {
-        String escolha = "n";
-        do {
-            mostrarPedido(procurado);
-            IProduto novoProduto = escolherProduto();
-            procurado.adicionar(novoProduto);
-            System.out.print("\nDeseja algo mais? (s/n) ");
-            escolha = teclado.nextLine();
-        } while (escolha.toLowerCase().equals("s"));
-    }
-
-    static void encerrarPedido(List<Pedido> todosOsPedidos) {
-        Pedido pedido = localizarPedido(todosOsPedidos);
+    static Pedido criarPedidoEntrega(){
+        double dist = Double.parseDouble(
+                    IO.readln("Pedido para entrega. Distância: "));
         try {
-            pedido.fecharPedido();
-            System.out.println("Pedido encerrado: ");
-            System.out.println(pedido.toString());
-        } catch (IllegalStateException excecao) {
-            System.out.println(excecao.getMessage());
-        }catch (NullPointerException nulo){
-            System.out.println("Pedido não existe.");
-            encerrarPedido(todosOsPedidos);
-        }
-    }
-
-    static Pizza comprarPizza() {
-        System.out.println("Comprando uma nova pizza:");
-        Pizza novaPizza = new Pizza();
-        addBordaPizza(novaPizza);
-        escolherIngredientes(novaPizza);
-        mostrarNota(novaPizza);
-        return novaPizza;
-    }
-
-    static void escolherIngredientes(Pizza pizza) {
-        int adicionais = lerInteiro("Quantidade de adicionais (máx 8)");
-        try {
-            pizza.adicionarIngredientes(adicionais);    
+            return new PedidoEntrega(dist);    
         } catch (IllegalArgumentException e) {
-            // TODO: handle exception
-        } catch (IllegalStateException ise){
-           // TODO: handle exception     
+            IO.println(e.getMessage());
+            return null;
         }
         
     }
 
-    static void mostrarNota(Pizza pizza) {
-        System.out.println("Você acabou de comprar: ");
-        System.out.println(pizza.toString());
+    static Object localizar(int numero){
+        Object localizado = null;
+        for (int i = 0; localizado == null && i<pedidos.size(); i++) {
+            Object candidato = pedidos.get(i);
+            if(candidato.hashCode() == numero)
+                localizado = candidato;
+        }
+        return localizado;
+    }
+    
+    static void alterarPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Incluir itens em um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = (Pedido)localizar(numPedido);
+        if(pedido != null ){
+            try {
+                pedido.adicionar(comprarPizza());    
+            } catch (PedidoFechadoException ex) {
+                IO.println(ex.getMessage());
+                return;
+            }catch (IllegalArgumentException ex) {
+                IO.println(ex.getMessage());
+                alterarPedido();
+            }
+        }
+        imprimir(pedido, resposta);
     }
 
-    static void mostrarPedido(Pedido pedido) {
-        System.out.println("Relatório do Pedido: ");
-        System.out.println(pedido.toString());
-
+    static void fecharPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Fechar um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = (Pedido)localizar(numPedido);
+        if(pedido != null ){
+            try {
+                pedido.fecharPedido();    
+            } catch (IllegalStateException ex) {
+                IO.print(ex.getMessage());
+                return;
+            }
+        }
+        imprimir(pedido, resposta);
     }
 
+    static void relatorioPedido(){
+        cabecalho();
+        String resposta = "Pedido não encontrado";
+        IO.println("Relatório de um pedido.");
+        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        Pedido pedido = (Pedido)localizar(numPedido);
+        imprimir(pedido, resposta);
+    }
+    //#endregion
+
+    static void imprimir(Object objeto, String padrao){
+        if(objeto!=null){
+            cabecalho();
+            IO.println(objeto);
+        }
+            
+        else
+            IO.println(padrao);
+    }
+    //#region pizza
+    static Pizza comprarPizza() {
+        cabecalho();
+        IO.println("Comprando uma nova pizza:");
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
+        Pizza novaPizza = new Pizza(adicionais);
+        novaPizza.adicionarBorda(escolherBorda());
+        imprimir(novaPizza, "Pizza não pode ser criada");
+       
+        return novaPizza;
+    }
+
+    private static EBorda escolherBorda() {
+        IO.println("Escolha uma borda: ");
+        int i = 1;
+        for(EBorda borda : EBorda.values()){
+            IO.println(String.format("%d - %s", 
+                                    i, borda.toString()));
+            i++;
+        }    
+        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
+        EBorda[] bordas =  EBorda.values();
+        return bordas[opcao-1];
+    }
+
+    
+    //#endregion
+
+    //#region app
     public static void main(String[] args) throws Exception {
-        teclado = new Scanner(System.in);
-        List<Pedido> todosOsPedidos = new LinkedList<>();
-        int opcao;
-        opcao = exibirMenu();
+        pedidos = new LinkedList<>();
+        int opcao = -1;
         do {
+            opcao = exibirMenu();
             switch (opcao) {
-                case 1 -> abrirPedido(todosOsPedidos);
-                case 2 -> alterarPedido(todosOsPedidos);
-                case 3 -> relatorioPedido(todosOsPedidos);
-                case 4 -> encerrarPedido(todosOsPedidos);
-                case 5 -> valorDoUltimoPedido(todosOsPedidos);
+                case 1 -> abrirPedido();    
+                case 2 -> alterarPedido();    
+                case 3 -> fecharPedido();    
+                case 4 -> relatorioPedido();    
             }
             pausa();
-            opcao = exibirMenu();
-        } while (opcao != 0);
-
-        teclado.close();
-        System.out.println("FLW T+ VLW ABS.");
+        } while (opcao != 0);        
+        IO.println("FLW T+ VLW ABS.");
     }
-
+    //#endregion
 }

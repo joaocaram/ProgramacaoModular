@@ -1,7 +1,8 @@
+
 /** 
  * MIT License
  *
- * Copyright(c) 2024 João Caram <caram@pucminas.br>
+ * Copyright(c) 2024-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,97 +23,106 @@
  * SOFTWARE.
  */
 
- import java.text.NumberFormat;
 
- /** Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
-   * A pizza deve emitir uma nota de compra com os seus detalhes.
-   */
- public class Pizza implements IProduto{
- 
-     private static final int MAX_INGREDIENTES = 8;
-     private static final String DESCRICAO = "Pizza";
-     private static final double PRECO_BASE = 29d;
-     private static final double VALOR_ADICIONAL = 5d;
-     private int quantidadeIngredientes;
-     private EBorda borda;
- 
-    private void init(int quantosAdicionais, EBorda borda){
-        adicionarIngredientes(quantosAdicionais);
-        this.borda = borda;
+
+/**
+ * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
+ * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
+ * A pizza deve emitir uma nota de compra com os seus detalhes.
+ */
+public class Pizza {
+
+    private static final int MAX_INGREDIENTES = 8;
+    private static final double PRECO_BASE = 29D;
+    private static final double VALOR_ADICIONAL = 5d;
+    
+    private static int quantidadeVendida=0;
+    
+    private String descricao;
+    private int quantidadeIngredientes;
+    private EBorda borda;
+
+    private void setUp(int adicionais){
+        borda = EBorda.TRADICIONAL;
+        adicionarIngredientes(adicionais);
+        quantidadeVendida++;
     }
-     /**
-      * Construtor padrão. Cria uma pizza sem adicionais.
-      */
-     public Pizza() {
-         init(0, EBorda.TRADICIONAL);
-     }
- 
-     /**
-      * Cria uma pizza com a quantidade de adicionais pré-definida. Em caso de valor inválido, a pizza será criada sem adicionais.
-      * @param quantosAdicionais Quantidade de adicionais (entre 0 e 8, limites inclusivos).
-      */
-     public Pizza(int quantosAdicionais) {
-         init(quantosAdicionais, EBorda.TRADICIONAL);
-     }
- 
-     public Pizza(int quantosAdicionais, EBorda borda){
-        init(quantosAdicionais, borda);
-     }
 
-     private double valorAdicionais(){
-         return quantidadeIngredientes*VALOR_ADICIONAL;
-     }
-     /**
-      * Retorna o valor final da pizza, incluindo seus adicionais.
-      * @return Double com o valor final da pizza.
-      */
-      @Override
-     public double valorFinal() {
-         return PRECO_BASE + valorAdicionais() + borda.valor();
-     }
- 
-     /**
-      * Tenta adicionar ingredientes na pizza. Caso a adição seja inválida (ultrapassando limites ou com valores negativos), mantém 
-      * a quantidade atual de ingredientes. Retorna a quantidade de ingredientes após a execução do método.
-      * @param quantos Quantos ingredientes a serem adicionados (>0)
-      * @return Quantos ingredientes a pizza tem após a execução
-      */
-     public int adicionarIngredientes(int quantos) {
-        if(quantos < 0)
-            throw new IllegalArgumentException("Quantidade não pode ser negativa.");
-         if(!podeAdicionar(quantos))
-            throw new IllegalStateException("Máximo de ingredientes atingido.");
-        
-        quantidadeIngredientes += quantos;
-        return quantidadeIngredientes;
-     }
+    /**
+     * Construtor padrão. Cria uma pizza sem adicionais.
+     */
+    public Pizza() {
+        setUp(0);
+    }
 
-     public double adicionarBorda(EBorda borda){
+    /**
+     * Cria uma pizza já com ingredientes adicionais.
+     * Caso o valor seja inválido (<1 ou >8), a pizza será criada
+     * sem adicionais.
+     * @param adicionais Inteiro com a quantidade de adicionais da pizza.
+     */
+    public Pizza(int adicionais) {
+        setUp(adicionais);
+    }
+
+    /**
+     * Retorna o valor final da pizza, incluindo seus adicionais.
+     * 
+     * @return Double com o valor final da pizza.
+     */
+    public double valorAPagar() {
+        return borda.valorBorda() + PRECO_BASE + valorAdicionais();
+    }
+
+    public double adicionarBorda(EBorda borda){
         this.borda = borda;
-        return this.borda.valor();
-     }
-     /**
-      * Faz a verificação de limites para adicionar ingredientes na pizza. Retorna TRUE/FALSE conforme seja possível ou não adicionar
-      * esta quantidade de ingredientes.
-      * @param quantos Quantidade de ingredientes a adicionar.
-      * @return TRUE/FALSE conforme seja possível ou não adicionar esta quantidade de ingredientes.
-      */
-     private boolean podeAdicionar(int quantos) {
-         return (quantos>=0 && quantos+quantidadeIngredientes<=MAX_INGREDIENTES);
-     }
- 
-     /**
-      * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
-      * @return String no formato "<DESCRICAO>, no valor de <VALOR>"
-      */
-      @Override
-     public String toString() {
-         NumberFormat moeda = NumberFormat.getCurrencyInstance();
-         return String.format("%s (%s) com borda %s (%s) com %d ingredientes (%s), no valor de %s", 
-                                     DESCRICAO, moeda.format(PRECO_BASE), 
-                                     borda.descricao(), moeda.format(borda.valor()),
-                                     quantidadeIngredientes, moeda.format(valorAdicionais()), moeda.format(valorFinal()));
-     }
- 
- }
- 
+        atualizarDescricao();
+        return borda.valorBorda();
+    }
+
+    private double valorAdicionais(){
+        return quantidadeIngredientes * VALOR_ADICIONAL;
+    }
+    private boolean podeAdicionar(int quantos){
+        int novosIngredientes = quantidadeIngredientes + quantos;
+        return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
+    }
+
+    /**
+     * Tenta adicionar ingredientes na pizza. Caso a adição seja inválida
+     * (ultrapassando limites ou com valores negativos), mantém
+     * a quantidade atual de ingredientes. Atualiza a descrição.
+     * Retorna a quantidade de ingredientes após a execução do método.
+     * 
+     * @param quantidade Quantos ingredientes a serem adicionados (>0)
+     * @return Quantos ingredientes a pizza tem após a execução
+     */
+    public int adicionarIngredientes(int quantidade) {     
+        if (podeAdicionar(quantidade)) {
+            quantidadeIngredientes += quantidade;
+            atualizarDescricao();
+        }
+        return quantidadeIngredientes;
+    }
+    private void atualizarDescricao(){
+            descricao = String.format("Pizza com borda %s e %d adicionais", 
+                                    borda.toString().toLowerCase(), quantidadeIngredientes);
+            
+    }
+    /**
+     * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
+     * 
+     * @return String no formato "<DESCRICAO>, no valor de <VALOR>"
+     */
+    @Override
+    public String toString() {
+        double valor = valorAPagar();
+        double adicionais = valorAdicionais();
+        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
+                descricao, PRECO_BASE, adicionais, borda.valorBorda(),valor);
+    }
+
+    public static int pizzasVendidas(){
+        return quantidadeVendida;
+    }
+}

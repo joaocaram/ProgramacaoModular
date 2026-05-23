@@ -1,34 +1,32 @@
-import java.text.NumberFormat;
-
-public class PedidoEntrega extends Pedido{
-
+public class PedidoEntrega extends Pedido {
     private static final int MAX_PIZZAS = 8;
-    private static final double[] TAXAS =      {0, 5, 8};
-    private static final double[] DISTANCIAS = {4, 8, Double.MAX_VALUE};
-    
+    private static final double[] TAXAS = {0,5,8};
+    private static final double[] DISTANCIAS = {4,8,Double.MAX_VALUE};
     private double distanciaEntrega;
 
+    /**
+     * Pedido para entrega. Recebe uma distância entre 0.1 e 20 (km)
+     * @param distancia Distância da entrega
+     * @throws IllegalArgumentException para casos de distância inválida
+     */
     public PedidoEntrega(double distancia){
+        if(distancia <= 0)
+            throw new IllegalArgumentException("Distância deve ser pelo menos 0.1");
         super();
-        if(distancia < 0.1)
-            throw new DistanciaInvalidaException(distancia);
-        
         distanciaEntrega = distancia;
     }
 
     private double valorTaxa(){
-        double taxa = 0d;
         int pos = 0;
-		while(distanciaEntrega > DISTANCIAS[pos])
-			pos++;
-		taxa = TAXAS[pos];
-        return taxa;
+        while (distanciaEntrega > DISTANCIAS[pos]) {
+            pos++;
+        }
+        return TAXAS[pos];
     }
 
     @Override
     protected boolean podeAdicionar(){
-        return super.podeAdicionar()
-               && (itens.size() < MAX_PIZZAS);
+        return (pizzas.size() < MAX_PIZZAS && super.podeAdicionar());
     }
 
     @Override
@@ -37,12 +35,11 @@ public class PedidoEntrega extends Pedido{
     }
 
     @Override
-    public String toString(){
-        NumberFormat moeda = NumberFormat.getCurrencyInstance();
-        StringBuilder relat = new StringBuilder("XULAMBS PIZZA - Pedido Entrega ");
-        relat.append(detalhesPedido());
-        relat.append(String.format("\nTAXA DE ENTREGA: %s", moeda.format(valorTaxa())));
-        relat.append("\n"+rodapePedido());
-        return relat.toString();
-    }
+    public String toString() {
+		String relat = cabecalhoPedido();
+        relat += String.format("TAXA DE ENTREGA: R$ %.2f\n",
+                         valorTaxa());
+        relat += rodapePedido();
+        return relat;
+	}
 }
