@@ -1,6 +1,6 @@
 import java.text.NumberFormat;
 
-public enum ESobremesa implements IProduto{
+public enum ESobremesa{
 
     BRIGADEIRO_DE_COLHER(8),
     PUDIM(10),
@@ -14,10 +14,7 @@ public enum ESobremesa implements IProduto{
         valor = preco;
     }
     
-    @Override
-    public double valorAPagar() {
-       return valor;
-    }
+    
 
     @Override
     public String toString(){

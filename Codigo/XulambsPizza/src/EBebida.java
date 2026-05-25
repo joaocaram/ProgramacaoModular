@@ -1,6 +1,6 @@
 import java.text.NumberFormat;
 
-public enum EBebida implements IProduto{
+public enum EBebida{
 
     ÁGUA_COM_GAS(4),
     CHÁ_COM_GAS(6),
@@ -15,7 +15,6 @@ public enum EBebida implements IProduto{
         valor = preco;
     }
     
-    @Override
     public double valorAPagar() {
        return valor;
     }
