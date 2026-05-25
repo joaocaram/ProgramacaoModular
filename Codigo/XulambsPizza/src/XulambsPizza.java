@@ -226,12 +226,14 @@ public class XulambsPizza {
         return bordas[opcao-1];
     }
 
-    private static ESobremesa comprarSobremesa(){
-        return (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+    private static IProduto comprarSobremesa(){
+        ESobremesa sobremesa = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+        return new Sobremesa(sobremesa);
     }
 
-    private static EBebida comprarBebida(){
-        return (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+    private static IProduto comprarBebida(){
+        EBebida bebida = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+        return new Bebida(bebida);
     }
 
     private static Enum escolherEnum(Enum[] valores, String msg) {
