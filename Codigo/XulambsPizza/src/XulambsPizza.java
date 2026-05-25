@@ -214,16 +214,8 @@ public class XulambsPizza {
     }
 
     private static EBorda escolherBorda() {
-        IO.println("Escolha uma borda: ");
-        int i = 1;
-        for(EBorda borda : EBorda.values()){
-            IO.println(String.format("%d - %s", 
-                                    i, borda.toString()));
-            i++;
-        }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        EBorda[] bordas =  EBorda.values();
-        return bordas[opcao-1];
+        return
+            (EBorda)escolherEnum(EBorda.values(), "Escolha uma borda: ");
     }
 
     private static IProduto comprarSobremesa(){
