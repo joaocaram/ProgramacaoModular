@@ -42,7 +42,7 @@ public class XulambsPizza {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.6\n=============");
+        IO.println("XULAMBS FOODS v0.7\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -71,8 +71,9 @@ public class XulambsPizza {
     static int menuProdutos() {
         cabecalho();
         IO.println("1 - Pizzas");
-        IO.println("2 - Bebidas");
-        IO.println("3 - Sobremesas");
+        IO.println("2 - Sanduiches");
+        IO.println("3 - Bebidas");
+        IO.println("4 - Sobremesas");
         return lerInteiro("Digite sua escolha: ");
     
     }
@@ -103,9 +104,10 @@ public class XulambsPizza {
     private static IProduto comprarProduto() {
         int tipo = menuProdutos();
         return switch(tipo){
-            case 1-> comprarPizza();
-            case 2-> comprarBebida();
-            case 3-> comprarSobremesa();
+            case 1, 2-> comprarPersonalizavel(tipo);
+            
+            case 3-> comprarBebida();
+            case 4-> comprarSobremesa();
             default -> null;
         };
     }
@@ -153,7 +155,7 @@ public class XulambsPizza {
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
-                pedido.adicionar(comprarPizza());    
+                pedido.adicionar(comprarProduto());    
             } catch (PedidoFechadoException ex) {
                 IO.println(ex.getMessage());
                 return;
@@ -202,15 +204,36 @@ public class XulambsPizza {
             IO.println(padrao);
     }
     //#region pizza
-    static Pizza comprarPizza() {
+    static IProduto comprarPersonalizavel(int tipo){
+        String produto = tipo == 1 ? "pizza" : "sanduíche";
         cabecalho();
-        IO.println("Comprando uma nova pizza:");
+        IO.println("Comprando "+produto+": ");
         int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
-        Pizza novaPizza = new Pizza(adicionais);
+        IPersonalizavel item = switch (tipo) {
+            case 1 -> comprarPizza();
+            case 2 -> comprarSanduiche();
+            default -> null;
+        };
+        if(item != null){
+            item.adicionarIngredientes(adicionais);
+        }
+        imprimir(item, "Item não pôde ser criado");
+        return (IProduto)item;
+    }
+
+    static IPersonalizavel comprarPizza() {
+        Pizza novaPizza = new Pizza();
         novaPizza.adicionarBorda(escolherBorda());
-        imprimir(novaPizza, "Pizza não pode ser criada");
-       
+        
         return novaPizza;
+    }
+
+    static IPersonalizavel comprarSanduiche() {
+        Sanduiche novoSanduiche = new Sanduiche();
+        String combo = IO.readln("Será combo com fritas (s/n)? ").toUpperCase();
+        if(combo.equals("S"))
+            novoSanduiche.setCombo(true);
+        return novoSanduiche;
     }
 
     private static EBorda escolherBorda() {
@@ -226,12 +249,14 @@ public class XulambsPizza {
         return bordas[opcao-1];
     }
 
-    private static ESobremesa comprarSobremesa(){
-        return (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+    private static IProduto comprarSobremesa(){
+        ESobremesa tipo = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+        return new Sobremesa(tipo);
     }
 
-    private static EBebida comprarBebida(){
-        return (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+    private static IProduto comprarBebida(){
+        EBebida tipo = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+        return new Bebida(tipo);    
     }
 
     private static Enum escolherEnum(Enum[] valores, String msg) {

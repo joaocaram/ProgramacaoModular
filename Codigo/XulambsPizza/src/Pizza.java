@@ -30,7 +30,7 @@
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
  * A pizza deve emitir uma nota de compra com os seus detalhes.
  */
-public class Pizza implements IProduto, Comparable<IProduto>{
+public class Pizza implements IProduto, IPersonalizavel{
 
     private static final int MAX_INGREDIENTES = 8;
     private static final double PRECO_BASE = 29D;
@@ -130,4 +130,5 @@ public class Pizza implements IProduto, Comparable<IProduto>{
     public int compareTo(IProduto o) {
         return this.toString().compareTo(o.toString());
     }
+
 }
