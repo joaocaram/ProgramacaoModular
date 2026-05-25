@@ -15,6 +15,7 @@ public enum EBebida{
         valor = preco;
     }
     
+    
     public double valorAPagar() {
        return valor;
     }

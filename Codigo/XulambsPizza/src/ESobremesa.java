@@ -3,8 +3,9 @@ import java.text.NumberFormat;
 public enum ESobremesa{
 
     BRIGADEIRO_DE_COLHER(8),
-    PUDIM(10),
-    DOCE_DE_LEITE(9);
+    DOCE_DE_LEITE(9),
+    PUDIM(10);
+    
 
     private String nome;
     private double valor;
@@ -14,7 +15,9 @@ public enum ESobremesa{
         valor = preco;
     }
     
-    
+    public double valorAPagar() {
+       return valor;
+    }
 
     @Override
     public String toString(){
