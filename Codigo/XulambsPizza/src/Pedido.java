@@ -129,6 +129,7 @@ public abstract class Pedido {
 		relat.append(String.format("Pedido nº %d - %s - %s\n",
                             idPedido, dataFormatada, estado));
         for (int i = 0; i < itens.size(); i++) {
+			relat.append("----\n");
             relat.append(String.format("%02d: %s\n", 
                             (i+1), itens.get(i).toString()));
         }
@@ -136,7 +137,7 @@ public abstract class Pedido {
 	}
 
 	protected String rodapePedido(){
-		return String.format("TOTAL DO PEDIDO: R$ %.2f",
+		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
                          precoAPagar());
 
 	}
