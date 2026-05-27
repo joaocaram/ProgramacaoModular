@@ -20,5 +20,9 @@ public class Sobremesa implements IProduto{
         return tipo.toString();
     }
 
+     @Override
+	public int compareTo(IProduto outro){
+		return toString().toLowerCase().compareTo(outro.toString().toLowerCase());
+	}
  
 }

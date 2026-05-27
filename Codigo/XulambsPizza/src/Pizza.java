@@ -30,7 +30,7 @@
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
  * A pizza deve emitir uma nota de compra com os seus detalhes.
  */
-public class Pizza implements IProduto{
+public class Pizza implements IProduto, IPersonalizavel{
 
     private static final int MAX_INGREDIENTES = 8;
     private static final double PRECO_BASE = 29D;
@@ -104,6 +104,8 @@ public class Pizza implements IProduto{
         }
         return quantidadeIngredientes;
     }
+
+    
     private void atualizarDescricao(){
             descricao = String.format("Pizza com borda %s e %d adicionais", 
                                     borda.toString().toLowerCase(), quantidadeIngredientes);
@@ -125,4 +127,14 @@ public class Pizza implements IProduto{
     public static int pizzasVendidas(){
         return quantidadeVendida;
     }
+
+    @Override
+    public int maximoIngredientes() {
+        return MAX_INGREDIENTES;
+    }
+
+    @Override
+	public int compareTo(IProduto outro){
+		return descricao.toLowerCase().compareTo(outro.toString().toLowerCase());
+	}
 }

@@ -96,4 +96,14 @@ public class Sanduiche implements IProduto, IPersonalizavel {
 
         return String.format("%sVALOR A PAGAR: R$ %.2f", nota, valor);
     }
+
+    @Override
+    public int maximoIngredientes() {
+       return MAX_INGREDIENTES;
+    }
+
+     @Override
+	public int compareTo(IProduto outro){
+		return descricao.toLowerCase().compareTo(outro.toString().toLowerCase());
+	}
 }

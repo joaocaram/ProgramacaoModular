@@ -11,6 +11,11 @@ public class Bebida implements IProduto{
     }
 
     @Override
+	public int compareTo(IProduto outro){
+		return toString().toLowerCase().compareTo(outro.toString().toLowerCase());
+	}
+
+    @Override
     public double valorAPagar() {
         return tipo.valorAPagar();
     }

@@ -71,8 +71,9 @@ public class XulambsPizza {
     static int menuProdutos() {
         cabecalho();
         IO.println("1 - Pizzas");
-        IO.println("2 - Bebidas");
-        IO.println("3 - Sobremesas");
+        IO.println("2 - Sanduíches");
+        IO.println("3 - Bebidas");
+        IO.println("4 - Sobremesas");
         return lerInteiro("Digite sua escolha: ");
     
     }
@@ -103,9 +104,9 @@ public class XulambsPizza {
     private static IProduto comprarProduto() {
         int tipo = menuProdutos();
         return switch(tipo){
-            case 1-> comprarPizza();
-            case 2-> comprarBebida();
-            case 3-> comprarSobremesa();
+            case 1, 2 -> (IProduto)comprarPersonalizavel(tipo);
+            case 3-> comprarBebida();
+            case 4-> comprarSobremesa();
             default -> null;
         };
     }
@@ -153,7 +154,7 @@ public class XulambsPizza {
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
-                pedido.adicionar(comprarPizza());    
+                pedido.adicionar(comprarProduto());    
             } catch (PedidoFechadoException ex) {
                 IO.println(ex.getMessage());
                 return;
@@ -202,16 +203,51 @@ public class XulambsPizza {
             IO.println(padrao);
     }
     //#region pizza
-    static Pizza comprarPizza() {
+    static IPersonalizavel comprarPersonalizavel(int tipo){
         cabecalho();
-        IO.println("Comprando uma nova pizza:");
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
-        Pizza novaPizza = new Pizza(adicionais);
+        String nomeProduto = null;
+        IPersonalizavel item = null;
+        switch(tipo){
+            case 1-> {
+                nomeProduto = "pizza";
+                item = comprarPizza();
+            }
+            case 2-> {
+                nomeProduto = "sanduíche";
+                item = comprarSanduiche();
+            }
+        };
+        IO.println("Comprando "+nomeProduto);
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (até "+item.maximoIngredientes()+")"));
+        item.adicionarIngredientes(adicionais);
+        imprimir(item, nomeProduto+"não foi criado");
+        return item;
+    }
+    static IPersonalizavel comprarPizza() {
+        // cabecalho();
+        // IO.println("Comprando uma nova pizza:");
+        // int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
+        Pizza novaPizza = new Pizza();
         novaPizza.adicionarBorda(escolherBorda());
-        imprimir(novaPizza, "Pizza não pode ser criada");
+        // imprimir(novaPizza, "Pizza não pode ser criada");
        
         return novaPizza;
     }
+
+    static IPersonalizavel comprarSanduiche() {
+        // cabecalho();
+        // IO.println("Comprando um sanduiche:");
+        // int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
+        Sanduiche novo = new Sanduiche();
+        String combo = IO.readln("Quer fritas (s/n)? ").toLowerCase();
+        if(combo.equals("s"))
+            novo.setCombo(true);
+    
+       // imprimir(novo, "Sanduíche não pode ser criado");
+       
+        return novo;
+    }
+
 
     private static EBorda escolherBorda() {
         return
