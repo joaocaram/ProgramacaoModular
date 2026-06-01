@@ -40,6 +40,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 	protected LinkedList<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
+	protected double desconto;
 
     /**
 	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
@@ -53,8 +54,20 @@ public abstract class Pedido implements Comparable<Pedido>{
         itens = new LinkedList<>();
         data = LocalDate.now();
         idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
+		desconto = 0d;
 	}
 
+	public double aplicarDesconto(double valor){
+		if(valor < 0 || valor > valorItens())
+			throw new IllegalArgumentException("Desconto inválido");
+		if(desconto != 0 )
+			throw new IllegalStateException("Desconto já foi aplicado");
+		if(!aberto)
+			throw new PedidoFechadoException(idPedido);
+
+		desconto = valor;
+		return desconto;
+	}
 	protected double valorItens(){
 		double preco = 0d;
         for (IProduto produto : itens) {
