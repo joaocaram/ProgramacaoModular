@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-
+import java.text.Collator;
 
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
@@ -85,7 +85,7 @@ public class Pizza implements IProduto, IPersonalizavel{
     }
     private boolean podeAdicionar(int quantos){
         int novosIngredientes = quantidadeIngredientes + quantos;
-        return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
+        return (quantos >= 0 && novosIngredientes <=MAX_INGREDIENTES);
     }
 
     /**
@@ -135,6 +135,8 @@ public class Pizza implements IProduto, IPersonalizavel{
 
     @Override
 	public int compareTo(IProduto outro){
-		return descricao.toLowerCase().compareTo(outro.toString().toLowerCase());
-	}
+        Collator comparador = Collator.getInstance();
+        comparador.setStrength(Collator.SECONDARY);
+		return comparador.compare(this.toString(), outro.toString());
+    }
 }

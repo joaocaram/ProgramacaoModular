@@ -1,9 +1,15 @@
+import java.time.LocalDate;
+
 public class PedidoLocal extends Pedido {
 
     private static final double TAXA_SERVICO = 0.1;
 
     public PedidoLocal(){
         super();
+    }
+
+    public PedidoLocal(LocalDate data){
+        super(data);
     }
 
     private double valorServico(){
@@ -23,7 +29,7 @@ public class PedidoLocal extends Pedido {
 	@Override
 	public String toString() {
 		StringBuilder relat = new StringBuilder(cabecalhoPedido());
-        relat.append(String.format("SERVIÇO: R$ %.2f\n", valorServico()));
+        relat.append(String.format("\nSERVIÇO: R$ %.2f\n", valorServico()));
         relat.append(rodapePedido());
         return relat.toString();
 	} 

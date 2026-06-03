@@ -1,4 +1,5 @@
 import java.security.InvalidParameterException;
+import java.text.Collator;
 
 public class Sobremesa implements IProduto{
     private ESobremesa tipo;
@@ -22,7 +23,8 @@ public class Sobremesa implements IProduto{
 
      @Override
 	public int compareTo(IProduto outro){
-		return toString().toLowerCase().compareTo(outro.toString().toLowerCase());
-	}
- 
+        Collator comparador = Collator.getInstance();
+        comparador.setStrength(Collator.SECONDARY);
+		return comparador.compare(this.toString(), outro.toString());
+    } 
 }

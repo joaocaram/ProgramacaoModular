@@ -3,7 +3,7 @@ public class PedidoFechadoException
     private int idPedido;
 
     public PedidoFechadoException(int id){
-        super("Não pode adicionar pizza em pedido fechado.");
+        super("Não pode adicionar produtos em pedido fechado.");
         idPedido = id;
     }
 

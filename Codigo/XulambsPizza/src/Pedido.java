@@ -42,19 +42,26 @@ public abstract class Pedido implements Comparable<Pedido>{
 	private boolean aberto;
 	protected double desconto;
 
+	private void init(LocalDate data){
+		this.data = data;
+		if(data == null)
+			this.data = LocalDate.now();
+		ultimoPedido += sorteio.nextInt(1, 6);
+		aberto = true;
+        itens = new LinkedList<>();
+        idPedido = this.data.getDayOfMonth()*1000 + ultimoPedido;
+		desconto = 0d;
+	}
     /**
 	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
 	 * do último identificador armazenado.
 	 */
-
 	public Pedido() {
-        ultimoPedido += sorteio.nextInt(1, 6);
-        
-		aberto = true;
-        itens = new LinkedList<>();
-        data = LocalDate.now();
-        idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
-		desconto = 0d;
+		init(null);
+	}
+
+	public Pedido(LocalDate data) {
+		init(data);
 	}
 
 	public double aplicarDesconto(double valor){
@@ -148,12 +155,13 @@ public abstract class Pedido implements Comparable<Pedido>{
             relat.append(String.format("%02d: %s\n", 
                             (i+1), itens.get(i).toString()));
         }
+        relat.append(String.format("----\nTOTAL DOS ITENS: R$ %.2f", valorItens()));
 		return relat.toString();
 	}
 
 	protected String rodapePedido(){
-		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
-                         precoAPagar());
+		String rodape = String.format("----\nDESCONTO: R$ %.2f", desconto); 
+		return String.format("%s\n----\nTOTAL DO PEDIDO: R$ %.2f", rodape,precoAPagar());
 
 	}
 

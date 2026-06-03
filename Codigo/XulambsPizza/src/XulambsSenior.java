@@ -1,8 +1,6 @@
 public class XulambsSenior implements IFidelidade{
 
     private static final double PCT_DESCONTO = 0.15;
-    private static final int MIN_PEDIDOS = 20;
-    private static final double MIN_MEDIA = 44d;
     
     private static final int COMPRAS_CUPOM = 5;
     private static final double VALOR_CUPOM =10d;
@@ -17,6 +15,11 @@ public class XulambsSenior implements IFidelidade{
         }   
         quantCompras++;
         return valor;
+    }
+
+    @Override
+    public String toString(){
+        return "Senior";
     }
     
 }

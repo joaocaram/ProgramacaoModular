@@ -6,4 +6,9 @@ public class XulambsJunior implements IFidelidade {
         double valor = pedido.precoAPagar();
         return valor * PCT_DESCONTO;
     }
+
+    @Override
+    public String toString(){
+        return "Junior";
+    }
 }

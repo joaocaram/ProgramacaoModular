@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -26,10 +27,18 @@ import java.util.Optional;
  * SOFTWARE.
  */
 
-public class XulambsPizza {
+public class XulambsFoods {
 
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
+    static List<Cliente> clientes;
+    
+    //#region config e dados
+    static void config(){
+        clientes = GeradorClientes.gerarClientes();
+        pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
+    }
 
+    //#endregion
     //#region utilidades
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -42,7 +51,7 @@ public class XulambsPizza {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.6\n=============");
+        IO.println("XULAMBS FOODS v0.8\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -63,6 +72,17 @@ public class XulambsPizza {
         IO.println("2 - Alterar Pedido");
         IO.println("3 - Fechar Pedido");
         IO.println("4 - Relatório de Pedido");
+        IO.println("5 - Gerência");
+        IO.println("0 - Finalizar");
+        return lerInteiro("Digite sua escolha: ");
+    
+    }
+
+    static int exibirMenuGerencia() {
+        cabecalho();
+        IO.println("1 - Todos os clientes");
+        IO.println("2 - Todos os pedidos");
+        IO.println("3 - Atualizar categorias");
         IO.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha: ");
     
@@ -136,10 +156,10 @@ public class XulambsPizza {
         
     }
 
-    static Object localizar(int numero){
+    static Object localizar(int numero, List lista){
         Object localizado = null;
-        for (int i = 0; localizado == null && i<pedidos.size(); i++) {
-            Object candidato = pedidos.get(i);
+        for (int i = 0; localizado == null && i<lista.size(); i++) {
+            Object candidato = lista.get(i);
             if(candidato.hashCode() == numero)
                 localizado = candidato;
         }
@@ -151,7 +171,7 @@ public class XulambsPizza {
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = (Pedido)localizar(numPedido);
+        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
         if(pedido != null ){
             try {
                 pedido.adicionar(comprarProduto());    
@@ -171,16 +191,21 @@ public class XulambsPizza {
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = (Pedido)localizar(numPedido);
-        if(pedido != null ){
+        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
+        int numCliente = Integer.parseInt(IO.readln("ID do cliente: "));
+        Cliente cliente = (Cliente)localizar(numCliente, clientes);
+        
+        if(pedido != null && cliente !=null){
             try {
-                pedido.fecharPedido();    
+                cliente.registrarPedido(pedido);
+                pedido.fecharPedido();
+                String registro = (String.format("%s\nPedido %d registrado para %s\n", pedido, numPedido, cliente.getNome()));
+                imprimir(registro, resposta);
             } catch (IllegalStateException ex) {
                 IO.print(ex.getMessage());
                 return;
             }
         }
-        imprimir(pedido, resposta);
     }
 
     static void relatorioPedido(){
@@ -188,7 +213,7 @@ public class XulambsPizza {
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = (Pedido)localizar(numPedido);
+        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
         imprimir(pedido, resposta);
     }
     //#endregion
@@ -218,33 +243,22 @@ public class XulambsPizza {
             }
         };
         IO.println("Comprando "+nomeProduto);
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (até "+item.maximoIngredientes()+")"));
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (até "+item.maximoIngredientes()+") "));
         item.adicionarIngredientes(adicionais);
         imprimir(item, nomeProduto+"não foi criado");
         return item;
     }
     static IPersonalizavel comprarPizza() {
-        // cabecalho();
-        // IO.println("Comprando uma nova pizza:");
-        // int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
         Pizza novaPizza = new Pizza();
         novaPizza.adicionarBorda(escolherBorda());
-        // imprimir(novaPizza, "Pizza não pode ser criada");
-       
         return novaPizza;
     }
 
     static IPersonalizavel comprarSanduiche() {
-        // cabecalho();
-        // IO.println("Comprando um sanduiche:");
-        // int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
-        Sanduiche novo = new Sanduiche();
+         Sanduiche novo = new Sanduiche();
         String combo = IO.readln("Quer fritas (s/n)? ").toLowerCase();
         if(combo.equals("s"))
             novo.setCombo(true);
-    
-       // imprimir(novo, "Sanduíche não pode ser criado");
-       
         return novo;
     }
 
@@ -282,6 +296,7 @@ public class XulambsPizza {
     //#region app
     public static void main(String[] args) throws Exception {
         pedidos = new LinkedList<>();
+        config();
         int opcao = -1;
         do {
             opcao = exibirMenu();
@@ -290,10 +305,44 @@ public class XulambsPizza {
                 case 2 -> alterarPedido();    
                 case 3 -> fecharPedido();    
                 case 4 -> relatorioPedido();    
+                case 5 -> menuGerencia();
             }
             pausa();
         } while (opcao != 0);        
         IO.println("FLW T+ VLW ABS.");
     }
     //#endregion
+
+    private static void menuGerencia() {
+        cabecalho();
+        int opcao = exibirMenuGerencia();
+        switch (opcao) {
+            case 1 -> relatorioClientes();
+            case 2 -> relatorioPedidos();
+            case 3 -> atualizarClientes();
+        }    
+    }
+
+    private static void atualizarClientes() {
+        for (Cliente cliente : clientes) {
+            cliente.verificarCategoria();
+        }    
+    }
+
+    private static void relatorioClientes() {
+        cabecalho();
+        IO.println("Relatório Clientes:");
+        for (Cliente cliente : clientes) {
+            IO.println(cliente);
+        }    
+    }
+
+    private static void relatorioPedidos() {
+        cabecalho();
+        IO.println("Relatório pedidos:");
+        pedidos.sort(null);
+        for (Pedido pedido : pedidos) {
+            IO.println(pedido);
+        }    
+    }
 }

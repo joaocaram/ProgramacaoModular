@@ -1,3 +1,4 @@
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class Cliente {
     public int registrarPedido(Pedido novo){
         if(novo == null)
             throw new IllegalArgumentException("Pedido inválido");
+        
+        double desconto = categoria.descontoPedido(novo);
+        novo.aplicarDesconto(desconto);
         pedidos.addLast(novo);
         return pedidos.size();
     }
@@ -45,5 +49,22 @@ public class Cliente {
             relat.append("\n"+pedido);
         }
         return relat.toString();
+    }
+
+    public String getNome(){
+        return nome;
+    }
+    @Override
+    public String toString(){
+        NumberFormat moeda = NumberFormat.getCurrencyInstance();
+        double total = totalGasto();
+        int quantidade = pedidos.size();
+        return String.format("%02d - %s (%s) - Total de pedidos: %d - Valor gasto: %s (%s)",
+                             id, nome, categoria.toString(), quantidade, moeda.format(total), moeda.format(total/quantidade));
+    }
+
+    @Override
+    public int hashCode(){
+        return id;
     }
 }
