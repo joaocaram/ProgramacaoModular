@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+
 
 /** 
  * MIT License
@@ -26,7 +26,7 @@ import java.util.Optional;
  * SOFTWARE.
  */
 
-public class XulambsPizza {
+public class XulambsFoods {
 
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
 
