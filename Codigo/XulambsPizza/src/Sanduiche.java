@@ -1,3 +1,5 @@
+import java.text.Collator;
+
 public class Sanduiche implements IProduto, IPersonalizavel {
 
     private static final int MAX_INGREDIENTES = 5;
@@ -99,7 +101,9 @@ public class Sanduiche implements IProduto, IPersonalizavel {
 
     @Override
     public int compareTo(IProduto o) {
-        return this.toString().compareTo(o.toString());
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
     }
     
     

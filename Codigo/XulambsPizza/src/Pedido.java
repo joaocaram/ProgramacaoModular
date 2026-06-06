@@ -130,6 +130,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 		StringBuilder relat = new StringBuilder();
 		relat.append(String.format("Pedido nº %d - %s - %s\n",
                             idPedido, dataFormatada, estado));
+		Collections.sort(itens);
         for (int i = 0; i < itens.size(); i++) {
             relat.append(String.format("%02d: %s\n", 
                             (i+1), itens.get(i).toString()));
