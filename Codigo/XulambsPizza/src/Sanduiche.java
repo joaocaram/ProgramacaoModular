@@ -55,7 +55,7 @@ public class Sanduiche implements IProduto, IPersonalizavel {
 
     private boolean podeAdicionar(int quantos){
         int novosIngredientes = quantidadeIngredientes + quantos;
-        return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
+        return (quantos >= 0 && novosIngredientes <=MAX_INGREDIENTES);
     }
 
     /**
@@ -104,6 +104,16 @@ public class Sanduiche implements IProduto, IPersonalizavel {
         Collator collator = Collator.getInstance();
         collator.setStrength(Collator.PRIMARY);
         return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
+    }
+
+    @Override
+    public int maxIngredientes() {
+        return MAX_INGREDIENTES;
+    }
+
+    @Override
+    public String getNome() {
+        return "um sanduíche";
     }
     
     
