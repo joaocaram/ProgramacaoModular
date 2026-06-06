@@ -1,11 +1,9 @@
-import java.security.InvalidParameterException;
-
 public class Sobremesa implements IProduto{
     private ESobremesa tipo;
 
     public Sobremesa(ESobremesa tipo){
         if(tipo == null)
-            throw new InvalidParameterException("Obrigatório escolher o tipo da sobremesa.");
+            throw new IllegalArgumentException("Obrigatório escolher o tipo da sobremesa.");
 
         this.tipo = tipo;
     }

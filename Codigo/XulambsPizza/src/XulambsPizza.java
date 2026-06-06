@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+
 
 /** 
  * MIT License
@@ -84,18 +84,19 @@ public class XulambsPizza {
         cabecalho();
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
-            String maisItens;
-            try {
-                do{
+            String maisItens = null;
+            do{
+                try {
                     IProduto item = comprarProduto();
                     novo.adicionar(item);
+                    pedidos.add(novo);
+                    imprimir(novo, "");        
+                } catch (IllegalStateException | IllegalArgumentException ex) {
+                    IO.println(ex.getMessage());
+                } finally{
                     maisItens = IO.readln("Algo mais(s/n)? ");
-                }while(maisItens.toLowerCase().equals("s"));
-                pedidos.add(novo);
-                imprimir(novo, "Pedido não foi criado corretamente");        
-            } catch (IllegalStateException ex) {
-                IO.println(ex.getMessage());
-            }
+                }
+            }while(maisItens.toLowerCase().equals("s"));
         }
     }
         
@@ -149,7 +150,7 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
@@ -169,7 +170,7 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro("Número do pedido: ");
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
@@ -186,7 +187,7 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         imprimir(pedido, resposta);
     }
@@ -205,7 +206,7 @@ public class XulambsPizza {
     static Pizza comprarPizza() {
         cabecalho();
         IO.println("Comprando uma nova pizza:");
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
+        int adicionais = lerInteiro("Quantos adicionais você deseja? (máx. 8): ");
         Pizza novaPizza = new Pizza(adicionais);
         novaPizza.adicionarBorda(escolherBorda());
         imprimir(novaPizza, "Pizza não pode ser criada");
@@ -236,8 +237,13 @@ public class XulambsPizza {
                                     i, valor.toString()));
             i++;
         }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        return valores[opcao-1];
+        int opcao = lerInteiro("Digite sua opção: ");
+        try {
+            return valores[opcao-1];    
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+        
     }
 
     
