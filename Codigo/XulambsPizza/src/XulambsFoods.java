@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+
 
 /** 
  * MIT License
@@ -26,7 +26,7 @@ import java.util.Optional;
  * SOFTWARE.
  */
 
-public class XulambsPizza {
+public class XulambsFoods {
 
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
 
@@ -42,7 +42,7 @@ public class XulambsPizza {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS PIZZA v0.5\n=============");
+        IO.println("XULAMBS FOODS v0.7\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -68,6 +68,16 @@ public class XulambsPizza {
     
     }
 
+    static int menuProdutos() {
+        cabecalho();
+        IO.println("1 - Pizzas");
+        IO.println("2 - Sanduiches");
+        IO.println("3 - Bebidas");
+        IO.println("4 - Sobremesas");
+        return lerInteiro("Digite sua escolha: ");
+    
+    }
+
     //#endregion
 
     //#region pedido
@@ -75,21 +85,33 @@ public class XulambsPizza {
         cabecalho();
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
-            String outraPizza;
-            try {
-                do{
-                    Pizza novaPizza = comprarPizza();
-                    novo.adicionar(novaPizza);
-                    outraPizza = IO.readln("Mais pizza(s/n)? ");
-                }while(outraPizza.toLowerCase().equals("s"));
-                pedidos.add(novo);
-                imprimir(novo, "Pedido não foi criado corretamente");        
-            } catch (IllegalStateException ex) {
-                IO.println(ex.getMessage());
-            }
+            String maisItens = null;
+            do{
+                try {
+                    IProduto item = comprarProduto();
+                    novo.adicionar(item);
+                    pedidos.add(novo);
+                    imprimir(novo, "");        
+                } catch (IllegalStateException | IllegalArgumentException ex) {
+                    IO.println(ex.getMessage());
+                } finally{
+                    maisItens = IO.readln("Algo mais(s/n)? ");
+                }
+            }while(maisItens.toLowerCase().equals("s"));
         }
     }
         
+
+    private static IProduto comprarProduto() {
+        int tipo = menuProdutos();
+        return switch(tipo){
+            case 1, 2-> comprarPersonalizavel(tipo);
+            
+            case 3-> comprarBebida();
+            case 4-> comprarSobremesa();
+            default -> null;
+        };
+    }
 
     static Pedido escolherTipoPedido(){
         cabecalho();
@@ -130,11 +152,11 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
-                pedido.adicionar(comprarPizza());    
+                pedido.adicionar(comprarProduto());    
             } catch (PedidoFechadoException ex) {
                 IO.println(ex.getMessage());
                 return;
@@ -150,7 +172,7 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro("Número do pedido: ");
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
@@ -167,7 +189,7 @@ public class XulambsPizza {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         imprimir(pedido, resposta);
     }
@@ -183,28 +205,68 @@ public class XulambsPizza {
             IO.println(padrao);
     }
     //#region pizza
-    static Pizza comprarPizza() {
+    static IProduto comprarPersonalizavel(int tipo){
         cabecalho();
-        IO.println("Comprando uma nova pizza:");
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
-        Pizza novaPizza = new Pizza(adicionais);
+        
+        IPersonalizavel item = switch (tipo) {
+            case 1 -> comprarPizza();
+            case 2 -> comprarSanduiche();
+            default -> null;
+        };
+        IO.println("Comprando "+item.getNome());
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. "+item.maxIngredientes()+"): "));
+        if(item != null){
+            item.adicionarIngredientes(adicionais);
+        }
+        imprimir(item, "Item não pôde ser criado");
+        return (IProduto)item;
+    }
+
+    static IPersonalizavel comprarPizza() {
+        Pizza novaPizza = new Pizza();
         novaPizza.adicionarBorda(escolherBorda());
-        imprimir(novaPizza, "Pizza não pode ser criada");
-       
+        
         return novaPizza;
     }
 
+    static IPersonalizavel comprarSanduiche() {
+        Sanduiche novoSanduiche = new Sanduiche();
+        String combo = IO.readln("Será combo com fritas (s/n)? ").toUpperCase();
+        if(combo.equals("S"))
+            novoSanduiche.setCombo(true);
+        return novoSanduiche;
+    }
+
     private static EBorda escolherBorda() {
-        IO.println("Escolha uma borda: ");
+        return
+            (EBorda)escolherEnum(EBorda.values(), "Escolha uma borda: ");
+    }
+
+    private static IProduto comprarSobremesa(){
+        ESobremesa sobremesa = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+        return new Sobremesa(sobremesa);
+    }
+
+    private static IProduto comprarBebida(){
+        EBebida bebida = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+        return new Bebida(bebida);
+    }
+
+    private static Enum escolherEnum(Enum[] valores, String msg) {
+        IO.println(msg);
         int i = 1;
-        for(EBorda borda : EBorda.values()){
+        for(Enum valor : valores){
             IO.println(String.format("%d - %s", 
-                                    i, borda.toString()));
+                                    i, valor.toString()));
             i++;
         }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        EBorda[] bordas =  EBorda.values();
-        return bordas[opcao-1];
+        int opcao = lerInteiro("Digite sua opção: ");
+        try {
+            return valores[opcao-1];    
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+        
     }
 
     

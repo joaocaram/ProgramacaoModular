@@ -23,14 +23,15 @@
  * SOFTWARE.
  */
 
-
+import java.text.Collator;
+import java.util.Locale;
 
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
  * A pizza deve emitir uma nota de compra com os seus detalhes.
  */
-public class Pizza {
+public class Pizza implements IProduto, IPersonalizavel{
 
     private static final int MAX_INGREDIENTES = 8;
     private static final double PRECO_BASE = 29D;
@@ -85,7 +86,7 @@ public class Pizza {
     }
     private boolean podeAdicionar(int quantos){
         int novosIngredientes = quantidadeIngredientes + quantos;
-        return (quantos > 0 && novosIngredientes <=MAX_INGREDIENTES);
+        return (quantos >= 0 && novosIngredientes <=MAX_INGREDIENTES);
     }
 
     /**
@@ -118,11 +119,29 @@ public class Pizza {
     public String toString() {
         double valor = valorAPagar();
         double adicionais = valorAdicionais();
-        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
+        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \n\tVALOR A PAGAR: R$ %.2f",
                 descricao, PRECO_BASE, adicionais, borda.valorBorda(),valor);
     }
 
     public static int pizzasVendidas(){
         return quantidadeVendida;
     }
+
+    @Override
+    public int compareTo(IProduto o) {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
+    }
+
+    @Override
+    public int maxIngredientes() {
+        return MAX_INGREDIENTES;
+    }
+
+    @Override
+    public String getNome() {
+        return "uma pizza";
+    }
+
 }

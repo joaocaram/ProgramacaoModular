@@ -1,6 +1,8 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /** 
@@ -32,11 +34,11 @@ import java.util.Random;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public abstract class Pedido {
+public abstract class Pedido implements Comparable<Pedido>{
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
-	protected LinkedList<Pizza> pizzas;
+	protected List<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
 
@@ -49,15 +51,15 @@ public abstract class Pedido {
         ultimoPedido += sorteio.nextInt(1, 6);
         
 		aberto = true;
-        pizzas = new LinkedList<>();
+        itens = new LinkedList<>();
         data = LocalDate.now();
         idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
 	}
 
 	protected double valorItens(){
 		double preco = 0d;
-        for (Pizza pizza : pizzas) {
-            preco += pizza.valorAPagar();
+        for (IProduto produto : itens) {
+            preco += produto.valorAPagar();
         }
 		return preco;
 	}
@@ -85,18 +87,18 @@ public abstract class Pedido {
 	 * Retorna a quantidade de pizzas do pedido após a execução.
 	 * Em caso de pedido fechado ou outra condição que impeça a adição,
 	 * lança uma exceção de IllegalStateException. 
-	 * @param pizza Pizza a ser adicionada
+	 * @param item Pizza a ser adicionada
 	 * @return A quantidade de pizzas do pedido após a execução.
 	 * @throws IllegalStateException no caso do pedido estar fechado e não poder receber outras pizzas.
 	 */
-	public int adicionar(Pizza pizza) {
-		if(pizza == null)
-			throw new IllegalArgumentException("Pizza não foi criada");
+	public int adicionar(IProduto item) {
+		if(item == null)
+			throw new IllegalArgumentException("Produto não foi criado corretamente");
 		if(!podeAdicionar())
 			throw new PedidoFechadoException(idPedido);
 	
-		pizzas.addLast(pizza);
-		return pizzas.size();
+		itens.addLast(item);
+		return itens.size();
 	}
 
     /**
@@ -105,7 +107,7 @@ public abstract class Pedido {
      * @return Boolean com o estado do pedido (FALSE para fechado, TRUE para aberto) 
 	 */
 	public boolean fecharPedido() {
-		if(pizzas.size() > 0 ){
+		if(itens.size() > 0 ){
             aberto = false;
 			return aberto;
 		}
@@ -128,16 +130,24 @@ public abstract class Pedido {
 		StringBuilder relat = new StringBuilder();
 		relat.append(String.format("Pedido nº %d - %s - %s\n",
                             idPedido, dataFormatada, estado));
-        for (int i = 0; i < pizzas.size(); i++) {
+		Collections.sort(itens);
+        for (int i = 0; i < itens.size(); i++) {
+			relat.append("----\n");
             relat.append(String.format("%02d: %s\n", 
-                            (i+1), pizzas.get(i).toString()));
+                            (i+1), itens.get(i).toString()));
         }
 		return relat.toString();
 	}
 
 	protected String rodapePedido(){
-		return String.format("TOTAL DO PEDIDO: R$ %.2f",
+		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
                          precoAPagar());
 
+	}
+
+	@Override
+	public int compareTo(Pedido outro){
+		double diferenca = this.precoAPagar() - outro.precoAPagar();
+		return diferenca > 0 ? 1 : -1;
 	}
 }
