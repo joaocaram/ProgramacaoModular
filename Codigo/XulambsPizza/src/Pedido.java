@@ -91,7 +91,7 @@ public abstract class Pedido {
 	 */
 	public int adicionar(IProduto item) {
 		if(item == null)
-			throw new IllegalArgumentException("Pizza não foi criada");
+			throw new IllegalArgumentException("Produto não foi criado corretamente");
 		if(!podeAdicionar())
 			throw new PedidoFechadoException(idPedido);
 	
