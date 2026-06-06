@@ -206,15 +206,15 @@ public class XulambsFoods {
     }
     //#region pizza
     static IProduto comprarPersonalizavel(int tipo){
-        String produto = tipo == 1 ? "pizza" : "sanduíche";
         cabecalho();
-        IO.println("Comprando "+produto+": ");
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. 8): "));
+        
         IPersonalizavel item = switch (tipo) {
             case 1 -> comprarPizza();
             case 2 -> comprarSanduiche();
             default -> null;
         };
+        IO.println("Comprando "+item.getNome());
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. "+item.maxIngredientes()+"): "));
         if(item != null){
             item.adicionarIngredientes(adicionais);
         }
