@@ -16,7 +16,7 @@ public class GeradorProdutos {
         Pizza p = new Pizza();
         int borda = sorteio.nextInt(EBorda.values().length);
         p.adicionarBorda(EBorda.values()[borda]);
-        int adicionais = sorteio.nextInt(0, p.maximoIngredientes()+1);
+        int adicionais = sorteio.nextInt(0, p.maxIngredientes()+1);
         p.adicionarIngredientes(adicionais);
         return p;
     }
@@ -25,7 +25,7 @@ public class GeradorProdutos {
         Sanduiche s = new Sanduiche();
         int combo = sorteio.nextInt(1000);
         boolean ehCombo = combo > 728;
-        int adicionais = sorteio.nextInt(0, s.maximoIngredientes()+1);
+        int adicionais = sorteio.nextInt(0, s.maxIngredientes()+1);
         s.adicionarIngredientes(adicionais);
         s.setCombo(ehCombo);
         return s;

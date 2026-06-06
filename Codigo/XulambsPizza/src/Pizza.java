@@ -24,6 +24,7 @@
  */
 
 import java.text.Collator;
+import java.util.Locale;
 
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
@@ -129,14 +130,20 @@ public class Pizza implements IProduto, IPersonalizavel{
     }
 
     @Override
-    public int maximoIngredientes() {
+    public int compareTo(IProduto o) {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
+    }
+
+    @Override
+    public int maxIngredientes() {
         return MAX_INGREDIENTES;
     }
 
     @Override
-	public int compareTo(IProduto outro){
-        Collator comparador = Collator.getInstance();
-        comparador.setStrength(Collator.SECONDARY);
-		return comparador.compare(this.toString(), outro.toString());
+    public String getNome() {
+        return "uma pizza";
     }
+
 }

@@ -2,6 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /** 
@@ -37,7 +38,7 @@ public abstract class Pedido implements Comparable<Pedido>{
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
-	protected LinkedList<IProduto> itens;
+	protected List<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
 	protected double desconto;
@@ -112,7 +113,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 	 */
 	public int adicionar(IProduto item) {
 		if(item == null)
-			throw new IllegalArgumentException("Pizza não foi criada");
+			throw new IllegalArgumentException("Produto não foi criado corretamente");
 		if(!podeAdicionar())
 			throw new PedidoFechadoException(idPedido);
 	
@@ -160,16 +161,17 @@ public abstract class Pedido implements Comparable<Pedido>{
 	}
 
 	protected String rodapePedido(){
-		String rodape = String.format("----\nDESCONTO: R$ %.2f", desconto); 
-		return String.format("%s\n----\nTOTAL DO PEDIDO: R$ %.2f", rodape,precoAPagar());
+		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
+                         precoAPagar());
 
 	}
 
 	@Override
 	public int compareTo(Pedido outro){
-		if(outro == null)
-			throw new NullPointerException();
+		int resposta = 0;
 		double diferenca = this.precoAPagar() - outro.precoAPagar();
-		return diferenca < 0 ? -1 : 1;
+		if(diferenca !=0)
+			resposta =  diferenca > 0 ? 1 : -1;
+		return resposta;
 	}
 }

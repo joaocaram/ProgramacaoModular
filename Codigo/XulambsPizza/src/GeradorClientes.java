@@ -10,7 +10,7 @@ public class GeradorClientes {
     static final List<String> nomes = new ArrayList<>(Arrays.asList("Ana", "Bia", "Carla", "Daniela", "Elisa", "Fabiana", "Gabriela",
                                     "Heloisa", "Ivana", "Joana", "Katia", "Luisa", "Mariana"));
     
-    static final List<String> sobrenomes = new ArrayList<>(Arrays.asList("Andrade", "Bastos", "Coelho", "Diniz", "Elisa", "Frota", "Galvão",
+    static final List<String> sobrenomes = new ArrayList<>(Arrays.asList("Andrade", "Bastos", "Coelho", "Diniz", "Esteves", "Frota", "Galvão",
                                          "Horta", "Ibanez", "Jobim", "Keller", "Lopes", "Matos"));
     
     public static List<Cliente> gerarClientes(){

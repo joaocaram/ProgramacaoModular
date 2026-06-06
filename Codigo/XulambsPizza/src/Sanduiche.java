@@ -100,14 +100,21 @@ public class Sanduiche implements IProduto, IPersonalizavel {
     }
 
     @Override
-    public int maximoIngredientes() {
-       return MAX_INGREDIENTES;
+    public int compareTo(IProduto o) {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
     }
 
     @Override
-	public int compareTo(IProduto outro){
-        Collator comparador = Collator.getInstance();
-        comparador.setStrength(Collator.SECONDARY);
-		return comparador.compare(this.toString(), outro.toString());
+    public int maxIngredientes() {
+        return MAX_INGREDIENTES;
     }
+
+    @Override
+    public String getNome() {
+        return "um sanduíche";
+    }
+    
+    
 }

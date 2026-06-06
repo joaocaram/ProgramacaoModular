@@ -1,7 +1,9 @@
 import java.time.LocalDate;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+
 
 /** 
  * MIT License
@@ -32,13 +34,11 @@ public class XulambsFoods {
     static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
     static List<Cliente> clientes;
     
-    //#region config e dados
     static void config(){
         clientes = GeradorClientes.gerarClientes();
         pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
     }
 
-    //#endregion
     //#region utilidades
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -65,6 +65,41 @@ public class XulambsFoods {
     }
     //#endregion
 
+    //#region gerência
+    private static void menuGerencia() {
+        cabecalho();
+        int opcao = exibirMenuGerencia();
+        switch (opcao) {
+            case 1 -> relatorioClientes();
+            case 2 -> relatorioPedidos();
+            case 3 -> atualizarClientes();
+        }    
+    }
+
+    private static void atualizarClientes() {
+        for (Cliente cliente : clientes) {
+            cliente.verificarCategoria();
+        }    
+    }
+
+    private static void relatorioClientes() {
+        cabecalho();
+        IO.println("Relatório Clientes:");
+        for (Cliente cliente : clientes) {
+            IO.println(cliente);
+        }    
+    }
+
+    private static void relatorioPedidos() {
+        cabecalho();
+        IO.println("Relatório pedidos:");
+        Collections.sort(pedidos);
+        for (Pedido pedido : pedidos) {
+            IO.println(pedido);
+        }    
+    }
+    //#endregion
+
     //#region menus
     static int exibirMenu() {
         cabecalho();
@@ -82,7 +117,7 @@ public class XulambsFoods {
         cabecalho();
         IO.println("1 - Todos os clientes");
         IO.println("2 - Todos os pedidos");
-        IO.println("3 - Atualizar categorias");
+        IO.println("3 - Atualizar clientes");
         IO.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha: ");
     
@@ -91,7 +126,7 @@ public class XulambsFoods {
     static int menuProdutos() {
         cabecalho();
         IO.println("1 - Pizzas");
-        IO.println("2 - Sanduíches");
+        IO.println("2 - Sanduiches");
         IO.println("3 - Bebidas");
         IO.println("4 - Sobremesas");
         return lerInteiro("Digite sua escolha: ");
@@ -105,18 +140,19 @@ public class XulambsFoods {
         cabecalho();
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
-            String maisItens;
-            try {
-                do{
+            String maisItens = null;
+            do{
+                try {
                     IProduto item = comprarProduto();
                     novo.adicionar(item);
+                    pedidos.add(novo);
+                    imprimir(novo, "");        
+                } catch (IllegalStateException | IllegalArgumentException ex) {
+                    IO.println(ex.getMessage());
+                } finally{
                     maisItens = IO.readln("Algo mais(s/n)? ");
-                }while(maisItens.toLowerCase().equals("s"));
-                pedidos.add(novo);
-                imprimir(novo, "Pedido não foi criado corretamente");        
-            } catch (IllegalStateException ex) {
-                IO.println(ex.getMessage());
-            }
+                }
+            }while(maisItens.toLowerCase().equals("s"));
         }
     }
         
@@ -124,7 +160,8 @@ public class XulambsFoods {
     private static IProduto comprarProduto() {
         int tipo = menuProdutos();
         return switch(tipo){
-            case 1, 2 -> (IProduto)comprarPersonalizavel(tipo);
+            case 1, 2-> comprarPersonalizavel(tipo);
+            
             case 3-> comprarBebida();
             case 4-> comprarSobremesa();
             default -> null;
@@ -170,7 +207,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido, pedidos);
         if(pedido != null ){
             try {
@@ -186,7 +223,7 @@ public class XulambsFoods {
         imprimir(pedido, resposta);
     }
 
-    static void fecharPedido(){
+     static void fecharPedido(){
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
@@ -212,7 +249,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido, pedidos);
         imprimir(pedido, resposta);
     }
@@ -228,40 +265,37 @@ public class XulambsFoods {
             IO.println(padrao);
     }
     //#region pizza
-    static IPersonalizavel comprarPersonalizavel(int tipo){
+    static IProduto comprarPersonalizavel(int tipo){
         cabecalho();
-        String nomeProduto = null;
-        IPersonalizavel item = null;
-        switch(tipo){
-            case 1-> {
-                nomeProduto = "pizza";
-                item = comprarPizza();
-            }
-            case 2-> {
-                nomeProduto = "sanduíche";
-                item = comprarSanduiche();
-            }
+        
+        IPersonalizavel item = switch (tipo) {
+            case 1 -> comprarPizza();
+            case 2 -> comprarSanduiche();
+            default -> null;
         };
-        IO.println("Comprando "+nomeProduto);
-        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (até "+item.maximoIngredientes()+") "));
-        item.adicionarIngredientes(adicionais);
-        imprimir(item, nomeProduto+"não foi criado");
-        return item;
+        IO.println("Comprando "+item.getNome());
+        int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. "+item.maxIngredientes()+"): "));
+        if(item != null){
+            item.adicionarIngredientes(adicionais);
+        }
+        imprimir(item, "Item não pôde ser criado");
+        return (IProduto)item;
     }
+
     static IPersonalizavel comprarPizza() {
         Pizza novaPizza = new Pizza();
         novaPizza.adicionarBorda(escolherBorda());
+        
         return novaPizza;
     }
 
     static IPersonalizavel comprarSanduiche() {
-         Sanduiche novo = new Sanduiche();
-        String combo = IO.readln("Quer fritas (s/n)? ").toLowerCase();
-        if(combo.equals("s"))
-            novo.setCombo(true);
-        return novo;
+        Sanduiche novoSanduiche = new Sanduiche();
+        String combo = IO.readln("Será combo com fritas (s/n)? ").toUpperCase();
+        if(combo.equals("S"))
+            novoSanduiche.setCombo(true);
+        return novoSanduiche;
     }
-
 
     private static EBorda escolherBorda() {
         return
@@ -286,8 +320,13 @@ public class XulambsFoods {
                                     i, valor.toString()));
             i++;
         }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        return valores[opcao-1];
+        int opcao = lerInteiro("Digite sua opção: ");
+        try {
+            return valores[opcao-1];    
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+        
     }
 
     
@@ -311,38 +350,6 @@ public class XulambsFoods {
         } while (opcao != 0);        
         IO.println("FLW T+ VLW ABS.");
     }
+ 
     //#endregion
-
-    private static void menuGerencia() {
-        cabecalho();
-        int opcao = exibirMenuGerencia();
-        switch (opcao) {
-            case 1 -> relatorioClientes();
-            case 2 -> relatorioPedidos();
-            case 3 -> atualizarClientes();
-        }    
-    }
-
-    private static void atualizarClientes() {
-        for (Cliente cliente : clientes) {
-            cliente.verificarCategoria();
-        }    
-    }
-
-    private static void relatorioClientes() {
-        cabecalho();
-        IO.println("Relatório Clientes:");
-        for (Cliente cliente : clientes) {
-            IO.println(cliente);
-        }    
-    }
-
-    private static void relatorioPedidos() {
-        cabecalho();
-        IO.println("Relatório pedidos:");
-        pedidos.sort(null);
-        for (Pedido pedido : pedidos) {
-            IO.println(pedido);
-        }    
-    }
 }

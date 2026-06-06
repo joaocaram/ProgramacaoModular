@@ -11,12 +11,7 @@ public class Bebida implements IProduto{
         this.tipo = tipo;
     }
 
-    @Override
-	public int compareTo(IProduto outro){
-        Collator comparador = Collator.getInstance();
-        comparador.setStrength(Collator.SECONDARY);
-		return comparador.compare(this.toString(), outro.toString());
-    }
+    
 
     @Override
     public double valorAPagar() {
@@ -28,5 +23,10 @@ public class Bebida implements IProduto{
         return tipo.toString();
     }
 
-
+    @Override
+    public int compareTo(IProduto o) {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
+    }
 }

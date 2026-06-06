@@ -1,4 +1,5 @@
 public interface IPersonalizavel {
-    public int adicionarIngredientes(int quantidade);
-    public int maximoIngredientes();
+    public int adicionarIngredientes(int quantos);
+    public int maxIngredientes();
+    public String getNome();
 }
