@@ -41,21 +41,41 @@ public abstract class Pedido implements Comparable<Pedido>{
 	protected List<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
+	protected double desconto;
 
+	private void init(LocalDate data){
+		this.data = data;
+		if(data == null)
+			this.data = LocalDate.now();
+		ultimoPedido += sorteio.nextInt(1, 6);
+		aberto = true;
+        itens = new LinkedList<>();
+        idPedido = this.data.getDayOfMonth()*1000 + ultimoPedido;
+		desconto = 0d;
+	}
     /**
 	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
 	 * do último identificador armazenado.
 	 */
-
 	public Pedido() {
-        ultimoPedido += sorteio.nextInt(1, 6);
-        
-		aberto = true;
-        itens = new LinkedList<>();
-        data = LocalDate.now();
-        idPedido = data.getDayOfMonth()*1000 + ultimoPedido;
+		init(null);
 	}
 
+	public Pedido(LocalDate data) {
+		init(data);
+	}
+
+	public double aplicarDesconto(double valor){
+		if(valor < 0 || valor > valorItens())
+			throw new IllegalArgumentException("Desconto inválido");
+		if(desconto != 0 )
+			throw new IllegalStateException("Desconto já foi aplicado");
+		if(!aberto)
+			throw new PedidoFechadoException(idPedido);
+
+		desconto = valor;
+		return desconto;
+	}
 	protected double valorItens(){
 		double preco = 0d;
         for (IProduto produto : itens) {
@@ -136,6 +156,7 @@ public abstract class Pedido implements Comparable<Pedido>{
             relat.append(String.format("%02d: %s\n", 
                             (i+1), itens.get(i).toString()));
         }
+        relat.append(String.format("----\nTOTAL DOS ITENS: R$ %.2f", valorItens()));
 		return relat.toString();
 	}
 
@@ -147,7 +168,10 @@ public abstract class Pedido implements Comparable<Pedido>{
 
 	@Override
 	public int compareTo(Pedido outro){
+		int resposta = 0;
 		double diferenca = this.precoAPagar() - outro.precoAPagar();
-		return diferenca > 0 ? 1 : -1;
+		if(diferenca !=0)
+			resposta =  diferenca > 0 ? 1 : -1;
+		return resposta;
 	}
 }

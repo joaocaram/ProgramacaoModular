@@ -105,6 +105,8 @@ public class Pizza implements IProduto, IPersonalizavel{
         }
         return quantidadeIngredientes;
     }
+
+    
     private void atualizarDescricao(){
             descricao = String.format("Pizza com borda %s e %d adicionais", 
                                     borda.toString().toLowerCase(), quantidadeIngredientes);
