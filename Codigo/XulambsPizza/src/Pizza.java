@@ -23,14 +23,15 @@
  * SOFTWARE.
  */
 
-
+import java.text.Collator;
+import java.util.Locale;
 
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
  * A pizza deve emitir uma nota de compra com os seus detalhes.
  */
-public class Pizza implements IProduto{
+public class Pizza implements IProduto, IPersonalizavel{
 
     private static final int MAX_INGREDIENTES = 8;
     private static final double PRECO_BASE = 29D;
@@ -125,4 +126,12 @@ public class Pizza implements IProduto{
     public static int pizzasVendidas(){
         return quantidadeVendida;
     }
+
+    @Override
+    public int compareTo(IProduto o) {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(this.toString().toLowerCase(), o.toString().toLowerCase());
+    }
+
 }

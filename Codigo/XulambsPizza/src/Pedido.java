@@ -1,6 +1,8 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /** 
@@ -32,11 +34,11 @@ import java.util.Random;
  * sua data. Ele deve calcular o preço a ser pago por ele e emitir um relatório detalhando suas pizzas
  * e o valor a pagar.
  */
-public abstract class Pedido {
+public abstract class Pedido implements Comparable<Pedido>{
     private static Random sorteio = new Random(42);
 	private static int ultimoPedido;
 	private LocalDate data;
-	protected LinkedList<IProduto> itens;
+	protected List<IProduto> itens;
 	private int idPedido;
 	private boolean aberto;
 
@@ -128,6 +130,7 @@ public abstract class Pedido {
 		StringBuilder relat = new StringBuilder();
 		relat.append(String.format("Pedido nº %d - %s - %s\n",
                             idPedido, dataFormatada, estado));
+		Collections.sort(itens);
         for (int i = 0; i < itens.size(); i++) {
 			relat.append("----\n");
             relat.append(String.format("%02d: %s\n", 
@@ -140,5 +143,11 @@ public abstract class Pedido {
 		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
                          precoAPagar());
 
+	}
+
+	@Override
+	public int compareTo(Pedido outro){
+		double diferenca = this.precoAPagar() - outro.precoAPagar();
+		return diferenca > 0 ? 1 : -1;
 	}
 }
