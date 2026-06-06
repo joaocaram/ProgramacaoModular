@@ -8,11 +8,11 @@ public class Sanduiche implements IProduto, IPersonalizavel {
     private static final double VALOR_COMBO = 7d;
 
     private String descricao;
-    private int quantidadeIngredientes;
     private boolean combo;
-
+    private VerificadorIngredientes verificador;
     private void setUp(int adicionais){
         combo = false;
+        verificador = new VerificadorIngredientes(MAX_INGREDIENTES, "um sanduíche");
         adicionarIngredientes(adicionais);
     }
 
@@ -50,13 +50,9 @@ public class Sanduiche implements IProduto, IPersonalizavel {
     }
 
     private double valorAdicionais(){
-        return quantidadeIngredientes * VALOR_ADICIONAL;
+        return verificador.quantidadeIngredientes() * VALOR_ADICIONAL;
     }
-
-    private boolean podeAdicionar(int quantos){
-        int novosIngredientes = quantidadeIngredientes + quantos;
-        return (quantos >= 0 && novosIngredientes <=MAX_INGREDIENTES);
-    }
+   
 
     /**
      * Tenta adicionar ingredientes na pizza. Caso a adição seja inválida
@@ -69,19 +65,17 @@ public class Sanduiche implements IProduto, IPersonalizavel {
      */
     @Override
     public int adicionarIngredientes(int quantidade) {     
-        if (podeAdicionar(quantidade)) {
-            quantidadeIngredientes += quantidade;
-            atualizarDescricao();
-        }
-        return quantidadeIngredientes;
+        verificador.adicionarIngredientes(quantidade);
+        atualizarDescricao();
+        return verificador.adicionarIngredientes(quantidade);
     }
+    
     private void atualizarDescricao(){
-
-            descricao = String.format("Sanduíche com %d adicionais", quantidadeIngredientes);
-            if(combo)
-                descricao += " e combo com fritas";
-            
+        descricao = String.format("Sanduíche com %d adicionais", verificador.quantidadeIngredientes());
+        if(combo)
+            descricao += " e combo com fritas";            
     }
+    
     /**
      * Nota simplificada de compra: descrição da pizza, dos ingredientes e do preço.
      * 

@@ -24,8 +24,6 @@
  */
 
 import java.text.Collator;
-import java.util.Locale;
-
 /**
  * Classe Pizza para a Xulambs Pizza. Uma pizza tem um preço base e pode ter até
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
@@ -40,11 +38,12 @@ public class Pizza implements IProduto, IPersonalizavel{
     private static int quantidadeVendida=0;
     
     private String descricao;
-    private int quantidadeIngredientes;
     private EBorda borda;
+    private VerificadorIngredientes ingredientes;
 
     private void setUp(int adicionais){
         borda = EBorda.TRADICIONAL;
+        ingredientes = new VerificadorIngredientes(MAX_INGREDIENTES, "uma pizza");
         adicionarIngredientes(adicionais);
         quantidadeVendida++;
     }
@@ -76,17 +75,15 @@ public class Pizza implements IProduto, IPersonalizavel{
     }
 
     public double adicionarBorda(EBorda borda){
+        if(borda == null)
+            borda = EBorda.TRADICIONAL;
         this.borda = borda;
         atualizarDescricao();
         return borda.valorBorda();
     }
 
     private double valorAdicionais(){
-        return quantidadeIngredientes * VALOR_ADICIONAL;
-    }
-    private boolean podeAdicionar(int quantos){
-        int novosIngredientes = quantidadeIngredientes + quantos;
-        return (quantos >= 0 && novosIngredientes <=MAX_INGREDIENTES);
+        return ingredientes.quantidadeIngredientes() * VALOR_ADICIONAL;
     }
 
     /**
@@ -99,15 +96,13 @@ public class Pizza implements IProduto, IPersonalizavel{
      * @return Quantos ingredientes a pizza tem após a execução
      */
     public int adicionarIngredientes(int quantidade) {     
-        if (podeAdicionar(quantidade)) {
-            quantidadeIngredientes += quantidade;
-            atualizarDescricao();
-        }
-        return quantidadeIngredientes;
+        ingredientes.adicionarIngredientes(quantidade);
+        atualizarDescricao();
+        return ingredientes.quantidadeIngredientes();
     }
     private void atualizarDescricao(){
             descricao = String.format("Pizza com borda %s e %d adicionais", 
-                                    borda.toString().toLowerCase(), quantidadeIngredientes);
+                                    borda.toString().toLowerCase(), ingredientes.quantidadeIngredientes());
             
     }
     /**
