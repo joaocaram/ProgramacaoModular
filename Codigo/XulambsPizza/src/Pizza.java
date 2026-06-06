@@ -30,7 +30,7 @@
  * 8 ingredientes adicionais. Cada ingrediente tem custo fixo.
  * A pizza deve emitir uma nota de compra com os seus detalhes.
  */
-public class Pizza {
+public class Pizza implements IProduto{
 
     private static final int MAX_INGREDIENTES = 8;
     private static final double PRECO_BASE = 29D;
@@ -118,7 +118,7 @@ public class Pizza {
     public String toString() {
         double valor = valorAPagar();
         double adicionais = valorAdicionais();
-        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \nVALOR A PAGAR: R$ %.2f",
+        return String.format("%s \n\tPreço inicial: R$ %.2f \n\tAdicionais: R$ %.2f \n\tBorda: R$ %.2f \n\tVALOR A PAGAR: R$ %.2f",
                 descricao, PRECO_BASE, adicionais, borda.valorBorda(),valor);
     }
 
