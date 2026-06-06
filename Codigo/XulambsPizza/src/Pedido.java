@@ -93,7 +93,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 	 */
 	public int adicionar(IProduto item) {
 		if(item == null)
-			throw new IllegalArgumentException("Pizza não foi criada");
+			throw new IllegalArgumentException("Produto não foi criado corretamente");
 		if(!podeAdicionar())
 			throw new PedidoFechadoException(idPedido);
 	
@@ -132,6 +132,7 @@ public abstract class Pedido implements Comparable<Pedido>{
                             idPedido, dataFormatada, estado));
 		Collections.sort(itens);
         for (int i = 0; i < itens.size(); i++) {
+			relat.append("----\n");
             relat.append(String.format("%02d: %s\n", 
                             (i+1), itens.get(i).toString()));
         }
@@ -139,7 +140,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 	}
 
 	protected String rodapePedido(){
-		return String.format("TOTAL DO PEDIDO: R$ %.2f",
+		return String.format("----\nTOTAL DO PEDIDO: R$ %.2f",
                          precoAPagar());
 
 	}

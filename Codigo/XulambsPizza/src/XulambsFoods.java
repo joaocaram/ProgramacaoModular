@@ -85,18 +85,19 @@ public class XulambsFoods {
         cabecalho();
         Pedido novo = escolherTipoPedido();
         if(novo!=null){
-            String maisItens;
-            try {
-                do{
+            String maisItens = null;
+            do{
+                try {
                     IProduto item = comprarProduto();
                     novo.adicionar(item);
+                    pedidos.add(novo);
+                    imprimir(novo, "");        
+                } catch (IllegalStateException | IllegalArgumentException ex) {
+                    IO.println(ex.getMessage());
+                } finally{
                     maisItens = IO.readln("Algo mais(s/n)? ");
-                }while(maisItens.toLowerCase().equals("s"));
-                pedidos.add(novo);
-                imprimir(novo, "Pedido não foi criado corretamente");        
-            } catch (IllegalStateException ex) {
-                IO.println(ex.getMessage());
-            }
+                }
+            }while(maisItens.toLowerCase().equals("s"));
         }
     }
         
@@ -151,7 +152,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
@@ -171,7 +172,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro("Número do pedido: ");
         Pedido pedido = (Pedido)localizar(numPedido);
         if(pedido != null ){
             try {
@@ -188,7 +189,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
-        int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro(IO.readln("Número do pedido: "));
         Pedido pedido = (Pedido)localizar(numPedido);
         imprimir(pedido, resposta);
     }
@@ -237,26 +238,18 @@ public class XulambsFoods {
     }
 
     private static EBorda escolherBorda() {
-        IO.println("Escolha uma borda: ");
-        int i = 1;
-        for(EBorda borda : EBorda.values()){
-            IO.println(String.format("%d - %s", 
-                                    i, borda.toString()));
-            i++;
-        }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        EBorda[] bordas =  EBorda.values();
-        return bordas[opcao-1];
+        return
+            (EBorda)escolherEnum(EBorda.values(), "Escolha uma borda: ");
     }
 
     private static IProduto comprarSobremesa(){
-        ESobremesa tipo = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
-        return new Sobremesa(tipo);
+        ESobremesa sobremesa = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
+        return new Sobremesa(sobremesa);
     }
 
     private static IProduto comprarBebida(){
-        EBebida tipo = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
-        return new Bebida(tipo);    
+        EBebida bebida = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
+        return new Bebida(bebida);
     }
 
     private static Enum escolherEnum(Enum[] valores, String msg) {
@@ -267,8 +260,13 @@ public class XulambsFoods {
                                     i, valor.toString()));
             i++;
         }    
-        int opcao = Integer.parseInt(IO.readln("Digite sua opção: "));
-        return valores[opcao-1];
+        int opcao = lerInteiro("Digite sua opção: ");
+        try {
+            return valores[opcao-1];    
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+        
     }
 
     
