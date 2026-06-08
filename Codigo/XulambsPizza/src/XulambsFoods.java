@@ -250,7 +250,7 @@ public class XulambsFoods {
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
-        int numPedido = lerInteiro(IO.readln("Número do pedido: "));
+        int numPedido = lerInteiro("Número do pedido: ");
         Pedido pedido = (Pedido)localizar(numPedido, pedidos);
         imprimir(pedido, resposta);
     }

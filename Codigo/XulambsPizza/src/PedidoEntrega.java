@@ -37,7 +37,7 @@ public class PedidoEntrega extends Pedido {
     @Override
     public String toString() {
 		String relat = cabecalhoPedido();
-        relat += String.format("TAXA DE ENTREGA: R$ %.2f\n",
+        relat += String.format("\nTAXA DE ENTREGA: R$ %.2f\n",
                          valorTaxa());
         relat += rodapePedido();
         return relat;
