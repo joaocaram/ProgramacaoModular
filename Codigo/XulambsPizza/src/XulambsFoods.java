@@ -96,6 +96,7 @@ public class XulambsFoods {
         Collections.sort(pedidos);
         for (Pedido pedido : pedidos) {
             IO.println(pedido);
+            IO.println("\n~~~~~~~~~~~~~~~~~~~~\n");
         }    
     }
     //#endregion
