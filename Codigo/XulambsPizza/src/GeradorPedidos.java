@@ -27,6 +27,8 @@ public class GeradorPedidos {
             cliente.registrarPedido(novo);
             novo.fecharPedido();
             pedidos.add(novo);
+            if(pedidos.size()%porDia == 0)
+                    dataPedido.plusDays(1);
         }
     
         return pedidos;
