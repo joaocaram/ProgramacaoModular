@@ -2,7 +2,7 @@ import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Cliente implements Comparable<Cliente>{
+public class Cliente{
     private int id;
     private String nome;
     private IFidelidade categoria;
@@ -97,8 +97,4 @@ public class Cliente implements Comparable<Cliente>{
         return id;
     }
 
-    @Override
-    public int compareTo(Cliente outro) {
-        return this.id - outro.id;    
-    }
 }

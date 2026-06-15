@@ -1,5 +1,10 @@
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /** 
@@ -74,13 +79,45 @@ public class XulambsFoods {
         }    
     }
 
-    private static void atualizarClientes() {
-      //  clientes.atualizarClientes();    
+    private static<T> void totalDeQualquerCoisa(Function<T, Double> f,
+                                            Dados<T> base){
+        IO.println(base.totalizar(f));
     }
+
+    private void pedidosPorData(){
+        String strData = IO.readln("Qual a data para o filtro? ");
+        LocalDate data = LocalDate.parse(strData);
+        Predicate<Pedido> porData = ped -> ped.ehNaData(data);
+        IO.println(pedidos.relatorioFiltrado(porData));
+    }
+
+    private static void totalGasto(){
+        Function<Cliente, Double> f = 
+            (cli) -> cli.totalGasto();  
+        IO.println(clientes.totalizar(f));
+    }
+
+    private static void totalPedidos(){
+        Function<Pedido, Double> f = 
+            (ped) -> ped.precoAPagar();
+        IO.println(pedidos.totalizar(f));
+    }
+
+    private static void atualizarClientes() {
+      Consumer<Cliente> cons = (cli) -> cli.verificarCategoria();
+      clientes.processar(cons);
+    }
+
+    private static<T> void relatorioOrdenado(Dados<T> dados, 
+                                             Comparator<T> comp){
+        IO.println(dados.relatorioOrdenado(comp));
+    }
+
 
     private static void relatorioClientes() {
         cabecalho();
-        IO.println(clientes.relatorio());
+        relatorioOrdenado(clientes, 
+                         (cli1, cli2) -> cli1.hashCode() - cli2.hashCode());
     }
 
     private static void relatorioPedidos() {
