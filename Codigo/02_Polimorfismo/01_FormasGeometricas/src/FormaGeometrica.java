@@ -22,25 +22,24 @@
  * SOFTWARE.
  */
 
-import java.util.Objects;
-
 /** Classe abstrata para representação de formas geomérticas */
 public abstract class FormaGeometrica {
     private static int ultimoId=0;
     private String descricao;
-    private int id;
+    private String id;
 
     /**
      * Construtor protegido (só é usado pelas classes descendentes)
      * @param desc A descrição da forma geométrica. Não faz validação da descrição
      */
     protected FormaGeometrica(String desc){
-        this.descricao = desc;
-        this.id = ultimoId++;
+        descricao = desc;
+        ultimoId++;
+        id = descricao.substring(0,1) + ultimoId;
     }
 
-    public void setId(int id){
-        this.id = id;
+    public String getId(){
+        return id;
     }
     /**
      * Retorna a área da forma geométrica.
@@ -83,12 +82,12 @@ public abstract class FormaGeometrica {
         return ( this.descricao.equals(outra.descricao) &&
                  this.area() == outra.area()
                 );
-     //  return this.id == outra.id;
+     
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(descricao, area());
+        return descricao.hashCode();
     }
     
 }
