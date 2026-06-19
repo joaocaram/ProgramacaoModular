@@ -188,7 +188,7 @@ public class FormasCollectionStream {
                         .filter(f -> f.nome().toLowerCase().equals(tipo))
                         .sorted(comparado)
                         .map(f -> f.toString())
-                        .reduce((s1, s2) -> s1.concat("\n").concat(s2))
+                        .reduce((s1, s2) -> s1.concat("\n"+s2))
                         .orElse("Conjunto vazio"));
     }
 
@@ -202,7 +202,7 @@ public class FormasCollectionStream {
     private static void perimetrosPorTipo() {
 
         String tipo = IO.readln("Qual tipo te interessa? ").toLowerCase();
-        String str = String.format("Soma dos perímetros dos %s: %.2f\n ",
+        String str = String.format("Média dos perímetros dos %s: %.2f\n ",
                 tipo,
                 listaFormas.stream()
                         .filter(f -> f.nome().toLowerCase().equals(tipo))
@@ -216,7 +216,7 @@ public class FormasCollectionStream {
         double soma = listaFormas.stream()
                 .mapToDouble(f -> metodo.apply(f))
                 .sum();
-        IO.println(String.format("Soma das áreas: %.2f\n", soma));
+        IO.println(String.format("Soma: %.2f\n", soma));
     }
 
     private static void maior(Comparator<FormaGeometrica> comparador) {
@@ -246,14 +246,12 @@ public class FormasCollectionStream {
         double minimo = Double.parseDouble(IO.readln("Digite a área mínima para filtrar: "));
         String tipo = IO.readln("Qual tipo te interessa? ").toLowerCase();
         Predicate<FormaGeometrica> areaMinima = (forma -> forma.area() >= minimo);
-        IO.println(
+        
                 listaFormas.stream()
                         .filter(areaMinima)
                         .filter(f -> f.nome().toLowerCase().equals(tipo))
                         .map(f -> f.toString())
-                        .reduce((s1, s2) -> s1.concat("\n" + s2))
-                        .orElse("Sem formas para este filtro"));
-
+                        .forEach(IO::println);
     }
 
     private static void quantidadeComFiltro() {
@@ -279,11 +277,14 @@ public class FormasCollectionStream {
 
     private static void acharElemento() {
         String id = IO.readln("ID da forma: ");
+        FormaGeometrica procurando = hashFiguras.get(id);        
+        Optional<FormaGeometrica> forma = Optional.ofNullable(procurando);
 
-        Optional<FormaGeometrica> forma = Optional.ofNullable(hashFiguras.get(id));
+        //forma.ifPresent((f) -> IO.println(f));
 
         forma.ifPresentOrElse((f) -> IO.println(f),
-                () -> IO.println("Não tem figura com este id"));
+                              ()  -> IO.println("Não tem figura com este id"));
+
     }
 
     private static void adicionarFormasFixas() {
