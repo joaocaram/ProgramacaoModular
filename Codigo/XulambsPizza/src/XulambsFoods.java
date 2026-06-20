@@ -38,7 +38,7 @@ public class XulambsFoods {
     
     static void config(){
         clientes = new Dados<>(GeradorClientes.gerarClientes());
-        pedidos = new Dados<>();
+        pedidos = new Dados<>(1000);
         // pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
     }
 
@@ -54,7 +54,7 @@ public class XulambsFoods {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS FOODS v0.8\n=============");
+        IO.println("XULAMBS FOODS v0.9\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
