@@ -1,80 +1,77 @@
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Dados<T> {
-    private List<T> dados;
+    private Map<Integer, T> dados;
 
     public Dados(List<T> lista){
-        dados = lista;
+        dados = new HashMap<>(lista.size());
+        for (T t : lista) {
+            dados.put(t.hashCode(), t);
+        }
     }
 
-    public Dados(){
-        dados = new LinkedList<>();
+    public Dados(int tamanho){
+        dados = new HashMap<>(tamanho);
     }
 
     public T localizar(int numero){
-        T localizado = null;
-        for (int i = 0; localizado == null && i<dados.size(); i++) {
-            T candidato = dados.get(i);
-            if(candidato.hashCode() == numero)
-                localizado = candidato;
-        }
-        return localizado;
+        return dados.get(numero);
     }
     
+    //Interface Predicate
     public String relatorioFiltrado(Predicate<T> condicao){
         StringBuilder relat = new StringBuilder("Relatório:\n"); 
-        for (T dado : dados) {
+        for (T dado : dados.values()) {
             if(condicao.test(dado)){
                 relat.append(dado+"\n");
             }
         }
         return relat.toString();
- 
     }
     
+    //Interface Function
     public double totalizar(Function<T, Double> funcao){
         double valor = 0;
-        for (T dado : dados) {
+        for (T dado : dados.values()) {
             valor += funcao.apply(dado);
          }
         return valor;
     }
 
+    //Interface Consumer
     public void processar(Consumer<T> funcao){
-        for (T dado : dados) {
+        for (T dado : dados.values()) {
             funcao.accept(dado);
          }
     }
         
-    // public void atualizarClientes() {
-    //     for (Cliente cliente : clientes) {
-    //         cliente.verificarCategoria();
-    //     }    
-    // }
-
     public int add(T dado){
-        dados.add(dado);
+        dados.put(dado.hashCode(),dado);
         return dados.size();
     }
 
     public String relatorio(){
         StringBuilder relat = new StringBuilder("Relatório:\n"); 
-        for (T dado : dados) {
+        for (T dado : dados.values()) {
             relat.append(dado+"\n");
         }
         return relat.toString();
     }
 
+    //Interface Comparator
     public String relatorioOrdenado(Comparator<T> comparador){
         StringBuilder relat = new StringBuilder();
-        Collections.sort(dados, comparador::compare);
-        for (T dado : dados) {
+        List<T> valores = new ArrayList<>(dados.values());
+        Collections.sort(valores, comparador::compare);
+        for (T dado : valores) {
             relat.append(dado);
             relat.append("\n~~~~~~~~~~~~~~~~~~~~\n");
         }
