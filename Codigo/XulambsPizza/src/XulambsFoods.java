@@ -1,8 +1,10 @@
+
 import java.time.LocalDate;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /** 
@@ -31,12 +33,13 @@ import java.util.List;
 
 public class XulambsFoods {
 
-    static List<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
-    static List<Cliente> clientes;
+    static Dados<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
+    static Dados<Cliente> clientes;
     
     static void config(){
-        clientes = GeradorClientes.gerarClientes();
-        pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
+        clientes = new Dados<>(GeradorClientes.gerarClientes());
+        pedidos = new Dados<>(1000);
+        // pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
     }
 
     //#region utilidades
@@ -51,7 +54,7 @@ public class XulambsFoods {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS FOODS v0.8\n=============");
+        IO.println("XULAMBS FOODS v0.9\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -76,28 +79,51 @@ public class XulambsFoods {
         }    
     }
 
-    private static void atualizarClientes() {
-        for (Cliente cliente : clientes) {
-            cliente.verificarCategoria();
-        }    
+    private static<T> void totalDeQualquerCoisa(Function<T, Double> f,
+                                            Dados<T> base){
+        IO.println(base.totalizar(f));
     }
+
+    private void pedidosPorData(){
+        String strData = IO.readln("Qual a data para o filtro? ");
+        LocalDate data = LocalDate.parse(strData);
+        Predicate<Pedido> porData = ped -> ped.ehNaData(data);
+        IO.println(pedidos.relatorioFiltrado(porData));
+    }
+
+    private static void totalGasto(){
+        Function<Cliente, Double> f = 
+            (cli) -> cli.totalGasto();  
+        IO.println(clientes.totalizar(f));
+    }
+
+    private static void totalPedidos(){
+        Function<Pedido, Double> f = 
+            (ped) -> ped.precoAPagar();
+        IO.println(pedidos.totalizar(f));
+    }
+
+    private static void atualizarClientes() {
+      Consumer<Cliente> cons = (cli) -> cli.verificarCategoria();
+      clientes.processar(cons);
+    }
+
+    private static<T> void relatorioOrdenado(Dados<T> dados, 
+                                             Comparator<T> comp){
+        IO.println(dados.relatorioOrdenado(comp));
+    }
+
 
     private static void relatorioClientes() {
         cabecalho();
-        IO.println("Relatório Clientes:");
-        for (Cliente cliente : clientes) {
-            IO.println(cliente);
-        }    
+        relatorioOrdenado(clientes, 
+                         (cli1, cli2) -> cli1.hashCode() - cli2.hashCode());
     }
 
     private static void relatorioPedidos() {
         cabecalho();
         IO.println("Relatório pedidos:");
-        Collections.sort(pedidos);
-        for (Pedido pedido : pedidos) {
-            IO.println(pedido);
-            IO.println("\n~~~~~~~~~~~~~~~~~~~~\n");
-        }    
+        IO.println(pedidos.relatorioOrdenado(Pedido::compareTo));
     }
     //#endregion
 
@@ -194,22 +220,14 @@ public class XulambsFoods {
         
     }
 
-    static Object localizar(int numero, List lista){
-        Object localizado = null;
-        for (int i = 0; localizado == null && i<lista.size(); i++) {
-            Object candidato = lista.get(i);
-            if(candidato.hashCode() == numero)
-                localizado = candidato;
-        }
-        return localizado;
-    }
+
     
     static void alterarPedido(){
         cabecalho();
         String resposta = "Pedido não encontrado";
         IO.println("Incluir itens em um pedido.");
         int numPedido = lerInteiro(("Número do pedido: "));
-        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
+        Pedido pedido = pedidos.localizar(numPedido);
         if(pedido != null ){
             try {
                 pedido.adicionar(comprarProduto());    
@@ -229,9 +247,9 @@ public class XulambsFoods {
         String resposta = "Pedido não encontrado";
         IO.println("Fechar um pedido.");
         int numPedido = Integer.parseInt(IO.readln("Número do pedido: "));
-        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
+        Pedido pedido = pedidos.localizar(numPedido);
         int numCliente = Integer.parseInt(IO.readln("ID do cliente: "));
-        Cliente cliente = (Cliente)localizar(numCliente, clientes);
+        Cliente cliente = clientes.localizar(numCliente);
         
         if(pedido != null && cliente !=null){
             try {
@@ -251,7 +269,7 @@ public class XulambsFoods {
         String resposta = "Pedido não encontrado";
         IO.println("Relatório de um pedido.");
         int numPedido = lerInteiro("Número do pedido: ");
-        Pedido pedido = (Pedido)localizar(numPedido, pedidos);
+        Pedido pedido = pedidos.localizar(numPedido);
         imprimir(pedido, resposta);
     }
     //#endregion
@@ -335,7 +353,6 @@ public class XulambsFoods {
 
     //#region app
     public static void main(String[] args) throws Exception {
-        pedidos = new LinkedList<>();
         config();
         int opcao = -1;
         do {

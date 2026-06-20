@@ -2,7 +2,7 @@ import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Cliente {
+public class Cliente{
     private int id;
     private String nome;
     private IFidelidade categoria;
@@ -96,4 +96,5 @@ public class Cliente {
     public int hashCode(){
         return id;
     }
+
 }

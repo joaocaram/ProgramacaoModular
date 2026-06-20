@@ -166,6 +166,9 @@ public abstract class Pedido implements Comparable<Pedido>{
 
 	}
 
+	public boolean ehNaData(LocalDate data){
+		return this.data.equals(data);
+	}
 	@Override
 	public int compareTo(Pedido outro){
 		int resposta = 0;
