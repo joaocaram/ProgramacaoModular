@@ -36,10 +36,12 @@ public class XulambsFoods {
     static Dados<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
     static Dados<Cliente> clientes;
     static Cardapio cardapio;
-    
+    static IPreco regraAtual; 
+
     static void config(){
         clientes = new Dados<>(GeradorClientes.gerarClientes());
         pedidos = new Dados<>(1000);
+        regraAtual = new PrecoRegular();
         // pedidos = GeradorPedidos.gerarPedidos(LocalDate.now().minusDays(100), LocalDate.now(), clientes, 12);
     }
 
@@ -77,6 +79,7 @@ public class XulambsFoods {
             case 1 -> relatorioClientes();
             case 2 -> relatorioPedidos();
             case 3 -> atualizarClientes();
+            case 4 -> ativarRegra();
         }    
     }
 
@@ -146,6 +149,7 @@ public class XulambsFoods {
         IO.println("1 - Todos os clientes");
         IO.println("2 - Todos os pedidos");
         IO.println("3 - Atualizar clientes");
+        IO.println("4 - Alterar regra de preço");
         IO.println("0 - Finalizar");
         return lerInteiro("Digite sua escolha: ");
     
@@ -164,6 +168,7 @@ public class XulambsFoods {
     static void abrirPedido(){
         cabecalho();
         Pedido novo = escolherTipoPedido();
+        novo.mudarRegra(regraAtual);
         if(novo!=null){
             String maisItens = null;
             do{
@@ -181,6 +186,19 @@ public class XulambsFoods {
         }
     }
         
+    private static void ativarRegra(){
+        cabecalho();
+        IO.println("PREÇO VIGENTE:");
+        IO.println("1 - Regular (padrão)");
+        IO.println("2 - Promo Copa");
+        IO.println("3 - Fim de semana");
+        int opcao =  lerInteiro("Escolha a regra: ");
+        regraAtual =  switch (opcao) {
+            case 2 -> new PrecoCopa();
+            case 3 -> new PrecoFimDeSemana();
+            default -> new PrecoRegular();
+        };
+    }
 
     private static IProduto comprarProduto() {
         int tipo = menuProdutos();

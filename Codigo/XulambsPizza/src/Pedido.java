@@ -42,6 +42,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 	private int idPedido;
 	private boolean aberto;
 	protected double desconto;
+	private IPreco regraDePreco;
 
 	private void init(LocalDate data){
 		this.data = data;
@@ -52,6 +53,7 @@ public abstract class Pedido implements Comparable<Pedido>{
         itens = new LinkedList<>();
         idPedido = this.data.getDayOfMonth()*1000 + ultimoPedido;
 		desconto = 0d;
+		regraDePreco = new PrecoRegular();
 	}
     /**
 	 * Cria um pedido com a data de hoje. Identificador é gerado automaticamente a partir
@@ -65,6 +67,11 @@ public abstract class Pedido implements Comparable<Pedido>{
 		init(data);
 	}
 
+	public boolean mudarRegra(IPreco regra){
+		regraDePreco = regra;
+		return true;
+	}
+	
 	public double aplicarDesconto(double valor){
 		if(valor < 0 || valor > valorItens())
 			throw new IllegalArgumentException("Desconto inválido");
@@ -77,11 +84,7 @@ public abstract class Pedido implements Comparable<Pedido>{
 		return desconto;
 	}
 	protected double valorItens(){
-		double preco = 0d;
-        for (IProduto produto : itens) {
-            preco += produto.valorAPagar();
-        }
-		return preco;
+		return regraDePreco.valorItens(itens);
 	}
 	/**
 	 * Retorna o número do pedido (getter) para efeitos de localização/comparação em outros contextos.
