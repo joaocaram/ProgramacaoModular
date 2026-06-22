@@ -1,0 +1,12 @@
+MENU DE PRODUTOS
+==================
+1 - Pizza
+2 - Sanduiche
+3 - Sanduiche combo
+================
+4 - Doce de leite
+5 - Brigadeiro
+================
+6 - Agua com gas
+7 - Cha com gas
+8 - Suco

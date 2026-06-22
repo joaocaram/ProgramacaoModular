@@ -35,6 +35,7 @@ public class XulambsFoods {
 
     static Dados<Pedido> pedidos;    // lista com todos os pedidos. A melhorar no futuro. 
     static Dados<Cliente> clientes;
+    static Cardapio cardapio;
     
     static void config(){
         clientes = new Dados<>(GeradorClientes.gerarClientes());
@@ -152,10 +153,7 @@ public class XulambsFoods {
 
     static int menuProdutos() {
         cabecalho();
-        IO.println("1 - Pizzas");
-        IO.println("2 - Sanduiches");
-        IO.println("3 - Bebidas");
-        IO.println("4 - Sobremesas");
+        IO.println(Cardapio.cardapio());
         return lerInteiro("Digite sua escolha: ");
     
     }
@@ -186,12 +184,11 @@ public class XulambsFoods {
 
     private static IProduto comprarProduto() {
         int tipo = menuProdutos();
+        IProduto produto = Cardapio.criar(tipo);
+
         return switch(tipo){
-            case 1, 2-> comprarPersonalizavel(tipo);
-            
-            case 3-> comprarBebida();
-            case 4-> comprarSobremesa();
-            default -> null;
+            case 1, 2, 3-> comprarPersonalizavel(tipo, produto);
+            default -> produto;
         };
     }
 
@@ -284,14 +281,14 @@ public class XulambsFoods {
             IO.println(padrao);
     }
     //#region pizza
-    static IProduto comprarPersonalizavel(int tipo){
+    static IProduto comprarPersonalizavel(int tipo, IProduto produto){
         cabecalho();
         
         IPersonalizavel item = switch (tipo) {
             case 1 -> comprarPizza();
-            case 2 -> comprarSanduiche();
-            default -> null;
+            default -> (IPersonalizavel)produto;
         };
+
         IO.println("Comprando "+item.getNome());
         int adicionais = Integer.parseInt(IO.readln("Quantos adicionais você deseja? (máx. "+item.maxIngredientes()+"): "));
         if(item != null){
@@ -308,29 +305,13 @@ public class XulambsFoods {
         return novaPizza;
     }
 
-    static IPersonalizavel comprarSanduiche() {
-        Sanduiche novoSanduiche = new Sanduiche();
-        String combo = IO.readln("Será combo com fritas (s/n)? ").toUpperCase();
-        if(combo.equals("S"))
-            novoSanduiche.setCombo(true);
-        return novoSanduiche;
-    }
-
+    
     private static EBorda escolherBorda() {
         return
             (EBorda)escolherEnum(EBorda.values(), "Escolha uma borda: ");
     }
 
-    private static IProduto comprarSobremesa(){
-        ESobremesa sobremesa = (ESobremesa)escolherEnum(ESobremesa.values(), "Escolha sua sobremesa: ");
-        return new Sobremesa(sobremesa);
-    }
-
-    private static IProduto comprarBebida(){
-        EBebida bebida = (EBebida)escolherEnum(EBebida.values(), "Escolha sua bebida: ");
-        return new Bebida(bebida);
-    }
-
+    
     private static Enum escolherEnum(Enum[] valores, String msg) {
         IO.println(msg);
         int i = 1;
