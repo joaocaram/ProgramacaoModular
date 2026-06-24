@@ -30,7 +30,7 @@ public class Cliente{
      * Atualiza a categoria de fidelidade do cliente, retornando-a.
      * @return Nova categoria de fidelidade do cliente.
      */
-    public IFidelidade verificarCategoria(){
+    private IFidelidade verificarCategoria(){
         categoria = IFidelidade.definirCategoria(pedidos);
         return categoria;
     }
@@ -48,6 +48,7 @@ public class Cliente{
         double desconto = categoria.descontoPedido(novo);
         novo.aplicarDesconto(desconto);
         pedidos.addLast(novo);
+        categoria = verificarCategoria();
         return pedidos.size();
     }
 

@@ -57,7 +57,7 @@ public class XulambsFoods {
     }
     static void cabecalho() {
         limparTela();
-        IO.println("XULAMBS FOODS v0.9\n=============");
+        IO.println("XULAMBS FOODS v0.11\n=============");
         IO.println("Pizzas vendidas hoje: "+Pizza.pizzasVendidas());
     }
 
@@ -108,8 +108,9 @@ public class XulambsFoods {
     }
 
     private static void atualizarClientes() {
-      Consumer<Cliente> cons = (cli) -> cli.verificarCategoria();
-      clientes.processar(cons);
+        IO.println("Atualização automática no registro de pedidos.");
+        //   Consumer<Cliente> cons = (cli) -> cli.verificarCategoria();
+    //   clientes.processar(cons);
     }
 
     private static<T> void relatorioOrdenado(Dados<T> dados, 

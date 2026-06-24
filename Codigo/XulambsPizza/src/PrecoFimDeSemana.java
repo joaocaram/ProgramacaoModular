@@ -8,7 +8,6 @@ public class PrecoFimDeSemana implements IPreco {
                             .mapToDouble( prod -> prod.valorAPagar())
                             .sum();
 
-        
         double desconto = 0;
         if(itens.size() >= 3)
             desconto = itens.stream()
