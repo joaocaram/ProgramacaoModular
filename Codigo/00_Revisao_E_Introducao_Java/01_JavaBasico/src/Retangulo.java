@@ -1,9 +1,7 @@
-import java.util.Scanner;
-
 /** 
  * MIT License
  *
- * Copyright(c) 2024 João Caram <caram@pucminas.br>
+ * Copyright(c) 2024-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +25,17 @@ import java.util.Scanner;
 /** Primeiro exemplo de Java: E/S e impressão de um retângulo no console */
 public class Retangulo {
     
-    /** Scaner para leitura do teclado */
-    static Scanner teclado = new Scanner(System.in);
+        
     
-    /** 
-     * Lê um número inteiro do teclado, sem validação, e o retorna
-     * @return uma variável int
-    */
-    static int lerNumero(){
+    /**
+     * Recebe uma mensagem para exibir e pede a leitura de um número inteiro, retornando-o. 
+     * Código sem robustez para valores não inteiros.
+     * @param mensagem Mensagem a ser exibida ao usuário
+     * @return Número inteiro lido a partir do teclado
+     */
+    static int lerNumero(String mensagem){
         int valor;
-        System.out.print("\tDigite um numero positivo: ");
-        valor = teclado.nextInt();
+        valor = Integer.parseInt( IO.readln("\t"+mensagem+": "));
         return valor;
     }
     
@@ -69,16 +67,16 @@ public class Retangulo {
     }
     
     
-    public static void main(String[] args) {
-        int altura = lerNumero();
-        int largura = lerNumero();
+    void main() {
+        int altura = lerNumero("Digite a altura do retângulo (>=2)");
+        int largura = lerNumero("Digite a largura do retângulo (>=2)");
         
-        System.out.println(linhaCheia(largura));
+        IO.println(linhaCheia(largura));
         
         for(int i=0 ; i < altura - 2; i++ ){
-            System.out.println(linhaVazia(largura));
+            IO.println(linhaVazia(largura));
         }
-        System.out.println(linhaCheia(largura));
+        IO.println(linhaCheia(largura));
     }
     
 }

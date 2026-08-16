@@ -1,9 +1,7 @@
-import java.util.Scanner;
-
 /** 
  * MIT License
  *
- * Copyright(c) 2025 João Caram <caram@pucminas.br>
+ * Copyright(c) 2025-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +25,7 @@ import java.util.Scanner;
  /** Java básico: E/S e algumas operações com strings */
 public class Strings {
     
-    /** Scanner para leitura da entrada padrão (teclado) */
-    static Scanner teclado;
-
+    
     /**
      * Recebe uma mensagem para exibir e pede a leitura de um número inteiro, retornando-o. 
      * Código sem robustez para valores não inteiros.
@@ -38,15 +34,13 @@ public class Strings {
      */
     static int lerNumero(String mensagem){
         int valor;
-        System.out.print("\t"+mensagem+": ");
-        valor = Integer.parseInt(teclado.nextLine());
+        valor = Integer.parseInt(IO.readln("\t"+mensagem+": "));
         return valor;
     }
 
     /** Exibe mensagem e espera leitura do teclado para simular uma pausa no programa */
     static void pausa(){
-        System.out.println("Digite enter para continuar.");
-        teclado.nextLine();
+        IO.readln("Digite enter para continuar.");
     }
 
     /**
@@ -54,12 +48,12 @@ public class Strings {
      * @return Número inteiro lido a partir do teclado (sem robustez para valores inválidos)
      */
     static int menu(){
-        System.out.println("1 - Procurar uma letra");
-        System.out.println("2 - Descobrir o tamanho");
-        System.out.println("3 - Substituir letras");
-        System.out.println("4 - Recortar frase");
-        System.out.println("5 - Contar repetição de letra");
-        System.out.println("0 - Sair");
+        IO.println("1 - Procurar uma letra");
+        IO.println("2 - Descobrir o tamanho");
+        IO.println("3 - Substituir letras");
+        IO.println("4 - Recortar frase");
+        IO.println("5 - Contar repetição de letra");
+        IO.println("0 - Sair");
 
         int opcao = lerNumero("Digite sua opção");
         return opcao;
@@ -74,32 +68,42 @@ public class Strings {
         String letra;
         String mensagem = "Letra não existe na frase";
         int posicao;
-        System.out.print("Digite a letra para procurar: ");
-        letra = teclado.nextLine();
+        
+        letra = IO.readln("Digite a letra para procurar: ");
         posicao = frase.indexOf(letra);
-        if(posicao!=-1)
+        if(posicao != -1)
             mensagem = letra + " encontrada na posição "+posicao;
         
-        System.out.println("\n"+mensagem);
+        IO.println("\n"+mensagem);
     }
 
     /**
      * Demonstração de replace para substituir letra de uma string, criando outra string. 
      * Já faz a impressão do resultado para o programa principal
-     * @param frase Frase na qual a letra será substituída. 
+     * @param fraseOriginal Frase na qual a letra será substituída. 
      */
     static void substituirLetras(String fraseOriginal){
         String letraOriginal, letraNova, fraseNova;
 
-        System.out.print("Digite a letra a ser substituida: ");
-        letraOriginal = teclado.nextLine();
-        System.out.print("Digite a letra a ser colocada: ");
-        letraNova = teclado.nextLine();
+        letraOriginal = IO.readln("Digite a letra a ser substituida: ");
+        letraNova = IO.readln("Digite a letra a ser colocada: ");
 
         fraseNova = fraseOriginal.replace(letraOriginal, letraNova);
 
-        System.out.println("\nOriginal: "+fraseOriginal);
-        System.out.println("Com trocas: "+fraseNova);
+        IO.println("\nOriginal: "+fraseOriginal);
+        IO.println("Com trocas: "+fraseNova);
+    }
+
+    /**
+     * Exibe uma mensagem no console indicando quantos caracteres
+     * existem na frase original.
+     * @param fraseOriginal Frase da qual queremos exibir a quantidade
+     * de caracteres.
+     */
+    static void mostrarTamanhoDaFrase(String fraseOriginal){
+        IO.println("A frase '"+fraseOriginal+"' tem "+
+            fraseOriginal.length()+" caracteres."
+        );
     }
 
     /**
@@ -110,14 +114,16 @@ public class Strings {
     static void recortarFrase(String fraseOriginal){
         String fraseNova;
         int posicaoInicial, posicaoFinal;
-        System.out.println("A frase tem "+fraseOriginal.length()+" caracteres.");
+        int tamanhoFrase = fraseOriginal.length();
+
+        IO.println("A frase tem "+tamanhoFrase+" caracteres.");
         posicaoInicial = lerNumero("Início do recorte (>=0)");
-        posicaoFinal = lerNumero("Fim do recorte (<=" + fraseOriginal.length()+")");
+        posicaoFinal = lerNumero("Fim do recorte (<=" + tamanhoFrase+")");
 
         fraseNova = fraseOriginal.substring(posicaoInicial, posicaoFinal);
 
-        System.out.println("\nOriginal: "+fraseOriginal);
-        System.out.println("Cortada: "+fraseNova);
+        IO.println("\nOriginal: "+fraseOriginal);
+        IO.println("Cortada: "+fraseNova);
     }
 
     /**
@@ -128,35 +134,34 @@ public class Strings {
     static void contarRepeticao(String fraseOriginal){
         String letraParaContar;
         int contador=0;
-        System.out.print("Digite a letra a ser contada: ");
-        letraParaContar = teclado.nextLine();
+        
+        letraParaContar = IO.readln("Digite a letra a ser contada: ");
         for (int i = 0; i < fraseOriginal.length(); i++) {
             if(fraseOriginal.charAt(i) == letraParaContar.charAt(0))
                 contador++;
         }
 
-        System.out.println("Temos "+contador+" ocorrências de "+letraParaContar+" na frase");
+        IO.println("Temos "+contador+" ocorrências de "+letraParaContar+" na frase");
     }
 
 
     public static void main(String[] args) {
-        teclado = new Scanner(System.in);
         int opcao=-1;
         String fraseOriginal;
         
-        System.out.print("Digite uma frase completa: ");
-        fraseOriginal = teclado.nextLine();
+        fraseOriginal = IO.readln("Digite uma frase completa: ");
         
         do{
-            System.out.println("\n\nFrase original: "+fraseOriginal+"\n");
+            IO.println("\n\nFrase original: "+fraseOriginal+"\n");
             opcao = menu();
             switch (opcao) {
-                case 0 -> System.out.println("Adeus!!!");
+                case 0 -> IO.println("Adeus!!!");
                 case 1 -> procurarLetra(fraseOriginal);
-                case 2 -> System.out.println("A frase "+fraseOriginal+" tem "+fraseOriginal.length()+" caracteres.");                
+                case 2 -> IO.println("A frase "+fraseOriginal+" tem "+fraseOriginal.length()+" caracteres.");                
                 case 3 -> substituirLetras(fraseOriginal);
                 case 4 -> recortarFrase(fraseOriginal);
                 case 5 -> contarRepeticao(fraseOriginal);
+                default -> IO.println("Opção inválida");
             }
             pausa();
             

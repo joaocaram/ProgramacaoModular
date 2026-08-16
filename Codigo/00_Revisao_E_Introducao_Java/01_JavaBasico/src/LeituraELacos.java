@@ -1,9 +1,7 @@
-import java.util.Scanner;
-
 /** 
  * MIT License
  *
- * Copyright(c) 2025 João Caram <caram@pucminas.br>
+ * Copyright(c) 2025-26 João Caram <caram@pucminas.br>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,20 +24,16 @@ import java.util.Scanner;
 
 
 /** Java básico: E/S, repetição e decisão, vetores */
-public class LeituraELacos {
-    /** Scanner para fazer leitura da entrada padrão (teclado) */
-    static Scanner teclado;
-    
+   
     /**
      * Recebe uma mensagem para exibir e pede a leitura de um número inteiro, retornando-o. 
      * Código sem robustez para valores não inteiros.
      * @param mensagem Mensagem a ser exibida ao usuário
      * @return Número inteiro lido a partir do teclado
      */
-    static int lerNumero(String mensagem){
+    int lerNumero(String mensagem){
         int valor;
-        System.out.print("\t"+mensagem+": ");
-        valor = teclado.nextInt();
+        valor = Integer.parseInt( IO.readln("\t"+mensagem+": "));
         return valor;
     }
 
@@ -47,7 +41,7 @@ public class LeituraELacos {
      * Preenche um vetor a partir da leitura de números inteiros
      * @param vetor Vetor a ser preenchido
      */
-    static void preencherVetor(int[] vetor){
+     void preencherVetor(int[] vetor){
         for (int i = 0; i < vetor.length; i++) {
             vetor[i] = lerNumero("Digite um valor inteiro");
         }
@@ -58,26 +52,57 @@ public class LeituraELacos {
      * @param vetor O vetor a ser analisado.
      * @return int com a quantidade de pares do vetor (>=0)
      */
-    static int contaPares(int[] vetor){
-        int contadorPar=0;
+    int contaImpares(int[] vetor){
+        int contadorImpar=0;
         for (int i = 0; i < vetor.length; i++) {
-            if(vetor[i]%2==0)
-                contadorPar++;
+            contadorImpar += (vetor[i]%2);
         }
-        return contadorPar;
+        return contadorImpar;
     }
 
-    public static void main(String[] args) throws Exception {
-        teclado = new Scanner(System.in);
+    int somaVetor(int [] vetor){
+        int soma = 0;
+        for (int i = 0; i < vetor.length; i++) {
+            soma = soma + vetor[i];
+        }
+        return soma;
+    }
+
+    int maioresQue(double valor, int[] vetor){
+        int contador = 0;
+        for (int i = 0; i < vetor.length; i++) {
+            if(vetor[i] > valor){
+                contador = contador+1;
+            }
+        }
+        return contador;
+    }
+
+    void main(){
+        
         int[] vetor;
         int tamanho = lerNumero("Quantidade de inteiros para ler");
-        int quantPares;
+        int quantImpares;
+        int soma;
+        double media;
+        int maioresQueAMedia;
 
         vetor = new int[tamanho];
         preencherVetor(vetor);
-        quantPares = contaPares(vetor);
-        System.out.println("O vetor tem "+quantPares+" números pares.");
-        teclado.close();
+        quantImpares = contaImpares(vetor);
+        soma = somaVetor(vetor);
+        media = soma / tamanho;
+        maioresQueAMedia = maioresQue(media, vetor);
+
+        IO.println("RESULTADOS:");
+        IO.println("============");
+        IO.println("O vetor tem "+quantImpares+" números ímpares e "+(tamanho-quantImpares)+" pares.");
+        IO.println(
+                String.format("A soma dos valores é de %d e sua média é de %f", soma, media)
+                );
+        IO.println(
+                String.format("%d valores são maiores que a média", maioresQueAMedia)
+                );
         
     }
-}
+
