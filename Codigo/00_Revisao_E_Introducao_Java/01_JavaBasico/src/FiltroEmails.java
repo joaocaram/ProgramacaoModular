@@ -36,7 +36,7 @@ static List<String> lerEmails(){
     quantos = lerNumero("Quantidade de emails");
     List<String> emails = new ArrayList<>(quantos);
     
-    for (int i = 0; i < emails.size(); i++) {
+    for (int i = 0; i < quantos; i++) {
         String prompt = String.format("Digite o %dº email: ",(i+1));
         emails.add(IO.readln(prompt));   
     }
@@ -48,7 +48,7 @@ static String lerDominio(){
 }
 
 static List<String> filtrarEmails(List<String> emails, String dominio){
-    List<String> resposta = new LinkedList<>();
+    List<String> resposta = new ArrayList<>(emails.size());
     
     int quantidade = 0;
     for (int i = 0; i < emails.size(); i++) {
