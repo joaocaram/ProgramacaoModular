@@ -44,7 +44,6 @@ public class Aluno {
     public Aluno(String nome) {
         this.nome = nome;
         matricula = proxMatricula++;
-        ;
         notas = new ArrayList<Double>(QUANT_AVALIACOES);
         faltas = 0;
         curso = null;
@@ -72,8 +71,9 @@ public class Aluno {
     }
 
     public int lancarFalta() {
-        if (curso != null && faltas < curso.quantidadeAulas())
-            faltas++;
+        if (curso != null && 
+            faltas < curso.quantidadeAulas())
+                faltas++;
 
         return faltas;
     }

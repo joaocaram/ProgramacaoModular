@@ -42,7 +42,9 @@ public class Turma {
 
     public boolean matricular(Aluno aluno) {
         boolean resposta = false;
-        boolean alunoExiste = aluno != null && getAluno(aluno.getMatricula()) != null;
+        boolean alunoExiste = 
+                aluno != null && 
+                getAluno(aluno.getMatricula()) != null;
         if (temVagas() && !alunoExiste) {
             resposta = aluno.matricular(curso);
             if (resposta)

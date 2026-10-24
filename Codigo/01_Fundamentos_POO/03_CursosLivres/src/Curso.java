@@ -49,7 +49,7 @@ public class Curso {
         StringBuilder cod = new StringBuilder();
         String[] palavras = nome.split(" ");
         for (String palavra : palavras)
-            cod.append(palavra.charAt(0) + "\n");
+            cod.append(palavra.charAt(0));
 
         cod.append(diaSemana.getValue() % 7 + 1);
         return cod.toString();
